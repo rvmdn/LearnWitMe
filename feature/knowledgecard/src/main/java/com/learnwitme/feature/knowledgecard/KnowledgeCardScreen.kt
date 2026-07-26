@@ -221,12 +221,12 @@ private fun KnowledgeCardContent(
         }
 
         // 7. Official References
-        if (card.reference.isNotEmpty() || card.officialDocumentationLink.isNotBlank()) {
+        if (card.references.isNotEmpty() || card.officialDocumentationLink.isNotBlank()) {
             item {
                 Column {
                     LwmSectionHeader(title = "Official References")
                     Column(verticalArrangement = Arrangement.spacedBy(LwmTheme.spacing.xs)) {
-                        card.reference.forEach { ref ->
+                        card.references.forEach { ref ->
                             LwmCard(modifier = Modifier.fillMaxWidth()) {
                                 Column {
                                     Text(
