@@ -46,7 +46,7 @@ class IntegrationTest {
     private val roadmapRepo = object : RoadmapRepository {
         override suspend fun getRoadmap(id: LearningRoadmapId): LearningRoadmap? = learningRoadmap
         override suspend fun getActiveRoadmapByUserId(userId: UserId): LearningRoadmap? = learningRoadmap
-        override suspend fun saveRoadmap(roadmap: LearningRoadmap) { learningRoadmap = roadmap }
+        override suspend fun saveRoadmap(userId: UserId, roadmap: LearningRoadmap) { learningRoadmap = roadmap }
     }
 
     private val sessionRepo = object : LearningSessionRepository {

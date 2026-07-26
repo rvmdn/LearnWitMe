@@ -38,7 +38,7 @@ class FinishQuizWorkflow(
         } else {
             roadmap
         }
-        roadmapRepository.saveRoadmap(updatedRoadmap)
+        roadmapRepository.saveRoadmap(userId, updatedRoadmap)
 
         val memory = memoryRepository.getMemoryByUserId(userId)
             ?: throw IllegalStateException("Memory not found for user ${userId.value}")

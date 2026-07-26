@@ -20,7 +20,7 @@ class FakeRoadmapRepo : RoadmapRepository {
     var savedRoadmap: LearningRoadmap? = null
     override suspend fun getRoadmap(id: LearningRoadmapId) = roadmap
     override suspend fun getActiveRoadmapByUserId(userId: UserId) = roadmap
-    override suspend fun saveRoadmap(roadmap: LearningRoadmap) { savedRoadmap = roadmap }
+    override suspend fun saveRoadmap(userId: UserId, roadmap: LearningRoadmap) { savedRoadmap = roadmap }
 }
 
 class FakeProfileRepo : UserProfileRepository {

@@ -10,5 +10,5 @@ import com.learnwitme.core.domain.model.UserId
 interface RoadmapRepository {
     suspend fun getRoadmap(id: LearningRoadmapId): LearningRoadmap?
     suspend fun getActiveRoadmapByUserId(userId: UserId): LearningRoadmap?
-    suspend fun saveRoadmap(roadmap: LearningRoadmap)
+    suspend fun saveRoadmap(userId: UserId, roadmap: LearningRoadmap)
 }

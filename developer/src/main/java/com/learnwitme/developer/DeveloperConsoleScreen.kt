@@ -13,8 +13,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.learnwitme.core.config.ConfigManager
 import com.learnwitme.core.storage.EncryptedDataStore
-import com.learnwitme.core.storage.UserDao
-import com.learnwitme.core.storage.UserEntity
+import com.learnwitme.core.storage.local.dao.UserProfileDao
+import com.learnwitme.core.storage.local.entity.UserProfileEntity
 import com.learnwitme.core.ui.components.DynamicCard
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -25,7 +25,7 @@ fun DeveloperConsoleScreen(
     navController: NavHostController,
     configManager: ConfigManager,
     encryptedDataStore: EncryptedDataStore,
-    userDao: UserDao
+    userProfileDao: UserProfileDao
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -33,11 +33,11 @@ fun DeveloperConsoleScreen(
 
     var isMockEnabled by remember { mutableStateOf(false) }
     var isPerfEnabled by remember { mutableStateOf(false) }
-    var dbUser by remember { mutableStateOf<UserEntity?>(null) }
+    var dbUser by remember { mutableStateOf<UserProfileEntity?>(null) }
 
     fun refreshDbUser() {
         coroutineScope.launch {
-            dbUser = userDao.getUser()
+            dbUser = userProfileDao.getUserProfile("current_user")
         }
     }
 
@@ -143,15 +143,15 @@ fun DeveloperConsoleScreen(
                         )
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            Text("Table: users", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+                            Text("Table: user_profiles", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
                             Spacer(modifier = Modifier.height(8.dp))
                             dbUser?.let { user ->
-                                Text("ID: ${user.id}", style = MaterialTheme.typography.bodyMedium)
-                                Text("Name: ${user.name}", style = MaterialTheme.typography.bodyMedium)
-                                Text("Email: ${user.email}", style = MaterialTheme.typography.bodyMedium)
-                                Text("Premium Access: ${user.isPremium}", style = MaterialTheme.typography.bodyMedium)
+                                Text("User ID: ${user.userId}", style = MaterialTheme.typography.bodyMedium)
+                                Text("Career Path: ${user.careerPathName} (${user.careerPathCode})", style = MaterialTheme.typography.bodyMedium)
+                                Text("Current Level: ${user.currentLevel}", style = MaterialTheme.typography.bodyMedium)
+                                Text("Target Level: ${user.targetLevel}", style = MaterialTheme.typography.bodyMedium)
                             } ?: Text(
-                                "No user records found in encrypted database.",
+                                "No user profile records found in encrypted database.",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                             )
@@ -165,36 +165,25 @@ fun DeveloperConsoleScreen(
                         Button(
                             onClick = {
                                 coroutineScope.launch {
-                                    val testUser = UserEntity(
-                                        id = "usr_test_1",
-                                        name = "Irvan Ramadan Test",
-                                        email = "test@learnwitme.com",
-                                        isPremium = true
+                                    val testUser = UserProfileEntity(
+                                        userId = "current_user",
+                                        careerPathCode = "cp_kotlin_dev",
+                                        careerPathName = "Kotlin Developer",
+                                        careerPathDescription = "Android & Backend Developer",
+                                        learningGoalJson = "{}",
+                                        preferenceJson = "{\"preferredTopics\":[\"tp_kotlin\"],\"dailyTimeCommitmentMinutes\":30}",
+                                        currentLevel = "BEGINNER",
+                                        targetLevel = "MID",
+                                        progressJson = "{\"totalUnitsCompleted\":0,\"totalCardsMastered\":0,\"activeStreakDays\":0,\"lastActiveDate\":0}"
                                     )
-                                    userDao.insertUser(testUser)
+                                    userProfileDao.insertUserProfile(testUser)
                                     refreshDbUser()
-                                    Toast.makeText(context, "Inserted simulated user!", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, "Inserted simulated user profile!", Toast.LENGTH_SHORT).show()
                                 }
                             },
                             modifier = Modifier.weight(1f)
                         ) {
-                            Text("Insert User")
-                        }
-
-                        Button(
-                            onClick = {
-                                coroutineScope.launch {
-                                    userDao.clearUser()
-                                    refreshDbUser()
-                                    Toast.makeText(context, "Wiped database records!", Toast.LENGTH_SHORT).show()
-                                }
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.error
-                            ),
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text("Wipe Table")
+                            Text("Insert Profile")
                         }
                     }
                 }

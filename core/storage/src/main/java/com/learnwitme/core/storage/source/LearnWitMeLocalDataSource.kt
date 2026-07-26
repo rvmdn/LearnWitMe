@@ -17,6 +17,12 @@ class LearnWitMeLocalDataSource(
         db.userProfileDao().insertUserProfile(profile.toEntity())
     }
     
+    suspend fun getLearningMemoryById(id: LearningMemoryId): LearningMemory? = withContext(Dispatchers.IO) {
+        val memoryEntity = db.learningMemoryDao().getMemoryById(id.value) ?: return@withContext null
+        val recordsEntity = db.learningMemoryDao().getRecordsForMemory(memoryEntity.id)
+        memoryEntity.toDomain(recordsEntity)
+    }
+
     suspend fun getLearningMemory(userId: UserId): LearningMemory? = withContext(Dispatchers.IO) {
         val memoryEntity = db.learningMemoryDao().getMemoryByUserId(userId.value) ?: return@withContext null
         val recordsEntity = db.learningMemoryDao().getRecordsForMemory(memoryEntity.id)
@@ -29,6 +35,12 @@ class LearnWitMeLocalDataSource(
         db.learningMemoryDao().insertMemory(memoryEntity)
         db.learningMemoryDao().insertRecords(recordsEntity)
         db.learningMemoryDao().deleteStaleRecords(memoryEntity.id, recordsEntity.map { it.cardId })
+    }
+
+    suspend fun getRoadmapById(id: LearningRoadmapId): LearningRoadmap? = withContext(Dispatchers.IO) {
+        val roadmapEntity = db.roadmapDao().getRoadmapById(id.value) ?: return@withContext null
+        val unitsEntity = db.roadmapDao().getUnitsForRoadmap(roadmapEntity.id)
+        roadmapEntity.toDomain(unitsEntity)
     }
     
     suspend fun getActiveRoadmap(userId: UserId): LearningRoadmap? = withContext(Dispatchers.IO) {

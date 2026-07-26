@@ -44,7 +44,7 @@ class InitializeApplicationWorkflow(
             status = RoadmapStatus.ACTIVE,
             completedUnitIds = emptySet()
         )
-        roadmapRepository.saveRoadmap(defaultRoadmap)
+        roadmapRepository.saveRoadmap(userId, defaultRoadmap)
 
         val defaultMemory = LearningMemory(
             id = LearningMemoryId("mem_${userId.value}"),

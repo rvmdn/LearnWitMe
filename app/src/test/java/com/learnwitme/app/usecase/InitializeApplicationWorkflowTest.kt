@@ -40,7 +40,7 @@ class InitializeApplicationWorkflowTest {
         workflow.execute(userId) { manifest }
 
         coVerify { importer.import(manifest) }
-        coVerify { roadmapRepo.saveRoadmap(any()) }
+        coVerify { roadmapRepo.saveRoadmap(any(), any()) }
         coVerify { memoryRepo.saveMemory(any()) }
     }
 
@@ -59,6 +59,6 @@ class InitializeApplicationWorkflowTest {
         workflow.execute(userId) { mockk() }
 
         coVerify(exactly = 0) { importer.import(any()) }
-        coVerify(exactly = 0) { roadmapRepo.saveRoadmap(any()) }
+        coVerify(exactly = 0) { roadmapRepo.saveRoadmap(any(), any()) }
     }
 }

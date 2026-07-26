@@ -43,24 +43,5 @@ object StorageModule {
 
     @Provides
     @Singleton
-    fun provideAppDatabase(
-        @ApplicationContext context: Context
-    ): AppDatabase {
-        net.sqlcipher.database.SQLiteDatabase.loadLibs(context)
-        val passphrase = "SecureLearnWitMePassphrase123!".toByteArray()
-        val factory = SupportFactory(passphrase)
-
-        return Room.databaseBuilder(
-            context,
-            AppDatabase::class.java,
-            "learnwitme_app_secure.db"
-        )
-        .openHelperFactory(factory)
-        .fallbackToDestructiveMigration()
-        .build()
-    }
-
-    @Provides
-    @Singleton
-    fun provideUserDao(db: AppDatabase): UserDao = db.userDao()
+    fun provideUserProfileDao(db: LearnWitMeDatabase) = db.userProfileDao()
 }

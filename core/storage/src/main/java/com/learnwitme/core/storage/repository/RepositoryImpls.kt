@@ -15,7 +15,7 @@ class UserProfileRepositoryImpl @Inject constructor(
 class LearningMemoryRepositoryImpl @Inject constructor(
     private val localDataSource: LearnWitMeLocalDataSource
 ) : LearningMemoryRepository {
-    override suspend fun getMemory(id: LearningMemoryId): LearningMemory? = localDataSource.getLearningMemory(UserId("current_user"))
+    override suspend fun getMemory(id: LearningMemoryId): LearningMemory? = localDataSource.getLearningMemoryById(id)
     override suspend fun getMemoryByUserId(userId: UserId): LearningMemory? = localDataSource.getLearningMemory(userId)
     override suspend fun saveMemory(memory: LearningMemory) = localDataSource.saveLearningMemory(memory)
 }
@@ -23,9 +23,9 @@ class LearningMemoryRepositoryImpl @Inject constructor(
 class RoadmapRepositoryImpl @Inject constructor(
     private val localDataSource: LearnWitMeLocalDataSource
 ) : RoadmapRepository {
-    override suspend fun getRoadmap(id: LearningRoadmapId): LearningRoadmap? = localDataSource.getActiveRoadmap(UserId("current_user"))
+    override suspend fun getRoadmap(id: LearningRoadmapId): LearningRoadmap? = localDataSource.getRoadmapById(id)
     override suspend fun getActiveRoadmapByUserId(userId: UserId): LearningRoadmap? = localDataSource.getActiveRoadmap(userId)
-    override suspend fun saveRoadmap(roadmap: LearningRoadmap) = localDataSource.saveRoadmap(UserId("current_user"), roadmap)
+    override suspend fun saveRoadmap(userId: UserId, roadmap: LearningRoadmap) = localDataSource.saveRoadmap(userId, roadmap)
 }
 
 class LearningSessionRepositoryImpl @Inject constructor(

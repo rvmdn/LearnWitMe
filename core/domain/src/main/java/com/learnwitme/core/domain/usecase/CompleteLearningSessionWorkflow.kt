@@ -26,7 +26,7 @@ class CompleteLearningSessionWorkflow(
             updatedRoadmap = updatedRoadmap.completeUnit(unitId)
         }
         
-        roadmapRepository.saveRoadmap(updatedRoadmap)
+        roadmapRepository.saveRoadmap(userId, updatedRoadmap)
         sessionRepository.saveSession(userId, session)
         
         val sessions = sessionRepository.getSessions(userId)

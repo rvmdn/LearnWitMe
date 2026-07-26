@@ -19,6 +19,10 @@ interface UserProfileDao {
 @Dao
 interface LearningMemoryDao {
     @Transaction
+    @Query("SELECT * FROM learning_memories WHERE id = :id LIMIT 1")
+    suspend fun getMemoryById(id: String): LearningMemoryEntity?
+
+    @Transaction
     @Query("SELECT * FROM learning_memories WHERE userId = :userId LIMIT 1")
     suspend fun getMemoryByUserId(userId: String): LearningMemoryEntity?
 

@@ -2,8 +2,8 @@ package com.learnwitme.core.auth
 
 import com.learnwitme.core.network.AuthTokenProvider
 import com.learnwitme.core.storage.EncryptedDataStore
-import com.learnwitme.core.storage.UserDao
-import com.learnwitme.core.storage.UserEntity
+import com.learnwitme.core.storage.local.dao.UserProfileDao
+import com.learnwitme.core.storage.local.entity.UserProfileEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
@@ -15,7 +15,7 @@ import timber.log.Timber
 @Singleton
 class SessionManager @Inject constructor(
     private val encryptedDataStore: EncryptedDataStore,
-    private val userDao: UserDao
+    private val userProfileDao: UserProfileDao
 ) : AuthTokenProvider {
 
     companion object {
@@ -59,16 +59,15 @@ class SessionManager @Inject constructor(
         }
     }
 
-    suspend fun login(accessToken: String, refreshToken: String, user: UserEntity) {
+    suspend fun login(accessToken: String, refreshToken: String, profile: UserProfileEntity) {
         encryptedDataStore.putString(KEY_ACCESS_TOKEN, accessToken)
         encryptedDataStore.putString(KEY_REFRESH_TOKEN, refreshToken)
-        userDao.insertUser(user)
-        Timber.d("User session stored. Logged in successfully: %s", user.email)
+        userProfileDao.insertUserProfile(profile)
+        Timber.d("User session stored. Logged in successfully for user: %s", profile.userId)
     }
 
     suspend fun logout() {
         encryptedDataStore.clear()
-        userDao.clearUser()
         Timber.d("Session cleared. Logged out successfully.")
     }
 
