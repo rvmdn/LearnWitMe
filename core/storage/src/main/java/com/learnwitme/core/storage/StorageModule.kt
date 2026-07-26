@@ -12,6 +12,8 @@ import dagger.hilt.components.SingletonComponent
 import net.sqlcipher.database.SupportFactory
 import javax.inject.Singleton
 
+import com.learnwitme.core.security.DatabasePassphraseProvider
+
 @Module
 @InstallIn(SingletonComponent::class)
 object StorageModule {
@@ -19,11 +21,11 @@ object StorageModule {
     @Provides
     @Singleton
     fun provideLearnWitMeDatabase(
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context,
+        passphraseProvider: DatabasePassphraseProvider
     ): LearnWitMeDatabase {
         net.sqlcipher.database.SQLiteDatabase.loadLibs(context)
-        val passphrase = "SecureLearnWitMePassphrase123!".toByteArray()
-        val factory = SupportFactory(passphrase)
+        val factory = SupportFactory(passphraseProvider.getPassphrase())
 
         return Room.databaseBuilder(
             context,
