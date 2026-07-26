@@ -11,9 +11,11 @@ android {
 
 dependencies {
     api(project(":core:theme"))
+    api(project(":core:domain"))
     implementation(libs.coil.compose)
     implementation(libs.kotlinx.serialization.json)
     api(libs.androidx.lifecycle.viewmodel.compose)
+    api(libs.androidx.lifecycle.runtime.compose)
 
     testImplementation(libs.junit)
 }
