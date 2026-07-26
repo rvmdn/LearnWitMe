@@ -91,3 +91,37 @@ data class KnowledgeCardEntity(
     val prerequisiteCardIdsJson: String,
     val relatedTopicCodesJson: String
 )
+
+@Entity(tableName = "quizzes")
+data class QuizEntity(
+    @PrimaryKey val id: String,
+    val title: String,
+    val targetDifficulty: String
+)
+
+@Entity(tableName = "quiz_questions", primaryKeys = ["quizId", "id"])
+data class QuizQuestionEntity(
+    val quizId: String,
+    val id: String,
+    val questionText: String,
+    val correctOptionIndex: Int
+)
+
+@Entity(tableName = "quiz_options", primaryKeys = ["quizId", "questionId", "optionIndex"])
+data class QuizOptionEntity(
+    val quizId: String,
+    val questionId: String,
+    val optionIndex: Int,
+    val text: String,
+    val explanation: String
+)
+
+@Entity(tableName = "quiz_results")
+data class QuizResultEntity(
+    @PrimaryKey val id: String,
+    val quizId: String,
+    val userId: String,
+    val score: Double,
+    val answersJson: String,
+    val completedTimestamp: Long
+)

@@ -46,4 +46,8 @@ object StorageModule {
     @Provides
     @Singleton
     fun provideUserProfileDao(db: LearnWitMeDatabase) = db.userProfileDao()
+
+    @Provides
+    @Singleton
+    fun provideQuizDao(db: LearnWitMeDatabase) = db.quizDao()
 }

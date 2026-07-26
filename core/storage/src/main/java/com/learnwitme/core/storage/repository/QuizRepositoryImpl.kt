@@ -3,6 +3,8 @@ package com.learnwitme.core.storage.repository
 import android.content.Context
 import com.learnwitme.core.domain.model.*
 import com.learnwitme.core.domain.repository.QuizRepository
+import com.learnwitme.core.storage.local.dao.QuizDao
+import com.learnwitme.core.storage.local.entity.*
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -63,14 +65,15 @@ fun QuizResultDto.toDomain() = QuizResult(QuizResultId(id), QuizId(quizId), scor
 
 @Singleton
 class QuizRepositoryImpl @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val quizDao: QuizDao
 ) : QuizRepository {
 
     private val json = Json { ignoreUnknownKeys = true; prettyPrint = true }
     private val quizzesFile = File(context.filesDir, "quizzes.json")
     private val resultsFile = File(context.filesDir, "quiz_results.json")
 
-    private fun loadQuizzes(): MutableMap<String, QuizDto> {
+    private fun loadLegacyQuizzes(): MutableMap<String, QuizDto> {
         if (!quizzesFile.exists()) return mutableMapOf()
         return try {
             val content = quizzesFile.readText()
@@ -80,16 +83,7 @@ class QuizRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun saveQuizzes(quizzes: Map<String, QuizDto>) {
-        try {
-            val content = json.encodeToString(quizzes)
-            quizzesFile.writeText(content)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    private fun loadResults(): MutableList<QuizResultDto> {
+    private fun loadLegacyResults(): MutableList<QuizResultDto> {
         if (!resultsFile.exists()) return mutableListOf()
         return try {
             val content = resultsFile.readText()
@@ -99,37 +93,139 @@ class QuizRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun saveResults(results: List<QuizResultDto>) {
-        try {
-            val content = json.encodeToString(results)
-            resultsFile.writeText(content)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
     override suspend fun getQuiz(id: QuizId): Quiz? {
-        return loadQuizzes()[id.value]?.toDomain()
+        // 1. Try fetching from Room Database
+        val quizEntity = quizDao.getQuizById(id.value)
+        if (quizEntity != null) {
+            val questionsEntity = quizDao.getQuestionsForQuiz(id.value)
+            val optionsEntity = quizDao.getOptionsForQuiz(id.value)
+            
+            val questions = questionsEntity.map { q ->
+                val opts = optionsEntity
+                    .filter { it.questionId == q.id }
+                    .sortedBy { it.optionIndex }
+                    .map { QuizOption(it.text, it.explanation) }
+                QuizQuestion(q.id, q.questionText, opts, q.correctOptionIndex)
+            }
+            return Quiz(
+                id = QuizId(quizEntity.id),
+                title = quizEntity.title,
+                questions = questions,
+                targetDifficulty = DifficultyLevel.valueOf(quizEntity.targetDifficulty)
+            )
+        }
+
+        // 2. Coexistence Mode: Fallback to legacy JSON storage & migrate to Room
+        val legacyQuiz = loadLegacyQuizzes()[id.value]?.toDomain()
+        if (legacyQuiz != null) {
+            saveQuizToRoom(legacyQuiz)
+            return legacyQuiz
+        }
+
+        return null
     }
 
     override suspend fun saveQuiz(quiz: Quiz) {
-        val quizzes = loadQuizzes()
-        quizzes[quiz.id.value] = quiz.toDto()
-        saveQuizzes(quizzes)
+        // Save exclusively into Room Database (No raw file writes for new quizzes)
+        saveQuizToRoom(quiz)
+    }
+
+    private suspend fun saveQuizToRoom(quiz: Quiz) {
+        val quizEntity = QuizEntity(
+            id = quiz.id.value,
+            title = quiz.title,
+            targetDifficulty = quiz.targetDifficulty.name
+        )
+        val questionEntities = mutableListOf<QuizQuestionEntity>()
+        val optionEntities = mutableListOf<QuizOptionEntity>()
+
+        quiz.questions.forEach { question ->
+            questionEntities.add(
+                QuizQuestionEntity(
+                    quizId = quiz.id.value,
+                    id = question.id,
+                    questionText = question.questionText,
+                    correctOptionIndex = question.correctOptionIndex
+                )
+            )
+            question.options.forEachIndexed { index, option ->
+                optionEntities.add(
+                    QuizOptionEntity(
+                        quizId = quiz.id.value,
+                        questionId = question.id,
+                        optionIndex = index,
+                        text = option.text,
+                        explanation = option.explanation
+                    )
+                )
+            }
+        }
+
+        quizDao.insertQuiz(quizEntity)
+        quizDao.insertQuestions(questionEntities)
+        quizDao.insertOptions(optionEntities)
     }
 
     override suspend fun getQuizResult(id: QuizResultId): QuizResult? {
-        return loadResults().find { it.id == id.value }?.toDomain()
+        // 1. Try fetching from Room Database
+        val resultEntity = quizDao.getQuizResultById(id.value)
+        if (resultEntity != null) {
+            val answers = json.decodeFromString<List<QuestionAnswerDto>>(resultEntity.answersJson).map { it.toDomain() }
+            return QuizResult(
+                id = QuizResultId(resultEntity.id),
+                quizId = QuizId(resultEntity.quizId),
+                score = resultEntity.score,
+                answers = answers,
+                completedTimestamp = resultEntity.completedTimestamp
+            )
+        }
+
+        // 2. Coexistence Mode: Fallback to legacy JSON storage & migrate to Room
+        val legacyResult = loadLegacyResults().find { it.id == id.value }?.toDomain()
+        if (legacyResult != null) {
+            saveQuizResultToRoom(legacyResult, "current_user")
+            return legacyResult
+        }
+
+        return null
     }
 
     override suspend fun saveQuizResult(result: QuizResult) {
-        val results = loadResults()
-        results.removeAll { it.id == result.id.value }
-        results.add(result.toDto())
-        saveResults(results)
+        // Save exclusively into Room Database (No raw file writes for new results)
+        saveQuizResultToRoom(result, "current_user")
+    }
+
+    private suspend fun saveQuizResultToRoom(result: QuizResult, userId: String) {
+        val answersJson = json.encodeToString(result.answers.map { it.toDto() })
+        val resultEntity = QuizResultEntity(
+            id = result.id.value,
+            quizId = result.quizId.value,
+            userId = userId,
+            score = result.score,
+            answersJson = answersJson,
+            completedTimestamp = result.completedTimestamp
+        )
+        quizDao.insertQuizResult(resultEntity)
     }
 
     override suspend fun getQuizResultsByUserId(userId: UserId): List<QuizResult> {
-        return loadResults().map { it.toDomain() }
+        val roomResults = quizDao.getQuizResultsByUserId(userId.value)
+        if (roomResults.isNotEmpty()) {
+            return roomResults.map { entity ->
+                val answers = json.decodeFromString<List<QuestionAnswerDto>>(entity.answersJson).map { it.toDomain() }
+                QuizResult(
+                    id = QuizResultId(entity.id),
+                    quizId = QuizId(entity.quizId),
+                    score = entity.score,
+                    answers = answers,
+                    completedTimestamp = entity.completedTimestamp
+                )
+            }
+        }
+
+        // Coexistence fallback for legacy results
+        val legacyResults = loadLegacyResults().map { it.toDomain() }
+        legacyResults.forEach { saveQuizResultToRoom(it, userId.value) }
+        return legacyResults
     }
 }

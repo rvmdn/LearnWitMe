@@ -14,7 +14,11 @@ import com.learnwitme.core.storage.local.entity.*
         LearningUnitEntity::class,
         LearningSessionEntity::class,
         KnowledgePackageEntity::class,
-        KnowledgeCardEntity::class
+        KnowledgeCardEntity::class,
+        QuizEntity::class,
+        QuizQuestionEntity::class,
+        QuizOptionEntity::class,
+        QuizResultEntity::class
     ],
     version = 1,
     exportSchema = false
@@ -25,4 +29,5 @@ abstract class LearnWitMeDatabase : RoomDatabase() {
     abstract fun roadmapDao(): RoadmapDao
     abstract fun sessionDao(): SessionDao
     abstract fun knowledgePackageDao(): KnowledgePackageDao
+    abstract fun quizDao(): QuizDao
 }

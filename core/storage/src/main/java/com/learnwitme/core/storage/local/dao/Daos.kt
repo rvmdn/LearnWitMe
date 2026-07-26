@@ -95,3 +95,36 @@ interface KnowledgePackageDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCard(card: KnowledgeCardEntity)
 }
+
+@Dao
+interface QuizDao {
+    @Query("SELECT * FROM quizzes WHERE id = :id LIMIT 1")
+    suspend fun getQuizById(id: String): QuizEntity?
+
+    @Query("SELECT * FROM quiz_questions WHERE quizId = :quizId")
+    suspend fun getQuestionsForQuiz(quizId: String): List<QuizQuestionEntity>
+
+    @Query("SELECT * FROM quiz_options WHERE quizId = :quizId")
+    suspend fun getOptionsForQuiz(quizId: String): List<QuizOptionEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertQuiz(quiz: QuizEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertQuestions(questions: List<QuizQuestionEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOptions(options: List<QuizOptionEntity>)
+
+    @Query("SELECT * FROM quiz_results WHERE id = :id LIMIT 1")
+    suspend fun getQuizResultById(id: String): QuizResultEntity?
+
+    @Query("SELECT * FROM quiz_results WHERE userId = :userId")
+    suspend fun getQuizResultsByUserId(userId: String): List<QuizResultEntity>
+
+    @Query("SELECT * FROM quiz_results")
+    suspend fun getAllQuizResults(): List<QuizResultEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertQuizResult(result: QuizResultEntity)
+}
