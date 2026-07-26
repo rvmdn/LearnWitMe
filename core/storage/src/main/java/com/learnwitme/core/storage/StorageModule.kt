@@ -14,6 +14,8 @@ import javax.inject.Singleton
 
 import com.learnwitme.core.security.DatabasePassphraseProvider
 
+import com.learnwitme.core.storage.local.migration.DatabaseMigrations
+
 @Module
 @InstallIn(SingletonComponent::class)
 object StorageModule {
@@ -33,7 +35,7 @@ object StorageModule {
             "learnwitme_secure.db"
         )
         .openHelperFactory(factory)
-        .fallbackToDestructiveMigration()
+        .addMigrations(*DatabaseMigrations.ALL_MIGRATIONS)
         .build()
     }
 

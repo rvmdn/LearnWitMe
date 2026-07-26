@@ -9,6 +9,10 @@ android {
     namespace = "com.learnwitme.core.storage"
 }
 
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
 dependencies {
     implementation(project(":core:security"))
     implementation(libs.sqlcipher)

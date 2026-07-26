@@ -21,7 +21,7 @@ import com.learnwitme.core.storage.local.entity.*
         QuizResultEntity::class
     ],
     version = 1,
-    exportSchema = false
+    exportSchema = true
 )
 abstract class LearnWitMeDatabase : RoomDatabase() {
     abstract fun userProfileDao(): UserProfileDao

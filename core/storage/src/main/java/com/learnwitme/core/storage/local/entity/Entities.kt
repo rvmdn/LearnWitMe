@@ -1,6 +1,7 @@
 package com.learnwitme.core.storage.local.entity
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "user_profiles")
@@ -16,13 +17,20 @@ data class UserProfileEntity(
     val progressJson: String
 )
 
-@Entity(tableName = "learning_memories")
+@Entity(
+    tableName = "learning_memories",
+    indices = [Index(value = ["userId"])]
+)
 data class LearningMemoryEntity(
     @PrimaryKey val id: String,
     val userId: String
 )
 
-@Entity(tableName = "memory_records", primaryKeys = ["memoryId", "cardId"])
+@Entity(
+    tableName = "memory_records",
+    primaryKeys = ["memoryId", "cardId"],
+    indices = [Index(value = ["memoryId"])]
+)
 data class MemoryRecordEntity(
     val memoryId: String,
     val cardId: String,
@@ -33,7 +41,10 @@ data class MemoryRecordEntity(
     val reviewsJson: String
 )
 
-@Entity(tableName = "learning_roadmaps")
+@Entity(
+    tableName = "learning_roadmaps",
+    indices = [Index(value = ["userId"])]
+)
 data class LearningRoadmapEntity(
     @PrimaryKey val id: String,
     val userId: String,
@@ -42,7 +53,11 @@ data class LearningRoadmapEntity(
     val completedUnitIdsJson: String
 )
 
-@Entity(tableName = "learning_units", primaryKeys = ["roadmapId", "id"])
+@Entity(
+    tableName = "learning_units",
+    primaryKeys = ["roadmapId", "id"],
+    indices = [Index(value = ["roadmapId"])]
+)
 data class LearningUnitEntity(
     val roadmapId: String,
     val id: String,
@@ -53,7 +68,10 @@ data class LearningUnitEntity(
     val topicCode: String
 )
 
-@Entity(tableName = "learning_sessions")
+@Entity(
+    tableName = "learning_sessions",
+    indices = [Index(value = ["userId"])]
+)
 data class LearningSessionEntity(
     @PrimaryKey val id: String,
     val userId: String,
@@ -71,7 +89,10 @@ data class KnowledgePackageEntity(
     val isCore: Boolean
 )
 
-@Entity(tableName = "knowledge_cards")
+@Entity(
+    tableName = "knowledge_cards",
+    indices = [Index(value = ["packageId"])]
+)
 data class KnowledgeCardEntity(
     @PrimaryKey val id: String,
     val packageId: String,
@@ -99,7 +120,11 @@ data class QuizEntity(
     val targetDifficulty: String
 )
 
-@Entity(tableName = "quiz_questions", primaryKeys = ["quizId", "id"])
+@Entity(
+    tableName = "quiz_questions",
+    primaryKeys = ["quizId", "id"],
+    indices = [Index(value = ["quizId"])]
+)
 data class QuizQuestionEntity(
     val quizId: String,
     val id: String,
@@ -107,7 +132,11 @@ data class QuizQuestionEntity(
     val correctOptionIndex: Int
 )
 
-@Entity(tableName = "quiz_options", primaryKeys = ["quizId", "questionId", "optionIndex"])
+@Entity(
+    tableName = "quiz_options",
+    primaryKeys = ["quizId", "questionId", "optionIndex"],
+    indices = [Index(value = ["quizId", "questionId"])]
+)
 data class QuizOptionEntity(
     val quizId: String,
     val questionId: String,
@@ -116,7 +145,10 @@ data class QuizOptionEntity(
     val explanation: String
 )
 
-@Entity(tableName = "quiz_results")
+@Entity(
+    tableName = "quiz_results",
+    indices = [Index(value = ["userId"]), Index(value = ["quizId"])]
+)
 data class QuizResultEntity(
     @PrimaryKey val id: String,
     val quizId: String,
