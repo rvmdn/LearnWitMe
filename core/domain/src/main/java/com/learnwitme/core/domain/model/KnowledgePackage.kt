@@ -5,14 +5,16 @@ enum class PackageStatus {
 }
 
 /**
- * Responsibility: Serves as the Aggregate Root representing a bundle of educational materials
- * (Topics and KnowledgeCards) that users can acquire, complete, or reference.
+ * Responsibility: Serves as the Aggregate Root representing a versioned deployment bundle of educational materials
+ * (Topics and KnowledgeCards) that users can acquire and master.
  */
 data class KnowledgePackage(
     override val id: KnowledgePackageId,
     val title: String,
     val description: String,
-    val version: Int,
+    val version: Int = 1,
+    val checksum: String = "",
+    val isCore: Boolean = false,
     val status: PackageStatus = PackageStatus.DRAFT,
     val topics: List<Topic> = emptyList(),
     val cards: List<KnowledgeCard> = emptyList(),
@@ -23,17 +25,45 @@ data class KnowledgePackage(
         require(title.isNotBlank()) { "Package title cannot be blank" }
         require(version > 0) { "Package version must be greater than zero" }
 
-        // Duplicate Topic detection
         val topicCodes = topics.map { it.code }
         require(topicCodes.size == topicCodes.toSet().size) { "Package cannot contain duplicate Topics" }
 
-        // Duplicate KnowledgeCard detection
         val cardIds = cards.map { it.id }
         require(cardIds.size == cardIds.toSet().size) { "Package cannot contain duplicate KnowledgeCards" }
     }
 
     /**
-     * Publishes the package, validating consistency (must contain at least one topic and card).
+     * Upgrades the version of the package, enforcing that new version > current version.
+     */
+    fun upgradeVersion(newVersion: Int): KnowledgePackage {
+        require(newVersion > version) { "New package version ($newVersion) must be greater than current version ($version)" }
+        return this.copy(version = newVersion)
+    }
+
+    /**
+     * Validates whether the provided checksum matches the expected package checksum.
+     */
+    fun validateChecksum(expectedChecksum: String): Boolean {
+        if (expectedChecksum.isBlank()) return false
+        return checksum == expectedChecksum
+    }
+
+    /**
+     * Marks the package as protected core platform content.
+     */
+    fun markAsCore(): KnowledgePackage {
+        return this.copy(isCore = true)
+    }
+
+    /**
+     * Unmarks core designation for non-system custom packages.
+     */
+    fun unmarkCore(): KnowledgePackage {
+        return this.copy(isCore = false)
+    }
+
+    /**
+     * Publishes the package, validating draft state and content presence.
      */
     fun publish(): KnowledgePackage {
         require(status == PackageStatus.DRAFT) { "Only DRAFT packages can be published (current: $status)" }
@@ -52,7 +82,7 @@ data class KnowledgePackage(
     }
 
     /**
-     * Archives a package, transition to a terminal state.
+     * Archives a package into a terminal state.
      */
     fun archive(): KnowledgePackage {
         require(status != PackageStatus.ARCHIVED) { "Package is already ARCHIVED" }
@@ -82,7 +112,7 @@ data class KnowledgePackage(
     }
 
     /**
-     * Adds a dependency to another package, enforcing archived invariants.
+     * Adds a dependency to another package.
      */
     fun addDependency(dependencyId: KnowledgePackageId): KnowledgePackage {
         require(status != PackageStatus.ARCHIVED) { "Cannot modify an ARCHIVED package" }

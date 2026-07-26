@@ -94,6 +94,47 @@ data class ReviewSchedule(
         require(easeFactor >= 1.3) { "Ease factor must be at least 1.3" }
         require(repetitions >= 0) { "Repetitions count cannot be negative" }
     }
+
+    /**
+     * Records a review outcome and calculates the next spaced-repetition schedule.
+     */
+    fun recordReview(qualityScore: Double, clockTimestamp: Long): ReviewSchedule {
+        require(qualityScore in 0.0..1.0) { "Quality score must be bounded between 0.0 and 1.0" }
+        val newRepetitions = repetitions + 1
+        val newEaseFactor = (easeFactor + (0.1 - (1.0 - qualityScore) * 0.2)).coerceAtLeast(1.3)
+        val newInterval = if (newRepetitions == 1) 1 else (intervalDays * newEaseFactor).toInt().coerceAtLeast(1)
+        val nextTimestamp = clockTimestamp + (newInterval * 24 * 3600 * 1000L)
+        return this.copy(
+            intervalDays = newInterval,
+            nextReviewTimestamp = nextTimestamp,
+            easeFactor = newEaseFactor,
+            repetitions = newRepetitions
+        )
+    }
+
+    /**
+     * Postpones the scheduled review date by a specified number of days.
+     */
+    fun postponeReview(postponeDays: Int): ReviewSchedule {
+        require(postponeDays > 0) { "Postpone days must be greater than zero" }
+        val extensionMs = postponeDays * 24 * 3600 * 1000L
+        return this.copy(
+            intervalDays = intervalDays + postponeDays,
+            nextReviewTimestamp = nextReviewTimestamp + extensionMs
+        )
+    }
+
+    /**
+     * Resets the schedule back to initial learning state.
+     */
+    fun resetSchedule(clockTimestamp: Long): ReviewSchedule {
+        return this.copy(
+            intervalDays = 1,
+            nextReviewTimestamp = clockTimestamp + (24 * 3600 * 1000L),
+            easeFactor = 2.5,
+            repetitions = 0
+        )
+    }
 }
 
 @Serializable

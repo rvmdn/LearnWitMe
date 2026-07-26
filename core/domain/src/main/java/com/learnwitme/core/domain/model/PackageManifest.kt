@@ -57,7 +57,7 @@ data class PackageManifest(
 fun calculateChecksum(manifest: PackageManifest): PackageChecksum {
     val contentString = "${manifest.metadata.id.value}:${manifest.metadata.title}:${manifest.metadata.version}:" +
             manifest.topics.joinToString(",") { "${it.code}:${it.name}" } + ":" +
-            manifest.cards.joinToString(",") { "${it.id.value}:${it.title}" } + ":" +
+            manifest.cards.joinToString(",") { "${it.id.value}:${it.content.title}" } + ":" +
             manifest.units.joinToString(",") { "${it.id.value}:${it.title}" } + ":" +
             manifest.quizzes.joinToString(",") { "${it.id.value}:${it.title}" }
             
