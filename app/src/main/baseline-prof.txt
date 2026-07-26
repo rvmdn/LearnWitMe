@@ -1,0 +1,7 @@
+# Baseline Profile Rules for LearnWitMe app
+Hcom/learnwitme/app/MainActivity
+HScom/learnwitme/core/theme/MetaThemeKt
+HScom/learnwitme/core/config/ConfigManager
+HScom/learnwitme/core/storage/EncryptedDataStore
+Lcom/learnwitme/core/ui/components/DynamicCardKt;
+Lcom/learnwitme/core/ui/components/DynamicGridCardLayoutKt;

@@ -1,0 +1,7 @@
+{
+  "durationShortMs": 150,
+  "durationMediumMs": 300,
+  "durationLongMs": 500,
+  "standardEasing": "fast_out_slow_in",
+  "emphasizedEasing": "linear_out_slow_in"
+}

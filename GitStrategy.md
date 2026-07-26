@@ -1,0 +1,3 @@
+﻿# GitStrategy.md
+
+Documentation placeholder.

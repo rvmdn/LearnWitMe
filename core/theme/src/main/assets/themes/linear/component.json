@@ -1,0 +1,10 @@
+{
+  "buttonVariant": "filled",
+  "cardVariant": "flat",
+  "navigationVariant": "minimal",
+  "codeBlock": {
+    "theme": "dark",
+    "showLineNumbers": true,
+    "allowCopy": true
+  }
+}

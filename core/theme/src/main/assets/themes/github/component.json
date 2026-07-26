@@ -1,0 +1,10 @@
+{
+  "buttonVariant": "outlined",
+  "cardVariant": "outlined",
+  "navigationVariant": "minimal",
+  "codeBlock": {
+    "theme": "dark",
+    "showLineNumbers": true,
+    "allowCopy": true
+  }
+}

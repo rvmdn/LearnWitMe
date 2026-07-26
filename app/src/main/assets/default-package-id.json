@@ -1,0 +1,86 @@
+{
+  "metadata": {
+    "id": "pkg_default_id",
+    "title": "Kurikulum Dasar Kotlin",
+    "description": "Pelajari dasar-dasar pemrograman Kotlin modern.",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "patch": 0
+    },
+    "checksum": "placeholder"
+  },
+  "topics": [
+    {
+      "code": "tp_kotlin",
+      "name": "Dasar Kotlin",
+      "description": "Pelajari variabel Kotlin, struktur kontrol, dan fungsi dasar."
+    }
+  ],
+  "cards": [
+    {
+      "id": "c_kotlin_basics",
+      "title": "Sintaks Dasar Kotlin",
+      "summary": "Kotlin adalah bahasa pemrograman modern berketikan statis yang dikompilasi ke bytecode Java.",
+      "whyItMatters": "Kotlin adalah bahasa resmi dan utama yang direkomendasikan untuk pengembangan aplikasi Android modern.",
+      "realWorldExample": "Google dan ribuan aplikasi Android populer menggunakan Kotlin untuk API serta perkakas internal mereka.",
+      "commonMistakes": "Mengacaukan val (hanya-baca / read-only) dengan var (dapat diubah / mutable).",
+      "whenNotToUse": "Pemrograman tingkat rendah (low-level system) di mana overhead JVM tidak dapat diterima.",
+      "bestPractice": "Gunakan variabel val secara default kecuali mutabilitas benar-benar diperlukan.",
+      "reference": [
+        {
+          "title": "Referensi Resmi Kotlin",
+          "url": "https://kotlinlang.org/docs/reference/"
+        }
+      ],
+      "officialDocumentationLink": "https://kotlinlang.org/",
+      "difficulty": "BEGINNER",
+      "estimatedReadingTimeSeconds": 180,
+      "careerImpact": "Sangat Tinggi",
+      "tags": [
+        {
+          "name": "Kotlin"
+        }
+      ],
+      "prerequisiteCardIds": [],
+      "relatedTopicCodes": [
+        "tp_kotlin"
+      ]
+    }
+  ],
+  "units": [
+    {
+      "id": "u_kotlin_basics",
+      "title": "Dasar Sintaks Kotlin",
+      "cardId": "c_kotlin_basics",
+      "quizId": "qz_kotlin_basics",
+      "estimatedMinutes": 5,
+      "topicCode": "tp_kotlin"
+    }
+  ],
+  "quizzes": [
+    {
+      "id": "qz_kotlin_basics",
+      "title": "Kuis Dasar Kotlin",
+      "targetDifficulty": "BEGINNER",
+      "questions": [
+        {
+          "id": "q_kotlin_val",
+          "questionText": "Kata kunci mana yang digunakan untuk mendeklarasikan variabel read-only di Kotlin?",
+          "options": [
+            {
+              "text": "val",
+              "explanation": "Benar. val mendeklarasikan variabel lokal read-only."
+            },
+            {
+              "text": "var",
+              "explanation": "Salah. var mendeklarasikan variabel mutable."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    }
+  ],
+  "dependencies": []
+}

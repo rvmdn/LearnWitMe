@@ -1,0 +1,16 @@
+{
+  "name": "Glassmorphism",
+  "isDark": false,
+  "colors": {
+    "primary": "#3F51B5",
+    "onPrimary": "#FFFFFF",
+    "primaryContainer": "#E8EAF6",
+    "onPrimaryContainer": "#1A237E",
+    "secondary": "#FF4081",
+    "onSecondary": "#FFFFFF",
+    "background": "#ECEFF1",
+    "onBackground": "#263238",
+    "surface": "#E0F2F1",
+    "onSurface": "#004D40"
+  }
+}

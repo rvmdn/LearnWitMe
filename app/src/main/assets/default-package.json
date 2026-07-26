@@ -1,0 +1,86 @@
+{
+  "metadata": {
+    "id": "pkg_default",
+    "title": "Kotlin Basics Curriculum",
+    "description": "Learn basic Kotlin programming.",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "patch": 0
+    },
+    "checksum": "placeholder"
+  },
+  "topics": [
+    {
+      "code": "tp_kotlin",
+      "name": "Kotlin Basics",
+      "description": "Learn Kotlin variables, control structures, and basic functions."
+    }
+  ],
+  "cards": [
+    {
+      "id": "c_kotlin_basics",
+      "title": "Kotlin Basic Syntax",
+      "summary": "Kotlin is a modern, statically typed programming language that compiles to Java bytecode.",
+      "whyItMatters": "It is the official and preferred language for modern Android development.",
+      "realWorldExample": "Google uses Kotlin for Android APIs and internal tooling.",
+      "commonMistakes": "Confusing val (read-only) with var (mutable).",
+      "whenNotToUse": "Low-level system programming where JVM overhead is unacceptable.",
+      "bestPractice": "Use val (immutable) variables by default unless mutability is required.",
+      "reference": [
+        {
+          "title": "Kotlin Official Reference",
+          "url": "https://kotlinlang.org/docs/reference/"
+        }
+      ],
+      "officialDocumentationLink": "https://kotlinlang.org/",
+      "difficulty": "BEGINNER",
+      "estimatedReadingTimeSeconds": 180,
+      "careerImpact": "High",
+      "tags": [
+        {
+          "name": "Kotlin"
+        }
+      ],
+      "prerequisiteCardIds": [],
+      "relatedTopicCodes": [
+        "tp_kotlin"
+      ]
+    }
+  ],
+  "units": [
+    {
+      "id": "u_kotlin_basics",
+      "title": "Kotlin Syntax Basics",
+      "cardId": "c_kotlin_basics",
+      "quizId": "qz_kotlin_basics",
+      "estimatedMinutes": 5,
+      "topicCode": "tp_kotlin"
+    }
+  ],
+  "quizzes": [
+    {
+      "id": "qz_kotlin_basics",
+      "title": "Kotlin Basics Quiz",
+      "targetDifficulty": "BEGINNER",
+      "questions": [
+        {
+          "id": "q_kotlin_val",
+          "questionText": "Which keyword is used to declare a read-only variable in Kotlin?",
+          "options": [
+            {
+              "text": "val",
+              "explanation": "Correct. val declares a read-only local variable."
+            },
+            {
+              "text": "var",
+              "explanation": "Incorrect. var declares a mutable variable."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    }
+  ],
+  "dependencies": []
+}

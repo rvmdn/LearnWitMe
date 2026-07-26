@@ -1,0 +1,16 @@
+{
+  "name": "Forest",
+  "isDark": false,
+  "colors": {
+    "primary": "#2E7D32",
+    "onPrimary": "#FFFFFF",
+    "primaryContainer": "#C8E6C9",
+    "onPrimaryContainer": "#002300",
+    "secondary": "#388E3C",
+    "onSecondary": "#FFFFFF",
+    "background": "#F1F8E9",
+    "onBackground": "#1B5E20",
+    "surface": "#FFFFFF",
+    "onSurface": "#1B5E20"
+  }
+}

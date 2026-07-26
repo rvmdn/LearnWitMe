@@ -1,0 +1,187 @@
+{
+  "environment": {
+    "name": "development",
+    "debugEnabled": true,
+    "sslPinningEnabled": false
+  },
+  "languageConfig": {
+    "defaultLanguage": "id",
+    "supportedLanguages": [
+      {
+        "code": "id",
+        "name": "Bahasa Indonesia",
+        "isDefault": true
+      },
+      {
+        "code": "en",
+        "name": "English",
+        "isDefault": false
+      }
+    ]
+  },
+  "featureFlags": {
+    "ai_features": true,
+    "ocr_features": false,
+    "ads_enabled": false,
+    "premium_content": true
+  },
+  "navigation": {
+    "defaultRoute": "home",
+    "splashRoute": "splash",
+    "loginRoute": "login",
+    "screens": [
+      {
+        "route": "home",
+        "className": "HomeScreen",
+        "title": "Home"
+      },
+      {
+        "route": "setting",
+        "className": "SettingScreen",
+        "title": "Settings"
+      },
+      {
+        "route": "profile",
+        "className": "ProfileScreen",
+        "title": "Profile"
+      },
+      {
+        "route": "history",
+        "className": "HistoryScreen",
+        "title": "History"
+      },
+      {
+        "route": "premium",
+        "className": "PremiumScreen",
+        "title": "Premium Upgrade"
+      },
+      {
+        "route": "developer",
+        "className": "DeveloperConsoleScreen",
+        "title": "Developer Console"
+      },
+      {
+        "route": "knowledge_card",
+        "className": "KnowledgeCardScreen",
+        "title": "Knowledge Card"
+      },
+      {
+        "route": "quiz",
+        "className": "QuizScreen",
+        "title": "Quiz"
+      },
+      {
+        "route": "onboarding",
+        "className": "OnboardingScreen",
+        "title": "Onboarding"
+      }
+    ]
+  },
+  "menus": [
+    {
+      "id": "menu_home",
+      "title": "Home",
+      "iconName": "home",
+      "route": "home",
+      "group": "main",
+      "order": 1
+    },
+    {
+      "id": "menu_history",
+      "title": "History",
+      "iconName": "history",
+      "route": "history",
+      "group": "main",
+      "order": 2
+    },
+    {
+      "id": "menu_profile",
+      "title": "Profile",
+      "iconName": "profile",
+      "route": "profile",
+      "group": "main",
+      "order": 3
+    },
+    {
+      "id": "menu_premium",
+      "title": "Premium",
+      "iconName": "premium",
+      "route": "premium",
+      "group": "main",
+      "order": 4
+    },
+    {
+      "id": "menu_settings",
+      "title": "Settings",
+      "iconName": "settings",
+      "route": "setting",
+      "group": "main",
+      "order": 5
+    },
+    {
+      "id": "menu_dev",
+      "title": "Dev",
+      "iconName": "developer",
+      "route": "developer",
+      "group": "main",
+      "order": 6
+    }
+  ],
+  "plugins": {
+    "ai": {
+      "enabled": true,
+      "version": "2.1.0",
+      "properties": {
+        "provider": "gemini"
+      }
+    },
+    "ocr": {
+      "enabled": false,
+      "version": "1.0.0",
+      "properties": {}
+    },
+    "ads": {
+      "enabled": false,
+      "version": "3.2.0",
+      "properties": {}
+    },
+    "billing": {
+      "enabled": true,
+      "version": "1.1.2",
+      "properties": {}
+    }
+  },
+  "aiProviders": [
+    {
+      "name": "Gemini Pro",
+      "enabled": true,
+      "baseUrl": "https://generativelanguage.googleapis.com",
+      "modelName": "gemini-1.5-pro"
+    }
+  ],
+  "billingProducts": [
+    {
+      "id": "sub_monthly",
+      "type": "subscription",
+      "price": "$4.99/mo",
+      "title": "Monthly Premium Plan"
+    },
+    {
+      "id": "sub_yearly",
+      "type": "subscription",
+      "price": "$39.99/yr",
+      "title": "Yearly Value Plan"
+    },
+    {
+      "id": "unlock_lifetime",
+      "type": "consumable",
+      "price": "$59.99",
+      "title": "Lifetime Premium Upgrade"
+    }
+  ],
+  "apiEndpoints": {
+    "auth_base": "https://auth.learnwitme.com/v1",
+    "data_base": "https://api.learnwitme.com/v2",
+    "ai_gateway": "https://ai.learnwitme.com/v1"
+  }
+}

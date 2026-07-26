@@ -1,0 +1,8 @@
+{
+  "id": "default",
+  "name": "Default Tech Slate",
+  "version": "1.0.0",
+  "author": "LearnWitMe",
+  "supportsDark": true,
+  "minimumUiVersion": "1.0"
+}

@@ -1,0 +1,42 @@
+{
+  "light": {
+    "primary": "#FF5E6AD2",
+    "onPrimary": "#FFFFFFFF",
+    "primaryContainer": "#FFE0E2F9",
+    "onPrimaryContainer": "#FF1C1D21",
+    "secondary": "#FF8B5CF6",
+    "onSecondary": "#FFFFFFFF",
+    "secondaryContainer": "#FFEDE9FE",
+    "onSecondaryContainer": "#FF4C1D95",
+    "background": "#FFF4F5F8",
+    "onBackground": "#FF1C1D21",
+    "surface": "#FFFFFFFF",
+    "onSurface": "#FF1C1D21",
+    "surfaceVariant": "#FFE6E8F0",
+    "onSurfaceVariant": "#FF6B7280",
+    "outline": "#FFE2E8F0",
+    "outlineVariant": "#FFCBD5E1",
+    "error": "#FFEF4444",
+    "onError": "#FFFFFFFF"
+  },
+  "dark": {
+    "primary": "#FF5E6AD2",
+    "onPrimary": "#FFFFFFFF",
+    "primaryContainer": "#FF2C2D35",
+    "onPrimaryContainer": "#FFF4F5F8",
+    "secondary": "#FF8B5CF6",
+    "onSecondary": "#FFFFFFFF",
+    "secondaryContainer": "#FF3B2D54",
+    "onSecondaryContainer": "#FFDDD6FE",
+    "background": "#FF0F1015",
+    "onBackground": "#FFF4F5F8",
+    "surface": "#FF1C1D21",
+    "onSurface": "#FFF4F5F8",
+    "surfaceVariant": "#FF2B2C34",
+    "onSurfaceVariant": "#FF9CA3AF",
+    "outline": "#FF2E303B",
+    "outlineVariant": "#FF3F4150",
+    "error": "#FFF87171",
+    "onError": "#FF7F1D1D"
+  }
+}

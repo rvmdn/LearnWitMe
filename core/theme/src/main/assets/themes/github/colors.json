@@ -1,0 +1,42 @@
+{
+  "light": {
+    "primary": "#FF24292E",
+    "onPrimary": "#FFFFFFFF",
+    "primaryContainer": "#FFE1E4E8",
+    "onPrimaryContainer": "#FF24292E",
+    "secondary": "#FF28A745",
+    "onSecondary": "#FFFFFFFF",
+    "secondaryContainer": "#FFDCFFE4",
+    "onSecondaryContainer": "#FF155724",
+    "background": "#FFF6F8FA",
+    "onBackground": "#FF24292E",
+    "surface": "#FFFFFFFF",
+    "onSurface": "#FF24292E",
+    "surfaceVariant": "#FFE1E4E8",
+    "onSurfaceVariant": "#FF586069",
+    "outline": "#FFE1E4E8",
+    "outlineVariant": "#FFD1D5DA",
+    "error": "#FFCB2431",
+    "onError": "#FFFFFFFF"
+  },
+  "dark": {
+    "primary": "#FFC9D1D9",
+    "onPrimary": "#FF0D1117",
+    "primaryContainer": "#FF21262D",
+    "onPrimaryContainer": "#FFC9D1D9",
+    "secondary": "#FF238636",
+    "onSecondary": "#FFFFFFFF",
+    "secondaryContainer": "#FF174820",
+    "onSecondaryContainer": "#FF7EE787",
+    "background": "#FF0D1117",
+    "onBackground": "#FFC9D1D9",
+    "surface": "#FF161B22",
+    "onSurface": "#FFC9D1D9",
+    "surfaceVariant": "#FF21262D",
+    "onSurfaceVariant": "#FF8B949E",
+    "outline": "#FF30363D",
+    "outlineVariant": "#FF484F58",
+    "error": "#FFF85149",
+    "onError": "#FF7EE787"
+  }
+}

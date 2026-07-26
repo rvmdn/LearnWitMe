@@ -1,0 +1,22 @@
+{
+  "fontFamily": "default",
+  "codeFontFamily": "monospace",
+  "displayLargeSp": 44,
+  "displayMediumSp": 36,
+  "displaySmallSp": 28,
+  "headlineLargeSp": 26,
+  "headlineMediumSp": 22,
+  "headlineSmallSp": 18,
+  "titleLargeSp": 18,
+  "titleMediumSp": 16,
+  "titleSmallSp": 14,
+  "bodyLargeSp": 16,
+  "bodyMediumSp": 14,
+  "bodySmallSp": 12,
+  "labelLargeSp": 14,
+  "labelMediumSp": 12,
+  "labelSmallSp": 11,
+  "codeLargeSp": 15,
+  "codeMediumSp": 13,
+  "codeSmallSp": 11
+}
