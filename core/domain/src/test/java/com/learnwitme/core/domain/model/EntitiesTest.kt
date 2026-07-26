@@ -56,7 +56,7 @@ class EntitiesTest {
             )
             fail("Expected IllegalArgumentException for blank title")
         } catch (e: IllegalArgumentException) {
-            assertTrue(e.message!!.contains("Title cannot be blank"))
+            assertTrue(e.message!!.contains("KnowledgeContent title cannot be blank"))
         }
     }
 
@@ -81,14 +81,14 @@ class EntitiesTest {
             relatedTopicCodes = emptyList()
         )
 
-        val updatedCard = card.copy(title = "SQL SELECT Query")
-        assertEquals("SQL SELECT Query", updatedCard.title)
+        val updatedCard = card.copy(content = card.content.copy(title = "SQL SELECT Query"))
+        assertEquals("SQL SELECT Query", updatedCard.content.title)
 
         try {
-            card.copy(title = "")
+            card.copy(content = card.content.copy(title = ""))
             fail("Expected IllegalArgumentException on invalid copied state")
         } catch (e: IllegalArgumentException) {
-            assertTrue(e.message!!.contains("Title cannot be blank"))
+            assertTrue(e.message!!.contains("KnowledgeContent title cannot be blank"))
         }
     }
 
@@ -203,7 +203,7 @@ class EntitiesTest {
         )
 
         // Same ID, different title -> entities are considered equal by DDD definition (ID comparison)
-        val card2 = card1.copy(title = "Title B")
+        val card2 = card1.copy(content = card1.content.copy(title = "Title B"))
         assertEquals(card1.id, card2.id)
 
         val card3 = card1.copy(id = KnowledgeCardId("kc_2"))

@@ -42,7 +42,7 @@ class RecommendationEngineTest {
         val unit2 = LearningUnit(LearningUnitId("u2"), "Unit 2", card2.id, null, 10, "tp_kotlin")
         
         val roadmap = LearningRoadmap(LearningRoadmapId("r1"), createGoal(), listOf(unit1, unit2), RoadmapStatus.ACTIVE, emptySet())
-        val pkg = KnowledgePackage(KnowledgePackageId("p1"), "Pkg 1", "Desc", 1, PackageStatus.PUBLISHED, emptyList(), listOf(card1, card2))
+        val pkg = KnowledgePackage(id = KnowledgePackageId("p1"), title = "Pkg 1", description = "Desc", version = 1, status = PackageStatus.PUBLISHED, topics = emptyList(), cards = listOf(card1, card2))
         
         // Card 1 is Mastered but NOT in review queue. Should be filtered out.
         // Card 2 is Mastered AND in review queue (CRITICAL). Should be recommended.
@@ -79,7 +79,7 @@ class RecommendationEngineTest {
         
         // Roadmap: unit1 is pending, unit2 is pending.
         val roadmap = LearningRoadmap(LearningRoadmapId("r1"), createGoal(), listOf(unit1, unit2), RoadmapStatus.ACTIVE, emptySet())
-        val pkg = KnowledgePackage(KnowledgePackageId("p1"), "Pkg 1", "Desc", 1, PackageStatus.PUBLISHED, emptyList(), listOf(card1, card2))
+        val pkg = KnowledgePackage(id = KnowledgePackageId("p1"), title = "Pkg 1", description = "Desc", version = 1, status = PackageStatus.PUBLISHED, topics = emptyList(), cards = listOf(card1, card2))
         
         val memory = LearningMemory(LearningMemoryId("m1"), UserId("u1"), emptyList())
         val reviewQueue = ReviewQueue(emptyList())
@@ -121,7 +121,7 @@ class RecommendationEngineTest {
             RoadmapStatus.ACTIVE, 
             setOf(dummyUnit.id, unitWeakHistory.id) // dummy and unitWeakHistory are completed, so unit1 is next pending
         )
-        val pkg = KnowledgePackage(KnowledgePackageId("p1"), "Pkg 1", "Desc", 1, PackageStatus.PUBLISHED, emptyList(), listOf(dummyCard, card1, card2, cardWeakHistory))
+        val pkg = KnowledgePackage(id = KnowledgePackageId("p1"), title = "Pkg 1", description = "Desc", version = 1, status = PackageStatus.PUBLISHED, topics = emptyList(), cards = listOf(dummyCard, card1, card2, cardWeakHistory))
         
         // Make tp_weak a weak topic by having a FORGOTTEN record for cardWeakHistory
         val memRecordWeakHistory = MemoryRecord(cardWeakHistory.id, MemoryState.FORGOTTEN, 0.0, 1.0, 0.0)

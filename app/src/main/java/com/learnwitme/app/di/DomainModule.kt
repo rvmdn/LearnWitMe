@@ -176,4 +176,106 @@ object DomainModule {
     ): InitializeApplicationWorkflow = InitializeApplicationWorkflow(
         profileRepository, roadmapRepository, memoryRepository, importer, clock
     )
+
+    @Provides
+    @Singleton
+    fun provideDispatcherProvider(): com.learnwitme.core.application.dispatcher.DispatcherProvider =
+        com.learnwitme.core.application.dispatcher.DefaultDispatcherProvider()
+
+    @Provides
+    @Singleton
+    fun provideSpacedRepetitionEngine(): com.learnwitme.core.domain.service.SpacedRepetitionEngine =
+        com.learnwitme.core.domain.service.SpacedRepetitionEngine()
+
+    @Provides
+    @Singleton
+    fun provideGenerateDailyRecommendationUseCase(
+        knowledgeRepository: KnowledgeRepository,
+        learningRepository: LearningRepository,
+        recommendationRepository: RecommendationRepository,
+        recommendationEngine: RecommendationEngine
+    ): GenerateDailyRecommendationUseCase = GenerateDailyRecommendationUseCase(
+        knowledgeRepository, learningRepository, recommendationRepository, recommendationEngine
+    )
+
+    @Provides
+    @Singleton
+    fun provideStartLearningUseCase(
+        learningRepository: LearningRepository
+    ): StartLearningUseCase = StartLearningUseCase(learningRepository)
+
+    @Provides
+    @Singleton
+    fun provideCompleteReviewUseCase(
+        learningRepository: LearningRepository,
+        spacedRepetitionEngine: com.learnwitme.core.domain.service.SpacedRepetitionEngine
+    ): CompleteReviewUseCase = CompleteReviewUseCase(learningRepository, spacedRepetitionEngine)
+
+    @Provides
+    @Singleton
+    fun providePackageValidationEngine(): com.learnwitme.core.domain.service.PackageValidationEngine =
+        com.learnwitme.core.domain.service.PackageValidationEngine()
+
+    @Provides
+    @Singleton
+    fun provideDifficultyEvaluator(): com.learnwitme.core.domain.service.DifficultyEvaluator =
+        com.learnwitme.core.domain.service.DifficultyEvaluator()
+
+    @Provides
+    @Singleton
+    fun provideImportKnowledgePackageUseCase(
+        knowledgeRepository: KnowledgeRepository,
+        validationEngine: com.learnwitme.core.domain.service.PackageValidationEngine
+    ): ImportKnowledgePackageUseCase = ImportKnowledgePackageUseCase(knowledgeRepository, validationEngine)
+
+    @Provides
+    @Singleton
+    fun providePublishKnowledgePackageUseCase(
+        knowledgeRepository: KnowledgeRepository
+    ): PublishKnowledgePackageUseCase = PublishKnowledgePackageUseCase(knowledgeRepository)
+
+    @Provides
+    @Singleton
+    fun provideFindKnowledgeCardUseCase(
+        knowledgeRepository: KnowledgeRepository,
+        learningRepository: LearningRepository,
+        difficultyEvaluator: com.learnwitme.core.domain.service.DifficultyEvaluator
+    ): FindKnowledgeCardUseCase = FindKnowledgeCardUseCase(knowledgeRepository, learningRepository, difficultyEvaluator)
+
+    @Provides
+    @Singleton
+    fun provideHomeApplicationService(
+        generateDailyRecommendationUseCase: GenerateDailyRecommendationUseCase,
+        learningRepository: LearningRepository,
+        recommendationRepository: RecommendationRepository,
+        dispatcherProvider: com.learnwitme.core.application.dispatcher.DispatcherProvider
+    ): com.learnwitme.core.application.service.HomeApplicationService =
+        com.learnwitme.core.application.service.HomeApplicationService(
+            generateDailyRecommendationUseCase, learningRepository, recommendationRepository, dispatcherProvider
+        )
+
+    @Provides
+    @Singleton
+    fun provideLearningApplicationService(
+        startLearningUseCase: StartLearningUseCase,
+        completeReviewUseCase: CompleteReviewUseCase,
+        learningRepository: LearningRepository,
+        dispatcherProvider: com.learnwitme.core.application.dispatcher.DispatcherProvider
+    ): com.learnwitme.core.application.service.LearningApplicationService =
+        com.learnwitme.core.application.service.LearningApplicationService(
+            startLearningUseCase, completeReviewUseCase, learningRepository, dispatcherProvider
+        )
+
+    @Provides
+    @Singleton
+    fun provideKnowledgeApplicationService(
+        importKnowledgePackageUseCase: ImportKnowledgePackageUseCase,
+        publishKnowledgePackageUseCase: PublishKnowledgePackageUseCase,
+        findKnowledgeCardUseCase: FindKnowledgeCardUseCase,
+        knowledgeRepository: KnowledgeRepository,
+        dispatcherProvider: com.learnwitme.core.application.dispatcher.DispatcherProvider
+    ): com.learnwitme.core.application.service.KnowledgeApplicationService =
+        com.learnwitme.core.application.service.KnowledgeApplicationService(
+            importKnowledgePackageUseCase, publishKnowledgePackageUseCase, findKnowledgeCardUseCase, knowledgeRepository, dispatcherProvider
+        )
 }

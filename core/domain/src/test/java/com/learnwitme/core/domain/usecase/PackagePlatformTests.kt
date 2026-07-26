@@ -18,10 +18,15 @@ class FakeQuizRepoForImport : QuizRepository {
 
 class FakeKnowledgeRepoForImport : KnowledgeRepository {
     val savedCards = mutableListOf<KnowledgeCard>()
-    override suspend fun getCard(id: KnowledgeCardId): KnowledgeCard? = savedCards.find { it.id == id }
+    override suspend fun findCard(id: KnowledgeCardId): KnowledgeCard? = savedCards.find { it.id == id }
+    override suspend fun getCard(id: KnowledgeCardId): KnowledgeCard? = findCard(id)
     override suspend fun saveCard(card: KnowledgeCard) { savedCards.add(card) }
     override suspend fun deleteCard(id: KnowledgeCardId) {}
     override suspend fun getCardsByTopic(topicCode: String): List<KnowledgeCard> = emptyList()
+    override suspend fun searchBySkills(skills: List<Skill>): List<KnowledgeCard> = emptyList()
+    override suspend fun findPackage(packageId: KnowledgePackageId): KnowledgePackage? = null
+    override suspend fun importPackage(pkg: KnowledgePackage) {}
+    override suspend fun publishPackage(packageId: KnowledgePackageId) {}
 }
 
 class PackagePlatformTests {
