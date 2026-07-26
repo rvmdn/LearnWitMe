@@ -115,4 +115,59 @@ class RecommendationEngine {
             alternatives = alternatives
         )
     }
+
+    /**
+     * Pure, deterministic recommendation algorithm evaluating UserKnowledge, due ReviewSchedules,
+     * and candidate KnowledgeCards to produce a prioritized recommendation list.
+     */
+    fun generateKnowledgeRecommendation(
+        userId: UserId,
+        userKnowledge: UserKnowledge,
+        dueSchedules: List<ReviewSchedule>,
+        availableCards: List<KnowledgeCard>,
+        currentTimeMs: Long
+    ): List<Recommendation> {
+        require(currentTimeMs > 0) { "Current time timestamp must be positive" }
+
+        val recommendations = mutableListOf<Recommendation>()
+        val dueCardIds = dueSchedules.map { it.cardId }.toSet()
+
+        for (card in availableCards) {
+            // 1. Skip already mastered cards unless explicitly due for review
+            if (userKnowledge.masteredCardIds.contains(card.id) && !dueCardIds.contains(card.id)) {
+                continue
+            }
+
+            var score = 0.0
+            val reasons = mutableListOf<String>()
+
+            // 2. High priority score for due reviews
+            if (dueCardIds.contains(card.id)) {
+                score += 50.0
+                reasons.add("Card is due for spaced-repetition review")
+            }
+
+            // 3. Active learning cards priority
+            if (userKnowledge.activeCardIds.contains(card.id)) {
+                score += 30.0
+                reasons.add("Card is in your active learning list")
+            } else if (!userKnowledge.masteredCardIds.contains(card.id)) {
+                score += 10.0
+                reasons.add("New card matching your curriculum")
+            }
+
+            // 4. Prerequisite readiness check
+            val unmetPrerequisites = card.prerequisiteCardIds.filter { !userKnowledge.masteredCardIds.contains(it) }
+            if (unmetPrerequisites.isNotEmpty()) {
+                score -= 25.0 // Penalize if prerequisites are not yet completed
+            }
+
+            if (score > 0.0) {
+                val reasonString = reasons.joinToString("; ")
+                recommendations.add(Recommendation(card.id, (score / 100.0).coerceIn(0.0, 1.0), reasonString))
+            }
+        }
+
+        return recommendations.sortedByDescending { it.score }
+    }
 }
