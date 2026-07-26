@@ -52,4 +52,50 @@ object StorageModule {
     @Provides
     @Singleton
     fun provideQuizDao(db: LearnWitMeDatabase) = db.quizDao()
+
+    @Provides
+    @Singleton
+    fun provideKnowledgePackageDao(db: LearnWitMeDatabase) = db.knowledgePackageDao()
+
+    @Provides
+    @Singleton
+    fun provideKnowledgeCardDao(db: LearnWitMeDatabase) = db.knowledgeCardDao()
+
+    @Provides
+    @Singleton
+    fun provideUserKnowledgeDao(db: LearnWitMeDatabase) = db.userKnowledgeDao()
+
+    @Provides
+    @Singleton
+    fun provideReviewScheduleDao(db: LearnWitMeDatabase) = db.reviewScheduleDao()
+
+    @Provides
+    @Singleton
+    fun provideRecommendationDao(db: LearnWitMeDatabase) = db.recommendationDao()
+
+    @Provides
+    @Singleton
+    fun provideKnowledgeRepository(
+        packageDao: com.learnwitme.core.storage.local.dao.KnowledgePackageDao,
+        cardDao: com.learnwitme.core.storage.local.dao.KnowledgeCardDao
+    ): com.learnwitme.core.domain.repository.KnowledgeRepository {
+        return com.learnwitme.core.storage.repository.KnowledgeRepositoryImpl(packageDao, cardDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideLearningRepository(
+        userKnowledgeDao: com.learnwitme.core.storage.local.dao.UserKnowledgeDao,
+        reviewScheduleDao: com.learnwitme.core.storage.local.dao.ReviewScheduleDao
+    ): com.learnwitme.core.domain.repository.LearningRepository {
+        return com.learnwitme.core.storage.repository.LearningRepositoryImpl(userKnowledgeDao, reviewScheduleDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRecommendationRepository(
+        recommendationDao: com.learnwitme.core.storage.local.dao.RecommendationDao
+    ): com.learnwitme.core.domain.repository.RecommendationRepository {
+        return com.learnwitme.core.storage.repository.RecommendationRepositoryImpl(recommendationDao)
+    }
 }

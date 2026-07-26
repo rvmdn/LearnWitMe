@@ -86,7 +86,9 @@ data class KnowledgePackageEntity(
     val title: String,
     val description: String,
     val version: String,
-    val isCore: Boolean
+    val checksum: String = "",
+    val status: String = "DRAFT",
+    val isCore: Boolean = false
 )
 
 @Entity(
@@ -108,6 +110,7 @@ data class KnowledgeCardEntity(
     val difficulty: String,
     val estimatedReadingTimeSeconds: Int,
     val careerImpact: String,
+    val skillsJson: String = "[]",
     val tagsJson: String,
     val prerequisiteCardIdsJson: String,
     val relatedTopicCodesJson: String

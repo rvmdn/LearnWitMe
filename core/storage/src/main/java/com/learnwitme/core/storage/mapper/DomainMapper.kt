@@ -94,10 +94,18 @@ fun LearningSessionEntity.toDomain(): LearningSession {
 
 // KnowledgePackage Mapper
 fun KnowledgePackage.toEntity(): KnowledgePackageEntity {
-    return KnowledgePackageEntity(id.value, title, description, version.toString(), status == PackageStatus.PUBLISHED)
+    return KnowledgePackageEntity(
+        id = id.value,
+        title = title,
+        description = description,
+        version = version.toString(),
+        checksum = checksum,
+        status = status.name,
+        isCore = isCore
+    )
 }
 fun KnowledgeCard.toEntity(packageId: String): KnowledgeCardEntity {
-    val refs = reference.map { ReferenceDto(it.title, it.url) }
+    val refs = references.map { ReferenceDto(it.title, it.url) }
     val tagsDto = tags.map { TagDto(it.name) }
     return KnowledgeCardEntity(
         id = id.value,
@@ -114,6 +122,7 @@ fun KnowledgeCard.toEntity(packageId: String): KnowledgeCardEntity {
         difficulty = difficulty.name,
         estimatedReadingTimeSeconds = estimatedReadingTimeSeconds,
         careerImpact = careerImpact,
+        skillsJson = Json.encodeToString(skills.map { SkillDto(it.code, it.name, it.category) }),
         tagsJson = Json.encodeToString(tagsDto),
         prerequisiteCardIdsJson = Json.encodeToString(prerequisiteCardIds.map { it.value }),
         relatedTopicCodesJson = Json.encodeToString(relatedTopicCodes)
@@ -126,7 +135,9 @@ fun KnowledgePackageEntity.toDomain(cards: List<KnowledgeCardEntity>): Knowledge
         title = title,
         description = description,
         version = version.toIntOrNull() ?: 1,
-        status = if (isCore) PackageStatus.PUBLISHED else PackageStatus.DRAFT,
+        checksum = checksum,
+        isCore = isCore,
+        status = runCatching { PackageStatus.valueOf(status) }.getOrDefault(PackageStatus.DRAFT),
         topics = emptyList(),
         cards = domainCards,
         dependencies = emptyList()
@@ -135,22 +146,27 @@ fun KnowledgePackageEntity.toDomain(cards: List<KnowledgeCardEntity>): Knowledge
 fun KnowledgeCardEntity.toDomain(): KnowledgeCard {
     val refsDto = Json.decodeFromString<List<ReferenceDto>>(referencesJson)
     val tagsDto = Json.decodeFromString<List<TagDto>>(tagsJson)
+    val skillsDto = runCatching { Json.decodeFromString<List<SkillDto>>(skillsJson) }.getOrDefault(emptyList())
     val preReqs = Json.decodeFromString<List<String>>(prerequisiteCardIdsJson)
     val topics = Json.decodeFromString<List<String>>(relatedTopicCodesJson)
     return KnowledgeCard(
         id = KnowledgeCardId(id),
-        title = title,
-        summary = summary,
-        whyItMatters = whyItMatters,
-        realWorldExample = realWorldExample,
-        commonMistakes = commonMistakes,
-        whenNotToUse = whenNotToUse,
-        bestPractice = bestPractice,
-        reference = refsDto.map { Reference(it.title, it.url) },
-        officialDocumentationLink = officialDocumentationLink,
+        packageId = KnowledgePackageId(packageId),
+        content = KnowledgeContent(
+            title = title,
+            summary = summary,
+            whyItMatters = whyItMatters,
+            realWorldExample = realWorldExample,
+            commonMistakes = commonMistakes,
+            whenNotToUse = whenNotToUse,
+            bestPractice = bestPractice,
+            officialDocumentationLink = officialDocumentationLink
+        ),
         difficulty = DifficultyLevel.valueOf(difficulty),
         estimatedReadingTimeSeconds = estimatedReadingTimeSeconds,
         careerImpact = careerImpact,
+        skills = skillsDto.map { Skill(it.code, it.name, it.category) },
+        references = refsDto.map { Reference(it.title, it.url) },
         tags = tagsDto.map { Tag(it.name) },
         prerequisiteCardIds = preReqs.map { KnowledgeCardId(it) },
         relatedTopicCodes = topics

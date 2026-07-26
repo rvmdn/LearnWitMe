@@ -66,35 +66,7 @@ interface SessionDao {
     suspend fun insertSession(session: LearningSessionEntity)
 }
 
-@Dao
-interface KnowledgePackageDao {
-    @Query("SELECT * FROM knowledge_packages WHERE id = :packageId LIMIT 1")
-    suspend fun getPackageById(packageId: String): KnowledgePackageEntity?
-
-    @Query("SELECT * FROM knowledge_packages")
-    suspend fun getAllPackages(): List<KnowledgePackageEntity>
-
-    @Query("SELECT * FROM knowledge_cards WHERE packageId = :packageId")
-    suspend fun getCardsForPackage(packageId: String): List<KnowledgeCardEntity>
-
-    @Query("SELECT * FROM knowledge_cards WHERE id = :id LIMIT 1")
-    suspend fun getCardById(id: String): KnowledgeCardEntity?
-    
-    @Query("SELECT * FROM knowledge_cards WHERE relatedTopicCodesJson LIKE '%' || :topicCode || '%'")
-    suspend fun getCardsByTopic(topicCode: String): List<KnowledgeCardEntity>
-    
-    @Query("DELETE FROM knowledge_cards WHERE id = :id")
-    suspend fun deleteCard(id: String)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPackage(pkg: KnowledgePackageEntity)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCards(cards: List<KnowledgeCardEntity>)
-    
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCard(card: KnowledgeCardEntity)
-}
+// KnowledgePackageDao moved to KnowledgeCoreDaos.kt
 
 @Dao
 interface QuizDao {

@@ -37,3 +37,9 @@ data class TagDto(val name: String)
 @Serializable
 data class ReferenceDto(val title: String, val url: String?)
 
+@Serializable
+data class SkillDto(val code: String, val name: String, val category: String = "GENERAL")
+
+@Serializable
+data class CompetencyDto(val level: String, val score: Double)
+

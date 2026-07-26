@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "f2b826a30143abd71ab2ec5a4ddb95ab",
+    "identityHash": "c5610bd53ac8f09c0ae007741f3fba4e",
     "entities": [
       {
         "tableName": "user_profiles",
@@ -352,7 +352,7 @@
       },
       {
         "tableName": "knowledge_packages",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `version` TEXT NOT NULL, `isCore` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `version` TEXT NOT NULL, `checksum` TEXT NOT NULL, `status` TEXT NOT NULL, `isCore` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -379,6 +379,18 @@
             "notNull": true
           },
           {
+            "fieldPath": "checksum",
+            "columnName": "checksum",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
             "fieldPath": "isCore",
             "columnName": "isCore",
             "affinity": "INTEGER",
@@ -396,7 +408,7 @@
       },
       {
         "tableName": "knowledge_cards",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `packageId` TEXT NOT NULL, `title` TEXT NOT NULL, `summary` TEXT NOT NULL, `whyItMatters` TEXT NOT NULL, `realWorldExample` TEXT NOT NULL, `commonMistakes` TEXT NOT NULL, `whenNotToUse` TEXT NOT NULL, `bestPractice` TEXT NOT NULL, `referencesJson` TEXT NOT NULL, `officialDocumentationLink` TEXT NOT NULL, `difficulty` TEXT NOT NULL, `estimatedReadingTimeSeconds` INTEGER NOT NULL, `careerImpact` TEXT NOT NULL, `tagsJson` TEXT NOT NULL, `prerequisiteCardIdsJson` TEXT NOT NULL, `relatedTopicCodesJson` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `packageId` TEXT NOT NULL, `title` TEXT NOT NULL, `summary` TEXT NOT NULL, `whyItMatters` TEXT NOT NULL, `realWorldExample` TEXT NOT NULL, `commonMistakes` TEXT NOT NULL, `whenNotToUse` TEXT NOT NULL, `bestPractice` TEXT NOT NULL, `referencesJson` TEXT NOT NULL, `officialDocumentationLink` TEXT NOT NULL, `difficulty` TEXT NOT NULL, `estimatedReadingTimeSeconds` INTEGER NOT NULL, `careerImpact` TEXT NOT NULL, `skillsJson` TEXT NOT NULL, `tagsJson` TEXT NOT NULL, `prerequisiteCardIdsJson` TEXT NOT NULL, `relatedTopicCodesJson` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -483,6 +495,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "skillsJson",
+            "columnName": "skillsJson",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
             "fieldPath": "tagsJson",
             "columnName": "tagsJson",
             "affinity": "TEXT",
@@ -516,6 +534,163 @@
             ],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_knowledge_cards_packageId` ON `${TABLE_NAME}` (`packageId`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "user_knowledge",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`userId` TEXT NOT NULL, `competenciesJson` TEXT NOT NULL, `activeCardIdsJson` TEXT NOT NULL, `masteredCardIdsJson` TEXT NOT NULL, PRIMARY KEY(`userId`))",
+        "fields": [
+          {
+            "fieldPath": "userId",
+            "columnName": "userId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "competenciesJson",
+            "columnName": "competenciesJson",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "activeCardIdsJson",
+            "columnName": "activeCardIdsJson",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "masteredCardIdsJson",
+            "columnName": "masteredCardIdsJson",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "userId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "review_schedules",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`userId` TEXT NOT NULL, `cardId` TEXT NOT NULL, `intervalDays` INTEGER NOT NULL, `nextReviewTimestamp` INTEGER NOT NULL, `easeFactor` REAL NOT NULL, `repetitions` INTEGER NOT NULL, PRIMARY KEY(`userId`, `cardId`))",
+        "fields": [
+          {
+            "fieldPath": "userId",
+            "columnName": "userId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cardId",
+            "columnName": "cardId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "intervalDays",
+            "columnName": "intervalDays",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nextReviewTimestamp",
+            "columnName": "nextReviewTimestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "easeFactor",
+            "columnName": "easeFactor",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "repetitions",
+            "columnName": "repetitions",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "userId",
+            "cardId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_review_schedules_userId",
+            "unique": false,
+            "columnNames": [
+              "userId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_review_schedules_userId` ON `${TABLE_NAME}` (`userId`)"
+          },
+          {
+            "name": "index_review_schedules_nextReviewTimestamp",
+            "unique": false,
+            "columnNames": [
+              "nextReviewTimestamp"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_review_schedules_nextReviewTimestamp` ON `${TABLE_NAME}` (`nextReviewTimestamp`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "recommendations",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`userId` TEXT NOT NULL, `cardId` TEXT NOT NULL, `score` REAL NOT NULL, `reason` TEXT NOT NULL, PRIMARY KEY(`userId`, `cardId`))",
+        "fields": [
+          {
+            "fieldPath": "userId",
+            "columnName": "userId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cardId",
+            "columnName": "cardId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "score",
+            "columnName": "score",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reason",
+            "columnName": "reason",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "userId",
+            "cardId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_recommendations_userId",
+            "unique": false,
+            "columnNames": [
+              "userId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_recommendations_userId` ON `${TABLE_NAME}` (`userId`)"
           }
         ],
         "foreignKeys": []
@@ -731,7 +906,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f2b826a30143abd71ab2ec5a4ddb95ab')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c5610bd53ac8f09c0ae007741f3fba4e')"
     ]
   }
 }

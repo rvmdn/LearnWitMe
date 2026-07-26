@@ -56,11 +56,4 @@ class KnowledgePackageRepositoryImpl @Inject constructor(
     override suspend fun getActivePackages(): List<KnowledgePackage> = localDataSource.getActivePackages()
 }
 
-class KnowledgeRepositoryImpl @Inject constructor(
-    private val localDataSource: LearnWitMeLocalDataSource
-) : KnowledgeRepository {
-    override suspend fun getCard(id: KnowledgeCardId): KnowledgeCard? = localDataSource.getKnowledgeCard(id)
-    override suspend fun saveCard(card: KnowledgeCard) = localDataSource.saveKnowledgeCard(card)
-    override suspend fun deleteCard(id: KnowledgeCardId) = localDataSource.deleteKnowledgeCard(id)
-    override suspend fun getCardsByTopic(topicCode: String): List<KnowledgeCard> = localDataSource.getCardsByTopic(topicCode)
-}
+// KnowledgeRepositoryImpl moved to KnowledgeCoreRepositories.kt

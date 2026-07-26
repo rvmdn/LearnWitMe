@@ -2,6 +2,7 @@ package com.learnwitme.core.storage.source
 
 import com.learnwitme.core.domain.model.*
 import com.learnwitme.core.storage.local.LearnWitMeDatabase
+import com.learnwitme.core.storage.local.entity.KnowledgeCardEntity
 import com.learnwitme.core.storage.mapper.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -65,44 +66,43 @@ class LearnWitMeLocalDataSource(
     }
     
     suspend fun getKnowledgePackage(packageId: KnowledgePackageId): KnowledgePackage? = withContext(Dispatchers.IO) {
-        val pkgEntity = db.knowledgePackageDao().getPackageById(packageId.value) ?: return@withContext null
-        val cardsEntity = db.knowledgePackageDao().getCardsForPackage(pkgEntity.id)
+        val pkgEntity = db.knowledgePackageDao().findById(packageId.value) ?: return@withContext null
+        val cardsEntity = db.knowledgeCardDao().findByPackage(pkgEntity.id)
         pkgEntity.toDomain(cardsEntity)
     }
     
     suspend fun saveKnowledgePackage(pkg: KnowledgePackage) = withContext(Dispatchers.IO) {
         val pkgEntity = pkg.toEntity()
         val cardsEntity = pkg.cards.map { it.toEntity(pkg.id.value) }
-        db.knowledgePackageDao().insertPackage(pkgEntity)
-        db.knowledgePackageDao().insertCards(cardsEntity)
+        db.knowledgePackageDao().insert(pkgEntity)
+        db.knowledgeCardDao().insertAll(cardsEntity)
     }
 
     suspend fun getActivePackages(): List<KnowledgePackage> = withContext(Dispatchers.IO) {
         db.knowledgePackageDao().getAllPackages().map { pkgEntity ->
-            val cardsEntity = db.knowledgePackageDao().getCardsForPackage(pkgEntity.id)
+            val cardsEntity = db.knowledgeCardDao().findByPackage(pkgEntity.id)
             pkgEntity.toDomain(cardsEntity)
         }
     }
     
     suspend fun getKnowledgeCard(id: KnowledgeCardId): KnowledgeCard? = withContext(Dispatchers.IO) {
-        db.knowledgePackageDao().getCardById(id.value)?.toDomain()
+        val entity = db.knowledgeCardDao().findById(id.value)
+        entity?.toDomain()
     }
     
     suspend fun saveKnowledgeCard(card: KnowledgeCard) = withContext(Dispatchers.IO) {
-        // Without knowing packageId, we shouldn't insert a standalone card.
-        // Wait, Domain KnowledgeCard does not have packageId!
-        // But Entity has it. So saveKnowledgeCard is tricky if we don't know the packageId.
-        // For simplicity, we can fetch the existing card to preserve packageId, or use a default "custom".
-        val existing = db.knowledgePackageDao().getCardById(card.id.value)
-        val packageId = existing?.packageId ?: "custom_package"
-        db.knowledgePackageDao().insertCard(card.toEntity(packageId))
+        val existing = db.knowledgeCardDao().findById(card.id.value)
+        val packageId = existing?.packageId ?: card.packageId.value
+        val entity = card.toEntity(packageId)
+        db.knowledgeCardDao().insert(entity)
     }
     
     suspend fun deleteKnowledgeCard(id: KnowledgeCardId) = withContext(Dispatchers.IO) {
-        db.knowledgePackageDao().deleteCard(id.value)
+        db.knowledgeCardDao().deleteCard(id.value)
     }
     
     suspend fun getCardsByTopic(topicCode: String): List<KnowledgeCard> = withContext(Dispatchers.IO) {
-        db.knowledgePackageDao().getCardsByTopic("\"$topicCode\"").map { it.toDomain() }
+        val entities: List<KnowledgeCardEntity> = db.knowledgeCardDao().getCardsByTopic("\"$topicCode\"")
+        entities.map { it.toDomain() }
     }
 }
