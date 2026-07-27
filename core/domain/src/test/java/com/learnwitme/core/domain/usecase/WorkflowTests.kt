@@ -10,9 +10,21 @@ import org.junit.Test
 class FakeMemoryRepo : LearningMemoryRepository {
     var memory: LearningMemory? = null
     var savedMemory: LearningMemory? = null
+    val snapshots = mutableListOf<com.learnwitme.core.domain.model.memory.LearningMemorySnapshot>()
+
     override suspend fun getMemory(id: LearningMemoryId) = memory
     override suspend fun getMemoryByUserId(userId: UserId) = memory
     override suspend fun saveMemory(memory: LearningMemory) { savedMemory = memory }
+    override suspend fun deleteMemoryByUserId(userId: UserId) { memory = null; savedMemory = null }
+    override suspend fun saveSnapshot(snapshot: com.learnwitme.core.domain.model.memory.LearningMemorySnapshot) { snapshots.add(snapshot) }
+    override suspend fun getSnapshot(snapshotId: String) = snapshots.find { it.snapshotId == snapshotId }
+    override suspend fun getSnapshotsForMemory(memoryId: LearningMemoryId) = snapshots.filter { it.memoryId == memoryId }
+    override suspend fun getLatestSnapshot(memoryId: LearningMemoryId) = snapshots.filter { it.memoryId == memoryId }.maxByOrNull { it.capturedEpochMs }
+    override suspend fun getSnapshotsInRange(memoryId: LearningMemoryId, fromEpochMs: Long, toEpochMs: Long) =
+        snapshots.filter { it.memoryId == memoryId && it.capturedEpochMs in fromEpochMs..toEpochMs }
+    override suspend fun pruneSnapshotsBefore(memoryId: LearningMemoryId, beforeEpochMs: Long) {
+        snapshots.removeAll { it.memoryId == memoryId && it.capturedEpochMs < beforeEpochMs }
+    }
 }
 
 class FakeRoadmapRepo : RoadmapRepository {

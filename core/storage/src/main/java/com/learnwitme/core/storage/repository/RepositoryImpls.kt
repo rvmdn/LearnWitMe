@@ -18,6 +18,16 @@ class LearningMemoryRepositoryImpl @Inject constructor(
     override suspend fun getMemory(id: LearningMemoryId): LearningMemory? = localDataSource.getLearningMemoryById(id)
     override suspend fun getMemoryByUserId(userId: UserId): LearningMemory? = localDataSource.getLearningMemory(userId)
     override suspend fun saveMemory(memory: LearningMemory) = localDataSource.saveLearningMemory(memory)
+    override suspend fun deleteMemoryByUserId(userId: UserId) {
+        // Stub implementation for account deletion workflow
+    }
+
+    override suspend fun saveSnapshot(snapshot: com.learnwitme.core.domain.model.memory.LearningMemorySnapshot) {}
+    override suspend fun getSnapshot(snapshotId: String): com.learnwitme.core.domain.model.memory.LearningMemorySnapshot? = null
+    override suspend fun getSnapshotsForMemory(memoryId: LearningMemoryId): List<com.learnwitme.core.domain.model.memory.LearningMemorySnapshot> = emptyList()
+    override suspend fun getLatestSnapshot(memoryId: LearningMemoryId): com.learnwitme.core.domain.model.memory.LearningMemorySnapshot? = null
+    override suspend fun getSnapshotsInRange(memoryId: LearningMemoryId, fromEpochMs: Long, toEpochMs: Long): List<com.learnwitme.core.domain.model.memory.LearningMemorySnapshot> = emptyList()
+    override suspend fun pruneSnapshotsBefore(memoryId: LearningMemoryId, beforeEpochMs: Long) {}
 }
 
 class RoadmapRepositoryImpl @Inject constructor(

@@ -1,6 +1,8 @@
 package com.learnwitme.core.domain.usecase
 
 import com.learnwitme.core.domain.model.*
+import com.learnwitme.core.domain.model.memory.LearningPattern
+import com.learnwitme.core.domain.model.memory.LearningPreference
 import com.learnwitme.core.domain.repository.*
 import com.learnwitme.core.domain.service.Clock
 import com.learnwitme.core.domain.service.PackageImporter
@@ -49,7 +51,9 @@ class InitializeApplicationWorkflow(
         val defaultMemory = LearningMemory(
             id = LearningMemoryId("mem_${userId.value}"),
             userId = userId,
-            records = emptyList()
+            records = emptyList(),
+            preference = LearningPreference.undetermined(nowEpochMs = clock.currentTimeMillis()),
+            pattern = LearningPattern.empty(nowEpochMs = clock.currentTimeMillis())
         )
         memoryRepository.saveMemory(defaultMemory)
     }

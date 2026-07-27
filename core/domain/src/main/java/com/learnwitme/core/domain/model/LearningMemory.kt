@@ -1,5 +1,11 @@
 package com.learnwitme.core.domain.model
 
+import com.learnwitme.core.domain.model.memory.LearningBehavior
+import com.learnwitme.core.domain.model.memory.LearningMemorySnapshot
+import com.learnwitme.core.domain.model.memory.LearningPattern
+import com.learnwitme.core.domain.model.memory.LearningPreference
+import com.learnwitme.core.domain.model.memory.LearningStrength
+import com.learnwitme.core.domain.model.memory.LearningWeakness
 import kotlinx.serialization.Serializable
 
 enum class MemoryState {
@@ -137,13 +143,46 @@ data class MemoryRecord(
 
 /**
  * Responsibility: Serves as the Aggregate Root that represents and manages
- * the user's cognitive memory states, retention scores, stability factor,
- * and review histories across various KnowledgeCards.
+ * the full accumulated learning knowledge of one learner, including:
+ *
+ * 1. Per-card cognitive memory states, retention scores, stability factors,
+ *    and review histories ([records]) — from Sprint 1.
+ *
+ * 2. Inferred learning style preference ([preference]) — Sprint 9.
+ * 3. Deterministic behavioral learning patterns ([pattern]) — Sprint 9.
+ * 4. Detected topic mastery areas ([strengths]) — Sprint 9.
+ * 5. Detected struggling topic areas ([weaknesses]) — Sprint 9.
+ * 6. Observable recurring study behaviors ([behaviors]) — Sprint 9.
+ *
+ * The Memory Engine is the sole writer of this aggregate.
+ * The Recommendation Engine, Quiz Engine, and AI Enhancement Layer
+ * consume this aggregate as read-only input.
+ *
+ * Architecture Invariant: AI never writes to LearningMemory.
+ * LearningMemory is deterministic domain data — not AI output.
  */
 data class LearningMemory(
     override val id: LearningMemoryId,
     val userId: UserId,
-    val records: List<MemoryRecord> = emptyList()
+    val records: List<MemoryRecord> = emptyList(),
+
+    // ── Sprint 9: Learner Profile Memory Layer ────────────────────────
+    /** Inferred cognitive learning style for this learner. */
+    val preference: LearningPreference = LearningPreference.undetermined(nowEpochMs = 1L),
+
+    /** Deterministic behavioral learning patterns derived from session analysis. */
+    val pattern: LearningPattern = LearningPattern.empty(nowEpochMs = 1L),
+
+    /** Topics where mastery has been deterministically detected. */
+    val strengths: List<LearningStrength> = emptyList(),
+
+    /** Topics where consistent difficulty has been deterministically detected. */
+    val weaknesses: List<LearningWeakness> = emptyList(),
+
+    /** Observable recurring study behaviors detected from session data. */
+    val behaviors: List<LearningBehavior> = emptyList()
+    // ─────────────────────────────────────────────────────────────────
+
 ) : AggregateRoot<LearningMemoryId> {
 
     init {
@@ -151,6 +190,32 @@ data class LearningMemory(
         val cardIds = records.map { it.cardId }
         require(cardIds.size == cardIds.toSet().size) {
             "LearningMemory cannot contain duplicate records for the same KnowledgeCard"
+        }
+
+        // Invariant: No duplicate strengths for the same topic
+        val strengthTopics = strengths.map { it.topicCode }
+        require(strengthTopics.size == strengthTopics.toSet().size) {
+            "LearningMemory cannot contain duplicate strength entries for the same topic"
+        }
+
+        // Invariant: No duplicate weaknesses for the same topic
+        val weaknessTopics = weaknesses.map { it.topicCode }
+        require(weaknessTopics.size == weaknessTopics.toSet().size) {
+            "LearningMemory cannot contain duplicate weakness entries for the same topic"
+        }
+
+        // Invariant: A topic cannot simultaneously be a Strength and a Weakness
+        val strengthSet = strengthTopics.toSet()
+        val weaknessSet = weaknessTopics.toSet()
+        val overlap = strengthSet.intersect(weaknessSet)
+        require(overlap.isEmpty()) {
+            "A topic cannot be both a Strength and a Weakness simultaneously: $overlap"
+        }
+
+        // Invariant: No duplicate behavior types (one record per BehaviorType)
+        val behaviorTypes = behaviors.map { it.type }
+        require(behaviorTypes.size == behaviorTypes.toSet().size) {
+            "LearningMemory cannot contain duplicate behavior entries for the same BehaviorType"
         }
     }
 
@@ -247,6 +312,155 @@ data class LearningMemory(
         }
         return weakTopics
     }
+
+    // ── Sprint 9: Learner Profile Memory Operations ───────────────────
+
+    /**
+     * Returns the inferred learning preference for this learner.
+     * Provided as an explicit accessor to make AI consumer contracts clear.
+     */
+    fun getLearningPreference(): LearningPreference = preference
+
+    /**
+     * Returns the deterministic behavioral learning pattern for this learner.
+     */
+    fun getLearningPattern(): LearningPattern = pattern
+
+    /**
+     * Updates the inferred learning style preference.
+     * Called by the Memory Engine after analyzing sufficient behavioral signals.
+     *
+     * @param newPreference The newly computed preference from the Memory Engine.
+     * @return A new immutable LearningMemory with the updated preference.
+     */
+    fun updatePreference(newPreference: LearningPreference): LearningMemory {
+        return this.copy(preference = newPreference)
+    }
+
+    /**
+     * Updates the deterministic behavioral learning pattern.
+     * Called by the Memory Engine after each session analysis cycle.
+     *
+     * @param newPattern The newly computed pattern from the Memory Engine.
+     * @return A new immutable LearningMemory with the updated pattern.
+     */
+    fun updatePattern(newPattern: LearningPattern): LearningMemory {
+        return this.copy(pattern = newPattern)
+    }
+
+    /**
+     * Records or updates a detected topic strength.
+     * If a strength for the same topic already exists, it is replaced.
+     *
+     * Precondition: [strength.topicCode] must NOT exist in [weaknesses].
+     *
+     * @param strength The newly detected or updated strength.
+     * @return A new immutable LearningMemory with the strength recorded.
+     */
+    fun recordStrength(strength: LearningStrength): LearningMemory {
+        require(weaknesses.none { it.topicCode == strength.topicCode }) {
+            "Cannot record a Strength for topic '${strength.topicCode}' — it is currently tracked as a Weakness. " +
+                    "Resolve the Weakness before promoting to Strength."
+        }
+        val updatedStrengths = strengths.filter { it.topicCode != strength.topicCode } + strength
+        return this.copy(strengths = updatedStrengths)
+    }
+
+    /**
+     * Records or updates a detected topic weakness.
+     * If a weakness for the same topic already exists, it is replaced.
+     *
+     * Precondition: [weakness.topicCode] must NOT exist in [strengths].
+     *
+     * @param weakness The newly detected or updated weakness.
+     * @return A new immutable LearningMemory with the weakness recorded.
+     */
+    fun recordWeakness(weakness: LearningWeakness): LearningMemory {
+        require(strengths.none { it.topicCode == weakness.topicCode }) {
+            "Cannot record a Weakness for topic '${weakness.topicCode}' — it is currently tracked as a Strength. " +
+                    "Remove the Strength entry before recording a Weakness."
+        }
+        val updatedWeaknesses = weaknesses.filter { it.topicCode != weakness.topicCode } + weakness
+        return this.copy(weaknesses = updatedWeaknesses)
+    }
+
+    /**
+     * Records or updates a detected observable behavior.
+     * If a behavior of the same [BehaviorType] already exists, it is replaced.
+     *
+     * @param behavior The newly observed or updated behavior.
+     * @return A new immutable LearningMemory with the behavior recorded.
+     */
+    fun recordBehavior(behavior: LearningBehavior): LearningMemory {
+        val updatedBehaviors = behaviors.filter { it.type != behavior.type } + behavior
+        return this.copy(behaviors = updatedBehaviors)
+    }
+
+    /**
+     * Removes a weakness entry when a topic has been successfully remediated
+     * and no longer qualifies as a weakness.
+     *
+     * If no weakness exists for the given topicCode, this is a no-op.
+     *
+     * @param topicCode The topic code of the resolved weakness.
+     * @return A new immutable LearningMemory with the weakness removed.
+     */
+    fun removeResolvedWeakness(topicCode: String): LearningMemory {
+        return this.copy(weaknesses = weaknesses.filter { it.topicCode != topicCode })
+    }
+
+    /**
+     * Removes a strength entry when a topic has regressed below mastery thresholds.
+     *
+     * If no strength exists for the given topicCode, this is a no-op.
+     *
+     * @param topicCode The topic code of the regressed strength.
+     * @return A new immutable LearningMemory with the strength removed.
+     */
+    fun removeRegressedStrength(topicCode: String): LearningMemory {
+        return this.copy(strengths = strengths.filter { it.topicCode != topicCode })
+    }
+
+    /**
+     * Computes the overall average retention score across all tracked memory records.
+     * Returns 0.0 if no records exist.
+     */
+    fun computeOverallRetention(): Double {
+        if (records.isEmpty()) return 0.0
+        return records.map { it.retention }.average()
+    }
+
+    /**
+     * Creates an immutable [LearningMemorySnapshot] capturing the full current state.
+     * Called by the Memory Engine at scheduled intervals or after significant transitions.
+     *
+     * @param snapshotId    Unique identifier for the new snapshot.
+     * @param capturedEpochMs The epoch timestamp at which the snapshot is being taken.
+     * @param reason        Human-readable reason for this snapshot (e.g., "Weekly digest").
+     * @return An immutable snapshot of the current LearningMemory state.
+     */
+    fun takeSnapshot(
+        snapshotId: String,
+        capturedEpochMs: Long,
+        reason: String
+    ): LearningMemorySnapshot {
+        return LearningMemorySnapshot(
+            snapshotId = snapshotId,
+            memoryId = id,
+            userId = userId,
+            capturedEpochMs = capturedEpochMs,
+            preference = preference,
+            pattern = pattern,
+            strengths = strengths.toList(),
+            weaknesses = weaknesses.toList(),
+            behaviors = behaviors.toList(),
+            totalCardsTracked = records.size,
+            overallRetentionAverage = computeOverallRetention(),
+            snapshotReason = reason
+        )
+    }
+
+    // ─────────────────────────────────────────────────────────────────
 
     private fun updateRecord(updatedRecord: MemoryRecord): LearningMemory {
         val newRecords = records.filter { it.cardId != updatedRecord.cardId } + updatedRecord
