@@ -45,8 +45,8 @@ class LocalizationManagerTest {
     @Before
     fun setUp() {
         every { context.assets } returns assetManager
-        every { assetManager.open("metadata/i18n/id.json") } returns ByteArrayInputStream(idJson.toByteArray())
-        every { assetManager.open("metadata/i18n/en.json") } returns ByteArrayInputStream(enJson.toByteArray())
+        every { assetManager.open("metadata/i18n/id.json") } answers { ByteArrayInputStream(idJson.toByteArray()) }
+        every { assetManager.open("metadata/i18n/en.json") } answers { ByteArrayInputStream(enJson.toByteArray()) }
         every { encryptedDataStore.getStringFlow("user_language_preference", "id") } returns flowOf("id")
         every { configManager.config } returns AppConfig(
             languageConfig = LanguageConfig(

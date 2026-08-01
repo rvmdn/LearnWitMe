@@ -19,7 +19,9 @@ class InitializeApplicationWorkflowTest {
     private val roadmapRepo = mockk<RoadmapRepository>(relaxed = true)
     private val memoryRepo = mockk<LearningMemoryRepository>(relaxed = true)
     private val importer = mockk<PackageImporter>(relaxed = true)
-    private val clock = mockk<Clock>(relaxed = true)
+    private val clock = mockk<Clock>(relaxed = true).apply {
+        io.mockk.every { currentTimeMillis() } returns 1000L
+    }
 
     private val workflow = InitializeApplicationWorkflow(
         profileRepo, roadmapRepo, memoryRepo, importer, clock

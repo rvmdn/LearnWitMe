@@ -42,6 +42,7 @@ include(":core:logging")
 include(":core:config")
 include(":core:navigation")
 include(":core:plugin")
+include(":core:infrastructure")
 
 // Include feature modules
 include(":feature:onboarding")

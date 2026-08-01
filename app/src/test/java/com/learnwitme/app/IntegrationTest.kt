@@ -41,6 +41,13 @@ class IntegrationTest {
         override suspend fun getMemory(id: LearningMemoryId): LearningMemory? = learningMemory
         override suspend fun getMemoryByUserId(userId: UserId): LearningMemory? = learningMemory
         override suspend fun saveMemory(memory: LearningMemory) { learningMemory = memory }
+        override suspend fun deleteMemoryByUserId(userId: UserId) { learningMemory = null }
+        override suspend fun saveSnapshot(snapshot: com.learnwitme.core.domain.model.memory.LearningMemorySnapshot) {}
+        override suspend fun getSnapshot(snapshotId: String): com.learnwitme.core.domain.model.memory.LearningMemorySnapshot? = null
+        override suspend fun getSnapshotsForMemory(memoryId: LearningMemoryId): List<com.learnwitme.core.domain.model.memory.LearningMemorySnapshot> = emptyList()
+        override suspend fun getLatestSnapshot(memoryId: LearningMemoryId): com.learnwitme.core.domain.model.memory.LearningMemorySnapshot? = null
+        override suspend fun getSnapshotsInRange(memoryId: LearningMemoryId, fromEpochMs: Long, toEpochMs: Long): List<com.learnwitme.core.domain.model.memory.LearningMemorySnapshot> = emptyList()
+        override suspend fun pruneSnapshotsBefore(memoryId: LearningMemoryId, beforeEpochMs: Long) {}
     }
 
     private val roadmapRepo = object : RoadmapRepository {
@@ -69,9 +76,14 @@ class IntegrationTest {
 
     private val knowledgeRepo = object : KnowledgeRepository {
         override suspend fun getCard(id: KnowledgeCardId): KnowledgeCard? = cards[id.value]
+        override suspend fun findCard(id: KnowledgeCardId): KnowledgeCard? = cards[id.value]
         override suspend fun saveCard(card: KnowledgeCard) { cards[card.id.value] = card }
         override suspend fun deleteCard(id: KnowledgeCardId) { cards.remove(id.value) }
         override suspend fun getCardsByTopic(topicCode: String): List<KnowledgeCard> = cards.values.filter { it.relatedTopicCodes.contains(topicCode) }
+        override suspend fun searchBySkills(skills: List<com.learnwitme.core.domain.model.Skill>): List<KnowledgeCard> = emptyList()
+        override suspend fun findPackage(packageId: KnowledgePackageId): KnowledgePackage? = null
+        override suspend fun importPackage(pkg: KnowledgePackage) {}
+        override suspend fun publishPackage(packageId: KnowledgePackageId) {}
     }
 
     private val quizRepo = object : QuizRepository {
