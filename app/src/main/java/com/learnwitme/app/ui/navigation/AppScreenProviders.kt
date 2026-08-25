@@ -41,9 +41,15 @@ class HomeScreenProvider @Inject constructor() : ScreenProvider {
                         is DailyFeedEffect.NavigateToCard -> {
                             navController.navigate(KnowledgeCardRoute(effect.cardId))
                         }
+                        is DailyFeedEffect.NavigateToOnboarding -> {
+                            navController.navigate(OnboardingRoute) {
+                                popUpTo(DailyFeedRoute) { inclusive = true }
+                            }
+                        }
                         is DailyFeedEffect.ShowToast -> {
                             android.widget.Toast.makeText(context, effect.message, android.widget.Toast.LENGTH_SHORT).show()
                         }
+
                     }
                 }
             }

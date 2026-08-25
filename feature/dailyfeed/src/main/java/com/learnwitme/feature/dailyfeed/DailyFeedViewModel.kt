@@ -1,8 +1,9 @@
 package com.learnwitme.feature.dailyfeed
 
 import androidx.lifecycle.viewModelScope
-import com.learnwitme.core.domain.model.UserId
-import com.learnwitme.core.domain.usecase.BuildDailyFeedWorkflow
+import com.learnwitme.core.domain.model.UserIdentity
+import com.learnwitme.core.domain.model.memory.personalization.DailyLearningInitializationResult
+import com.learnwitme.core.domain.usecase.InitializePersonalizedDailyLearningWorkflow
 import com.learnwitme.core.ui.mvi.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -10,10 +11,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DailyFeedViewModel @Inject constructor(
-    private val buildDailyFeedWorkflow: BuildDailyFeedWorkflow
+    private val initializePersonalizedDailyLearningWorkflow: InitializePersonalizedDailyLearningWorkflow
 ) : BaseViewModel<DailyFeedState, DailyFeedEvent, DailyFeedEffect>() {
 
-    private val currentUserId = UserId("current_user")
+    private val currentUserId = UserIdentity.Guest.DEFAULT_GUEST_ID
 
     init {
         loadFeed()
@@ -29,6 +30,9 @@ class DailyFeedViewModel @Inject constructor(
             is DailyFeedEvent.OnStartCard -> {
                 setEffect { DailyFeedEffect.NavigateToCard(event.cardId) }
             }
+            is DailyFeedEvent.OnCompletePreferences -> {
+                setEffect { DailyFeedEffect.NavigateToOnboarding }
+            }
         }
     }
 
@@ -36,8 +40,32 @@ class DailyFeedViewModel @Inject constructor(
         viewModelScope.launch {
             setState { DailyFeedState.Loading }
             try {
-                val feed = buildDailyFeedWorkflow.execute(currentUserId)
-                setState { DailyFeedState.Success(feed) }
+                val result = initializePersonalizedDailyLearningWorkflow.execute(currentUserId)
+                when (result) {
+                    is DailyLearningInitializationResult.Success -> {
+                        setState {
+                            DailyFeedState.Success(
+                                feed = result.feedDecision,
+                                context = result.context,
+                                initializationState = result.initializationState
+                            )
+                        }
+                    }
+                    is DailyLearningInitializationResult.IncompletePersonalization -> {
+                        setState {
+                            DailyFeedState.IncompletePersonalization(
+                                reason = result.reason.message
+                            )
+                        }
+                    }
+                    is DailyLearningInitializationResult.ContentUnavailable -> {
+                        setState {
+                            DailyFeedState.ContentUnavailable(
+                                reason = result.reason
+                            )
+                        }
+                    }
+                }
             } catch (e: Exception) {
                 setState { DailyFeedState.Error(e.message ?: "Unknown error occurred") }
                 setEffect { DailyFeedEffect.ShowToast("Failed to load feed") }

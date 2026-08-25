@@ -75,6 +75,7 @@ fun KnowledgeCardScreen(
                     is KnowledgeCardState.Success -> {
                         KnowledgeCardContent(
                             card = state.card,
+                            aiState = state.aiState,
                             onEvent = onEvent
                         )
                     }
@@ -88,6 +89,7 @@ fun KnowledgeCardScreen(
 @Composable
 private fun KnowledgeCardContent(
     card: KnowledgeCard,
+    aiState: AiAssistanceState,
     onEvent: (KnowledgeCardEvent) -> Unit
 ) {
     LazyColumn(
@@ -269,7 +271,123 @@ private fun KnowledgeCardContent(
             }
         }
 
-        // 9. Primary CTA - Review Evaluation Bar
+        // 9. Contextual AI Learning Assistance Section
+        item {
+            Column {
+                LwmSectionHeader(title = "AI Learning Companion")
+                when (aiState) {
+                    is AiAssistanceState.Idle -> {
+                        LwmCard(modifier = Modifier.fillMaxWidth()) {
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalArrangement = Arrangement.spacedBy(LwmTheme.spacing.s)
+                            ) {
+                                Text(
+                                    text = "Need a deeper explanation or real-world clarification for this topic?",
+                                    style = LwmTheme.typography.bodyMedium,
+                                    color = LwmTheme.colors.onSurface
+                                )
+                                LwmOutlinedButton(
+                                    text = "Ask AI for Explanation",
+                                    onClick = { onEvent(KnowledgeCardEvent.OnRequestAiExplanation(card.id.value)) },
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                        }
+                    }
+                    is AiAssistanceState.Loading -> {
+                        LwmCard(modifier = Modifier.fillMaxWidth()) {
+                            LwmLoadingState(message = "Generating personalized AI explanation...")
+                        }
+                    }
+                    is AiAssistanceState.Success -> {
+                        LwmCard(modifier = Modifier.fillMaxWidth()) {
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalArrangement = Arrangement.spacedBy(LwmTheme.spacing.s)
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    LwmTag(text = "AI Explanation")
+                                    LwmOutlinedButton(
+                                        text = "Dismiss",
+                                        onClick = { onEvent(KnowledgeCardEvent.OnDismissAiExplanation) }
+                                    )
+                                }
+                                Text(
+                                    text = aiState.explanation,
+                                    style = LwmTheme.typography.bodyMedium,
+                                    color = LwmTheme.colors.onSurface
+                                )
+                                Spacer(modifier = Modifier.height(LwmTheme.spacing.xs))
+                                if (!aiState.feedbackSubmitted) {
+                                    Text(
+                                        text = "Was this explanation helpful?",
+                                        style = LwmTheme.typography.bodySmall,
+                                        color = LwmTheme.colors.onSurfaceVariant
+                                    )
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.spacedBy(LwmTheme.spacing.s)
+                                    ) {
+                                        LwmOutlinedButton(
+                                            text = "👍 Helpful",
+                                            onClick = {
+                                                onEvent(KnowledgeCardEvent.OnSubmitAiFeedback(aiState.interactionId, 1.0))
+                                            },
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                        LwmOutlinedButton(
+                                            text = "👎 Needs Work",
+                                            onClick = {
+                                                onEvent(KnowledgeCardEvent.OnSubmitAiFeedback(aiState.interactionId, 0.2))
+                                            },
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                    }
+                                } else {
+                                    LwmTag(text = "Feedback Recorded ✓")
+                                }
+                            }
+                        }
+                    }
+                    is AiAssistanceState.Error -> {
+                        LwmCard(modifier = Modifier.fillMaxWidth()) {
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalArrangement = Arrangement.spacedBy(LwmTheme.spacing.s)
+                            ) {
+                                Text(
+                                    text = "AI Assistance Unavailable: ${aiState.message}",
+                                    style = LwmTheme.typography.bodyMedium,
+                                    color = LwmTheme.colors.error
+                                )
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(LwmTheme.spacing.s)
+                                ) {
+                                    LwmButton(
+                                        text = "Retry AI",
+                                        onClick = { onEvent(KnowledgeCardEvent.OnRequestAiExplanation(card.id.value)) },
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    LwmOutlinedButton(
+                                        text = "Dismiss",
+                                        onClick = { onEvent(KnowledgeCardEvent.OnDismissAiExplanation) },
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // 10. Primary CTA - Review Evaluation Bar
         item {
             LwmCard(modifier = Modifier.fillMaxWidth()) {
                 Column(
@@ -332,7 +450,7 @@ private fun KnowledgeCardScreenPreviewLight() {
     LwmTheme(darkTheme = false) {
         Scaffold { padding ->
             Box(modifier = Modifier.padding(padding)) {
-                KnowledgeCardContent(card = sampleCard, onEvent = {})
+                KnowledgeCardContent(card = sampleCard, aiState = AiAssistanceState.Idle, onEvent = {})
             }
         }
     }
@@ -362,7 +480,7 @@ private fun KnowledgeCardScreenPreviewDark() {
     LwmTheme(darkTheme = true) {
         Scaffold { padding ->
             Box(modifier = Modifier.padding(padding)) {
-                KnowledgeCardContent(card = sampleCard, onEvent = {})
+                KnowledgeCardContent(card = sampleCard, aiState = AiAssistanceState.Idle, onEvent = {})
             }
         }
     }

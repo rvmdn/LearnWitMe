@@ -2,9 +2,9 @@ package com.learnwitme.feature.quiz
 
 import androidx.lifecycle.viewModelScope
 import com.learnwitme.core.domain.model.*
+import com.learnwitme.core.domain.usecase.FinishQuizWorkflow
 import com.learnwitme.core.domain.usecase.StartQuizWorkflow
 import com.learnwitme.core.domain.usecase.SubmitQuizAnswerWorkflow
-import com.learnwitme.core.domain.usecase.FinishQuizWorkflow
 import com.learnwitme.core.ui.mvi.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -17,7 +17,7 @@ class QuizViewModel @Inject constructor(
     private val finishQuizWorkflow: FinishQuizWorkflow
 ) : BaseViewModel<QuizState, QuizEvent, QuizEffect>() {
 
-    private val currentUserId = UserId("current_user")
+    private val currentUserId = UserIdentity.Guest.DEFAULT_GUEST_ID
 
     override fun createInitialState(): QuizState = QuizState.Idle
 

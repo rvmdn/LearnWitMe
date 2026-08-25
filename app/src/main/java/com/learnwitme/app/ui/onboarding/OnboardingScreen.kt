@@ -17,8 +17,10 @@ fun OnboardingScreen(
     val state by viewModel.state.collectAsState()
     var selectedDailyLimit by remember { mutableStateOf(30) }
 
-    if (state is OnboardingState.Success) {
-        onSuccess()
+    LaunchedEffect(state) {
+        if (state is OnboardingState.Success) {
+            onSuccess()
+        }
     }
 
     Box(
@@ -32,7 +34,7 @@ fun OnboardingScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            when (state) {
+            when (val currentState = state) {
                 is OnboardingState.Idle -> {
                     Text(
                         text = "Welcome to LearnWitMe!",
@@ -70,6 +72,23 @@ fun OnboardingScreen(
                     )
                     Spacer(modifier = Modifier.height(24.dp))
 
+                    if (currentState.error != null) {
+                        Surface(
+                            color = MaterialTheme.colorScheme.errorContainer,
+                            shape = MaterialTheme.shapes.small,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = currentState.error,
+                                color = MaterialTheme.colorScheme.onErrorContainer,
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(12.dp),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+
                     Text("Daily Goal: $selectedDailyLimit minutes", style = MaterialTheme.typography.titleMedium)
                     Spacer(modifier = Modifier.height(12.dp))
                     Row(
@@ -102,19 +121,64 @@ fun OnboardingScreen(
 
                 is OnboardingState.Loading -> {
                     CircularProgressIndicator()
+                    if (!currentState.message.isNullOrBlank()) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = currentState.message,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
 
-                else -> {
-                    if (state is OnboardingState.Error) {
-                        Text(
-                            text = (state as OnboardingState.Error).message,
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Button(onClick = { viewModel.continueAsGuest() }) {
-                            Text("Retry")
+                is OnboardingState.InitializingPersonalization -> {
+                    CircularProgressIndicator()
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Personalizing your daily learning plan...",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                is OnboardingState.Success -> {
+                    CircularProgressIndicator()
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Ready! Preparing your feed...",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+
+                is OnboardingState.Error -> {
+                    Text(
+                        text = "Initialization Error",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = currentState.message,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Button(
+                        onClick = {
+                            if (currentState.canRetryPreferences) {
+                                viewModel.savePreferences(
+                                    preferredTopics = listOf("tp_kotlin"),
+                                    dailyLimitMinutes = selectedDailyLimit,
+                                    targetLevel = DifficultyLevel.MID
+                                )
+                            } else {
+                                viewModel.continueAsGuest()
+                            }
                         }
+                    ) {
+                        Text("Retry")
                     }
                 }
             }

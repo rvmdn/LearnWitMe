@@ -77,7 +77,8 @@ class MainActivity : ComponentActivity() {
                         is StartupState.Error -> {
                             ErrorScreen(message = state.message, onRetry = startupViewModel::initialize)
                         }
-                        is StartupState.OnboardingRequired -> {
+                        is StartupState.NewGuestOnboarding,
+                        is StartupState.PreferenceSetupRequired -> {
                             MainAppLayout(
                                 configManager = configManager,
                                 navigationEngine = navigationEngine,
@@ -87,7 +88,7 @@ class MainActivity : ComponentActivity() {
                                 startDestination = OnboardingRoute
                             )
                         }
-                        is StartupState.Success -> {
+                        is StartupState.Ready -> {
                             MainAppLayout(
                                 configManager = configManager,
                                 navigationEngine = navigationEngine,
@@ -97,6 +98,7 @@ class MainActivity : ComponentActivity() {
                                 startDestination = DailyFeedRoute
                             )
                         }
+
                     }
                 }
             }

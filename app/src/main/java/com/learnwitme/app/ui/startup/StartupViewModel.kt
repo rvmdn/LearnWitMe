@@ -4,9 +4,10 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.learnwitme.app.seeder.DefaultPackageParser
-import com.learnwitme.core.domain.model.UserId
-import com.learnwitme.core.domain.model.calculateChecksum
-import com.learnwitme.core.domain.repository.UserProfileRepository
+import com.learnwitme.core.config.LocalizationManager
+import com.learnwitme.core.domain.model.*
+import com.learnwitme.core.domain.model.memory.personalization.LearningPersonalizationContext
+import com.learnwitme.core.domain.usecase.DetermineUserStartupStateWorkflow
 import com.learnwitme.core.domain.usecase.InitializeApplicationWorkflow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -15,19 +16,18 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-import com.learnwitme.core.config.LocalizationManager
-
 sealed interface StartupState {
     object Loading : StartupState
-    object OnboardingRequired : StartupState
-    object Success : StartupState
+    data class NewGuestOnboarding(val userId: UserId) : StartupState
+    data class PreferenceSetupRequired(val profile: UserProfile) : StartupState
+    data class Ready(val profile: UserProfile, val context: LearningPersonalizationContext) : StartupState
     data class Error(val message: String) : StartupState
 }
 
 @HiltViewModel
 class StartupViewModel @Inject constructor(
     private val initializeApplicationWorkflow: InitializeApplicationWorkflow,
-    private val profileRepository: UserProfileRepository,
+    private val determineUserStartupStateWorkflow: DetermineUserStartupStateWorkflow,
     private val localizationManager: LocalizationManager,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
@@ -43,19 +43,19 @@ class StartupViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = StartupState.Loading
             try {
-                val userId = UserId("current_user")
+                val userId = UserIdentity.Guest.DEFAULT_GUEST_ID
                 val activeLang = localizationManager.currentLanguage.value
                 initializeApplicationWorkflow.execute(userId) {
                     val parsed = DefaultPackageParser.parse(context, activeLang)
                     val correctChecksum = calculateChecksum(parsed)
                     parsed.copy(metadata = parsed.metadata.copy(checksum = correctChecksum))
                 }
-                
-                val profile = profileRepository.getUserProfile(userId)
-                if (profile == null) {
-                    _state.value = StartupState.OnboardingRequired
-                } else {
-                    _state.value = StartupState.Success
+
+                val startupDecision = determineUserStartupStateWorkflow.execute(userId)
+                _state.value = when (startupDecision) {
+                    is UserStartupState.NewGuest -> StartupState.NewGuestOnboarding(startupDecision.userId)
+                    is UserStartupState.PreferenceSetupRequired -> StartupState.PreferenceSetupRequired(startupDecision.profile)
+                    is UserStartupState.Ready -> StartupState.Ready(startupDecision.profile, startupDecision.context)
                 }
             } catch (e: Exception) {
                 _state.value = StartupState.Error(e.message ?: "Failed to initialize application")

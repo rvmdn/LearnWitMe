@@ -220,6 +220,16 @@ object DomainModule {
         recommendationEngine, knowledgeEngine, feedEngine, clock
     )
 
+    @Provides
+    @Singleton
+    fun provideDetermineUserStartupStateWorkflow(
+        profileRepository: UserProfileRepository,
+        buildPersonalizedLearningContextWorkflow: BuildPersonalizedLearningContextWorkflow
+    ): DetermineUserStartupStateWorkflow = DetermineUserStartupStateWorkflow(
+        profileRepository, buildPersonalizedLearningContextWorkflow
+    )
+
+
 
 
 
@@ -325,4 +335,59 @@ object DomainModule {
         com.learnwitme.core.application.service.KnowledgeApplicationService(
             importKnowledgePackageUseCase, publishKnowledgePackageUseCase, findKnowledgeCardUseCase, knowledgeRepository, dispatcherProvider
         )
+
+    @Provides
+    @Singleton
+    fun provideAIProviderRegistry(): com.learnwitme.core.domain.ai.AIProviderRegistry {
+        val registry = com.learnwitme.core.domain.ai.AIProviderRegistry()
+        registry.registerProvider(
+            com.learnwitme.core.domain.ai.AIProviderType.MOCK,
+            com.learnwitme.core.domain.ai.MockAIProvider()
+        )
+        return registry
+    }
+
+    @Provides
+    @Singleton
+    fun provideAIProviderRouter(
+        registry: com.learnwitme.core.domain.ai.AIProviderRegistry
+    ): com.learnwitme.core.domain.ai.AIProviderRouter =
+        com.learnwitme.core.domain.ai.AIProviderRouter(registry)
+
+    @Provides
+    @Singleton
+    fun provideAIManager(
+        router: com.learnwitme.core.domain.ai.AIProviderRouter
+    ): com.learnwitme.core.domain.ai.AIManager =
+        com.learnwitme.core.domain.ai.AIManager(router)
+
+    @Provides
+    @Singleton
+    fun provideAILearningInteractionPersistenceCoordinator(
+        repository: AILearningInteractionRepository,
+        analyticsPipeline: com.learnwitme.core.analytics.AILearningAnalyticsPipeline
+    ): com.learnwitme.core.application.ai.feedback.AILearningInteractionPersistenceCoordinator {
+        return com.learnwitme.core.application.ai.feedback.AILearningInteractionPersistenceCoordinator(
+            repository = repository,
+            onResultPersisted = { result ->
+                try {
+                    analyticsPipeline.processAndDispatch(result)
+                } catch (_: Exception) {
+                    // Analytics dispatch fault isolation: analytics failure does not fail persistence or learning
+                }
+            }
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideAILearningInteractionService(
+        aiManager: com.learnwitme.core.domain.ai.AIManager,
+        persistenceCoordinator: com.learnwitme.core.application.ai.feedback.AILearningInteractionPersistenceCoordinator
+    ): com.learnwitme.core.application.ai.feedback.AILearningInteractionService {
+        return com.learnwitme.core.application.ai.feedback.AILearningInteractionService(
+            aiManager = aiManager,
+            persistenceCoordinator = persistenceCoordinator
+        )
+    }
 }

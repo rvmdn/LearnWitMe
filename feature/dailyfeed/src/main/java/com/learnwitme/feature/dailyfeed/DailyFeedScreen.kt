@@ -59,7 +59,21 @@ fun DailyFeedScreen(
             ) {
                 when (state) {
                     is DailyFeedState.Loading -> {
-                        LwmLoadingState(message = "Loading Daily Feed...")
+                        LwmLoadingState(message = "Loading your personalized daily feed...")
+                    }
+                    is DailyFeedState.IncompletePersonalization -> {
+                        LwmEmptyState(
+                            title = "Preferences Required",
+                            description = "Please complete your learning preferences to personalize your feed.",
+                            actionText = "Set Preferences",
+                            onActionClick = { onEvent(DailyFeedEvent.OnCompletePreferences) }
+                        )
+                    }
+                    is DailyFeedState.ContentUnavailable -> {
+                        LwmEmptyState(
+                            title = "Content Unavailable",
+                            description = state.reason.ifBlank { "No learning content is available for your current path." }
+                        )
                     }
                     is DailyFeedState.Error -> {
                         LwmErrorState(
@@ -79,6 +93,7 @@ fun DailyFeedScreen(
         }
     }
 }
+
 
 @Composable
 private fun DailyFeedContent(
