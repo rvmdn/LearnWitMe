@@ -179,6 +179,53 @@ object DomainModule {
 
     @Provides
     @Singleton
+    fun provideInitializeGuestUserWorkflow(
+        profileRepository: UserProfileRepository
+    ): InitializeGuestUserWorkflow = InitializeGuestUserWorkflow(profileRepository)
+
+    @Provides
+    @Singleton
+    fun provideUpdateLearningPreferenceWorkflow(
+        profileRepository: UserProfileRepository
+    ): UpdateLearningPreferenceWorkflow = UpdateLearningPreferenceWorkflow(profileRepository)
+
+    @Provides
+    @Singleton
+    fun provideBuildPersonalizedLearningContextWorkflow(
+        profileRepository: UserProfileRepository,
+        memoryRepository: LearningMemoryRepository,
+        clock: Clock
+    ): BuildPersonalizedLearningContextWorkflow = BuildPersonalizedLearningContextWorkflow(
+        profileRepository, memoryRepository, clock
+    )
+
+    @Provides
+    @Singleton
+    fun provideInitializePersonalizedDailyLearningWorkflow(
+        buildPersonalizedLearningContextWorkflow: BuildPersonalizedLearningContextWorkflow,
+        profileRepository: UserProfileRepository,
+        memoryRepository: LearningMemoryRepository,
+        roadmapRepository: RoadmapRepository,
+        packageRepository: KnowledgePackageRepository,
+        sessionRepository: LearningSessionRepository,
+        reviewEngine: ReviewEngine,
+        progressEngine: ProgressEngine,
+        recommendationEngine: RecommendationEngine,
+        knowledgeEngine: KnowledgeEngine,
+        feedEngine: FeedEngine,
+        clock: Clock
+    ): InitializePersonalizedDailyLearningWorkflow = InitializePersonalizedDailyLearningWorkflow(
+        buildPersonalizedLearningContextWorkflow, profileRepository, memoryRepository,
+        roadmapRepository, packageRepository, sessionRepository, reviewEngine, progressEngine,
+        recommendationEngine, knowledgeEngine, feedEngine, clock
+    )
+
+
+
+
+
+    @Provides
+    @Singleton
     fun provideDispatcherProvider(): com.learnwitme.core.application.dispatcher.DispatcherProvider =
         com.learnwitme.core.application.dispatcher.DefaultDispatcherProvider()
 
