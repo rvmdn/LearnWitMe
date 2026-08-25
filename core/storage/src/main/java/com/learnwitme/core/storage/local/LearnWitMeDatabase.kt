@@ -21,9 +21,13 @@ import com.learnwitme.core.storage.local.entity.*
         QuizEntity::class,
         QuizQuestionEntity::class,
         QuizOptionEntity::class,
-        QuizResultEntity::class
+        QuizResultEntity::class,
+        AILearningInteractionEntity::class,
+        AILearningFeedbackEntity::class,
+        AILearningOutcomeEntity::class,
+        AILearningMemoryImpactEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = true
 )
 abstract class LearnWitMeDatabase : RoomDatabase() {
@@ -37,4 +41,5 @@ abstract class LearnWitMeDatabase : RoomDatabase() {
     abstract fun reviewScheduleDao(): ReviewScheduleDao
     abstract fun recommendationDao(): RecommendationDao
     abstract fun quizDao(): QuizDao
+    abstract fun aiLearningInteractionDao(): AILearningInteractionDao
 }
