@@ -26,13 +26,15 @@ class AILearningInteractionDaoTest {
         database = Room.inMemoryDatabaseBuilder(
             RuntimeEnvironment.getApplication(),
             LearnWitMeDatabase::class.java
-        ).allowMainThreadQueries().build()
+        ).allowMainThreadQueries().fallbackToDestructiveMigration().build()
         dao = database.aiLearningInteractionDao()
     }
 
     @After
     fun tearDown() {
-        database.close()
+        if (::database.isInitialized) {
+            database.close()
+        }
     }
 
     @Test

@@ -21,10 +21,21 @@ object DatabaseMigrations {
         }
     }
 
+    /** Adds persistent analytics event queue for offline reliability. */
+    val MIGRATION_2_3 = object : Migration(2, 3) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("CREATE TABLE IF NOT EXISTS `ai_learning_analytics_events` (`eventId` TEXT NOT NULL, `eventType` TEXT NOT NULL, `interactionId` TEXT NOT NULL, `userId` TEXT NOT NULL, `action` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, `cardId` TEXT, `topicCode` TEXT, `provider` TEXT, `model` TEXT, `promptTokens` INTEGER NOT NULL, `completionTokens` INTEGER NOT NULL, `totalTokens` INTEGER NOT NULL, `personalizationPreset` TEXT, `outcomeStatus` TEXT, `summary` TEXT, `usefulnessRating` INTEGER, `confidenceSignal` REAL, `hasComment` INTEGER NOT NULL, `classification` TEXT, `confidenceDelta` REAL, `deliveryStatus` TEXT NOT NULL, `attemptCount` INTEGER NOT NULL, `lastAttemptAt` INTEGER, `nextRetryAt` INTEGER, `errorMessage` TEXT, PRIMARY KEY(`eventId`))")
+            db.execSQL("CREATE INDEX IF NOT EXISTS `index_ai_learning_analytics_events_interactionId` ON `ai_learning_analytics_events` (`interactionId`)")
+            db.execSQL("CREATE INDEX IF NOT EXISTS `index_ai_learning_analytics_events_deliveryStatus` ON `ai_learning_analytics_events` (`deliveryStatus`)")
+            db.execSQL("CREATE INDEX IF NOT EXISTS `index_ai_learning_analytics_events_userId` ON `ai_learning_analytics_events` (`userId`)")
+        }
+    }
+
     /**
      * Complete list of registered Room migrations to pass into databaseBuilder.
      */
     val ALL_MIGRATIONS: Array<Migration> = arrayOf(
-        MIGRATION_1_2
+        MIGRATION_1_2,
+        MIGRATION_2_3
     )
 }

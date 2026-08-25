@@ -39,4 +39,18 @@ class AILearningInteractionRepositoryImpl @Inject constructor(
 
     override suspend fun getMemoryImpact(interactionId: String): AILearningMemoryImpact? =
         dao.getMemoryImpact(interactionId)?.let(AILearningInteractionMapper::toDomain)
+
+    override suspend fun saveArtifacts(
+        interaction: AILearningInteraction,
+        outcome: AILearningOutcome?,
+        feedback: AILearningFeedback?,
+        impact: AILearningMemoryImpact?
+    ) {
+        dao.insertArtifacts(
+            interaction = AILearningInteractionMapper.toEntity(interaction),
+            outcome = outcome?.let(AILearningInteractionMapper::toEntity),
+            feedback = feedback?.let(AILearningInteractionMapper::toEntity),
+            impact = impact?.let(AILearningInteractionMapper::toEntity)
+        )
+    }
 }

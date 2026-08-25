@@ -22,6 +22,7 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.datastore.preferences)
     implementation(project(":core:domain"))
+    implementation(project(":core:analytics"))
     implementation(libs.kotlinx.serialization.json)
     
     testImplementation(libs.junit)

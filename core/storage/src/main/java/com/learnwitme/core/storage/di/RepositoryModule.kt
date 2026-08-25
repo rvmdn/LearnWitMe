@@ -57,4 +57,10 @@ abstract class RepositoryModule {
     abstract fun bindAILearningInteractionRepository(
         impl: AILearningInteractionRepositoryImpl
     ): AILearningInteractionRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAILearningAnalyticsRepository(
+        impl: AILearningAnalyticsRepositoryImpl
+    ): com.learnwitme.core.analytics.AILearningAnalyticsRepository
 }

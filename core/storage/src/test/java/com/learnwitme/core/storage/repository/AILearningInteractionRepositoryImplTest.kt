@@ -45,4 +45,31 @@ class AILearningInteractionRepositoryImplTest {
         coVerify { dao.insertFeedback(AILearningInteractionMapper.toEntity(feedback)) }
         coVerify { dao.insertOutcome(AILearningInteractionMapper.toEntity(outcome)) }
     }
+
+    @Test
+    fun repositoryDelegatesSaveArtifactsToDaoInsertArtifacts() = runBlocking {
+        val interaction = AILearningInteraction(
+            interactionId = "interaction-2",
+            userId = UserId("user-1"),
+            action = AIInteractionType.LESSON,
+            startedAt = 1_000L
+        )
+        val outcome = AILearningOutcome("interaction-2", AIOutcomeStatus.COMPLETED, completedAt = 2_100L)
+
+        repository.saveArtifacts(
+            interaction = interaction,
+            outcome = outcome,
+            feedback = null,
+            impact = null
+        )
+
+        coVerify {
+            dao.insertArtifacts(
+                interaction = AILearningInteractionMapper.toEntity(interaction),
+                outcome = AILearningInteractionMapper.toEntity(outcome),
+                feedback = null,
+                impact = null
+            )
+        }
+    }
 }

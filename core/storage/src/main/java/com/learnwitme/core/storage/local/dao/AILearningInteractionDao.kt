@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.learnwitme.core.storage.local.entity.AILearningFeedbackEntity
 import com.learnwitme.core.storage.local.entity.AILearningInteractionEntity
 import com.learnwitme.core.storage.local.entity.AILearningMemoryImpactEntity
@@ -34,4 +35,17 @@ interface AILearningInteractionDao {
 
     @Query("SELECT * FROM ai_learning_memory_impacts WHERE interactionId = :interactionId LIMIT 1")
     suspend fun getMemoryImpact(interactionId: String): AILearningMemoryImpactEntity?
+
+    @Transaction
+    suspend fun insertArtifacts(
+        interaction: AILearningInteractionEntity,
+        outcome: AILearningOutcomeEntity? = null,
+        feedback: AILearningFeedbackEntity? = null,
+        impact: AILearningMemoryImpactEntity? = null
+    ) {
+        insertInteraction(interaction)
+        outcome?.let { insertOutcome(it) }
+        feedback?.let { insertFeedback(it) }
+        impact?.let { insertMemoryImpact(it) }
+    }
 }

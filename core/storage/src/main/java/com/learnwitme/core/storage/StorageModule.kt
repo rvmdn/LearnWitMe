@@ -59,6 +59,10 @@ object StorageModule {
 
     @Provides
     @Singleton
+    fun provideAILearningAnalyticsEventDao(db: LearnWitMeDatabase) = db.aiLearningAnalyticsEventDao()
+
+    @Provides
+    @Singleton
     fun provideKnowledgePackageDao(db: LearnWitMeDatabase) = db.knowledgePackageDao()
 
     @Provides

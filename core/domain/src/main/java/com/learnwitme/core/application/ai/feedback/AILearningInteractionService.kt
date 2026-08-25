@@ -36,13 +36,15 @@ class AILearningInteractionService(
     private val expandKnowledgeCardUseCase: ExpandKnowledgeCardUseCase,
     private val simplifyTopicUseCase: SimplifyTopicUseCase,
     private val feedbackRecorder: AILearningFeedbackRecorder = AILearningFeedbackRecorder(),
-    private val memoryIntegrator: AILearningMemoryFeedbackIntegrator = AILearningMemoryFeedbackIntegrator()
+    private val memoryIntegrator: AILearningMemoryFeedbackIntegrator = AILearningMemoryFeedbackIntegrator(),
+    private val persistenceCoordinator: AILearningInteractionPersistenceCoordinator? = null
 ) {
 
     constructor(
         aiManager: AIManager,
         feedbackRecorder: AILearningFeedbackRecorder = AILearningFeedbackRecorder(),
-        memoryIntegrator: AILearningMemoryFeedbackIntegrator = AILearningMemoryFeedbackIntegrator()
+        memoryIntegrator: AILearningMemoryFeedbackIntegrator = AILearningMemoryFeedbackIntegrator(),
+        persistenceCoordinator: AILearningInteractionPersistenceCoordinator? = null
     ) : this(
         generateLessonUseCase = GenerateLessonUseCase(aiManager),
         generateQuizUseCase = GenerateQuizUseCase(aiManager),
@@ -50,7 +52,20 @@ class AILearningInteractionService(
         expandKnowledgeCardUseCase = ExpandKnowledgeCardUseCase(aiManager),
         simplifyTopicUseCase = SimplifyTopicUseCase(aiManager),
         feedbackRecorder = feedbackRecorder,
-        memoryIntegrator = memoryIntegrator
+        memoryIntegrator = memoryIntegrator,
+        persistenceCoordinator = persistenceCoordinator
+    )
+
+    constructor(
+        aiManager: AIManager,
+        repository: com.learnwitme.core.domain.repository.AILearningInteractionRepository,
+        feedbackRecorder: AILearningFeedbackRecorder = AILearningFeedbackRecorder(),
+        memoryIntegrator: AILearningMemoryFeedbackIntegrator = AILearningMemoryFeedbackIntegrator()
+    ) : this(
+        aiManager = aiManager,
+        feedbackRecorder = feedbackRecorder,
+        memoryIntegrator = memoryIntegrator,
+        persistenceCoordinator = AILearningInteractionPersistenceCoordinator(repository)
     )
 
     /**
@@ -361,15 +376,15 @@ class AILearningInteractionService(
         return processInteraction(simplified, interaction, outcome, feedback, currentMemory)
     }
 
-    private fun <T> processInteraction(
+    private suspend fun <T> processInteraction(
         generatedResult: T,
         interaction: AILearningInteraction,
         outcome: AILearningOutcome?,
         feedback: AILearningFeedback?,
         currentMemory: LearningMemory?
     ): AILearningInteractionResult<T> {
-        if (feedback == null) {
-            return AILearningInteractionResult(
+        val result = if (feedback == null) {
+            AILearningInteractionResult(
                 generatedResult = generatedResult,
                 interaction = interaction,
                 outcome = outcome,
@@ -377,37 +392,40 @@ class AILearningInteractionService(
                 feedbackResult = null,
                 memoryIntegrationResult = null
             )
-        }
-
-        val recordResult = feedbackRecorder.recordFeedback(
-            interaction = interaction,
-            feedback = feedback,
-            outcome = outcome
-        )
-
-        if (recordResult is AIInteractionFeedbackResult.Rejected) {
-            return AILearningInteractionResult(
-                generatedResult = generatedResult,
+        } else {
+            val recordResult = feedbackRecorder.recordFeedback(
                 interaction = interaction,
-                outcome = outcome,
                 feedback = feedback,
-                feedbackResult = recordResult,
-                memoryIntegrationResult = null
+                outcome = outcome
             )
+
+            if (recordResult is AIInteractionFeedbackResult.Rejected) {
+                AILearningInteractionResult(
+                    generatedResult = generatedResult,
+                    interaction = interaction,
+                    outcome = outcome,
+                    feedback = feedback,
+                    feedbackResult = recordResult,
+                    memoryIntegrationResult = null
+                )
+            } else {
+                val memoryResult = memoryIntegrator.integrateAccepted(
+                    acceptedResult = recordResult as AIInteractionFeedbackResult.Accepted,
+                    currentMemory = currentMemory
+                )
+
+                AILearningInteractionResult(
+                    generatedResult = generatedResult,
+                    interaction = interaction,
+                    outcome = outcome,
+                    feedback = feedback,
+                    feedbackResult = recordResult,
+                    memoryIntegrationResult = memoryResult
+                )
+            }
         }
 
-        val memoryResult = memoryIntegrator.integrateAccepted(
-            acceptedResult = recordResult as AIInteractionFeedbackResult.Accepted,
-            currentMemory = currentMemory
-        )
-
-        return AILearningInteractionResult(
-            generatedResult = generatedResult,
-            interaction = interaction,
-            outcome = outcome,
-            feedback = feedback,
-            feedbackResult = recordResult,
-            memoryIntegrationResult = memoryResult
-        )
+        persistenceCoordinator?.persist(result)
+        return result
     }
 }

@@ -23,4 +23,19 @@ interface AILearningInteractionRepository {
 
     suspend fun saveMemoryImpact(impact: AILearningMemoryImpact)
     suspend fun getMemoryImpact(interactionId: String): AILearningMemoryImpact?
+
+    /**
+     * Persists interaction artifacts together in a single operation.
+     */
+    suspend fun saveArtifacts(
+        interaction: AILearningInteraction,
+        outcome: AILearningOutcome? = null,
+        feedback: AILearningFeedback? = null,
+        impact: AILearningMemoryImpact? = null
+    ) {
+        saveInteraction(interaction)
+        outcome?.let { saveOutcome(it) }
+        feedback?.let { saveFeedback(it) }
+        impact?.let { saveMemoryImpact(it) }
+    }
 }
