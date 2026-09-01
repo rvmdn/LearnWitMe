@@ -205,4 +205,36 @@ class DailyFactSelectionTest {
         assertEquals(dec1.topRecommendation?.unit?.id, dec2.topRecommendation?.unit?.id)
         assertEquals(u1.id, dec1.topRecommendation?.unit?.id)
     }
+
+    @Test
+    fun testUserPersonalization_differentUsersProduceDifferentRankings() {
+        val cardAndroid = createCard("c_a1", "tp_android", DifficultyLevel.MID)
+        val cardArch = createCard("c_ar1", "tp_architecture", DifficultyLevel.MID)
+
+        val u1 = LearningUnit(LearningUnitId("u1"), "Android Unit", cardAndroid.id, null, 5, "tp_android")
+        val u2 = LearningUnit(LearningUnitId("u2"), "Architecture Unit", cardArch.id, null, 5, "tp_architecture")
+
+        // No pending unit priority by passing null/empty roadmap units or completed first unit
+        val roadmap = LearningRoadmap(LearningRoadmapId("r1"), createGoal(), listOf(u1, u2), RoadmapStatus.ACTIVE, setOf(u1.id, u2.id))
+        val pkg = createPackage("pkg_default", listOf(cardAndroid, cardArch))
+
+        // User A prefers Android, User B prefers Architecture
+        val profileA = createProfile(DifficultyLevel.MID, listOf("tp_android"))
+        val profileB = createProfile(DifficultyLevel.MID, listOf("tp_architecture"))
+
+        // Both cards have review scheduled
+        val revA = ReviewDecision(cardAndroid.id, 1000L, ReviewPriority.HIGH, true, false, "Overdue")
+        val revB = ReviewDecision(cardArch.id, 1000L, ReviewPriority.HIGH, true, false, "Overdue")
+        val queue = ReviewQueue(listOf(revA, revB))
+        val memory = LearningMemory(LearningMemoryId("m1"), UserId("u1"), listOf(
+            MemoryRecord(cardAndroid.id, MemoryState.LEARNING, 0.5, 1.0, 0.5),
+            MemoryRecord(cardArch.id, MemoryState.LEARNING, 0.5, 1.0, 0.5)
+        ))
+
+        val decisionA = engine.generateRecommendation(roadmap, memory, queue, createGoal(), profileA, pkg, RecommendationPolicy())
+        val decisionB = engine.generateRecommendation(roadmap, memory, queue, createGoal(), profileB, pkg, RecommendationPolicy())
+
+        assertEquals("User A should be recommended Android card", u1.id, decisionA.topRecommendation?.unit?.id)
+        assertEquals("User B should be recommended Architecture card", u2.id, decisionB.topRecommendation?.unit?.id)
+    }
 }

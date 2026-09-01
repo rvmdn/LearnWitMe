@@ -83,6 +83,12 @@ class RecommendationEngine {
                 reasons.add("Addresses a weak topic")
             }
 
+            // Rule: Preferred Topic Match
+            if (profile.preference.preferredTopics.contains(unit.topicCode)) {
+                score += 15.0
+                reasons.add("Matches your preferred learning topic")
+            }
+
             // Rule: Difficulty Match
             if (card.difficulty == profile.currentLevel || card.difficulty == profile.targetLevel) {
                 score += 10.0
