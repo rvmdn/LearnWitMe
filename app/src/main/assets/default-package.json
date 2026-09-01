@@ -1,8 +1,8 @@
 {
   "metadata": {
     "id": "pkg_default",
-    "title": "Kotlin Basics Curriculum",
-    "description": "Learn basic Kotlin programming.",
+    "title": "Kotlin & Android Engineering Curriculum",
+    "description": "Comprehensive foundation for modern Kotlin, Android, and Clean Architecture engineering.",
     "version": {
       "major": 1,
       "minor": 0,
@@ -13,8 +13,18 @@
   "topics": [
     {
       "code": "tp_kotlin",
-      "name": "Kotlin Basics",
-      "description": "Learn Kotlin variables, control structures, and basic functions."
+      "name": "Kotlin Fundamentals",
+      "description": "Master core Kotlin programming, modern language syntax, and coroutines."
+    },
+    {
+      "code": "tp_android",
+      "name": "Android Fundamentals",
+      "description": "Build robust Android applications with Jetpack Compose, Lifecycle, and Room."
+    },
+    {
+      "code": "tp_architecture",
+      "name": "Architecture & Engineering",
+      "description": "Design modular, maintainable, and testable applications using Clean Architecture."
     }
   ],
   "cards": [
@@ -46,6 +56,793 @@
       "relatedTopicCodes": [
         "tp_kotlin"
       ]
+    },
+    {
+      "id": "c_kotlin_val_var",
+      "title": "Variables and Immutability",
+      "summary": "Kotlin separates read-only references (val) from mutable variables (var).",
+      "whyItMatters": "Immutability eliminates side-effects, race conditions, and accidental state modification.",
+      "realWorldExample": "Declaring configuration parameters, domain models, and UI state as val.",
+      "commonMistakes": "Defaulting to var out of habit from other languages.",
+      "whenNotToUse": "Local loop counters or performance-sensitive internal mutable accumulators.",
+      "bestPractice": "Always declare references with val; change to var only when reassignment is strictly needed.",
+      "reference": [
+        {
+          "title": "Kotlin Basic Types",
+          "url": "https://kotlinlang.org/docs/basic-types.html"
+        }
+      ],
+      "officialDocumentationLink": "https://kotlinlang.org/docs/basic-syntax.html#variables",
+      "difficulty": "BEGINNER",
+      "estimatedReadingTimeSeconds": 120,
+      "careerImpact": "High",
+      "tags": [
+        {
+          "name": "Kotlin"
+        },
+        {
+          "name": "Immutability"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_kotlin_basics"
+      ],
+      "relatedTopicCodes": [
+        "tp_kotlin"
+      ]
+    },
+    {
+      "id": "c_kotlin_null_safety",
+      "title": "Null Safety & Nullable Types",
+      "summary": "Kotlin's type system distinguishes nullable types (Type?) from non-nullable types (Type).",
+      "whyItMatters": "Eliminates NullPointerException (The Billion Dollar Mistake) at compile-time.",
+      "realWorldExample": "Handling optional network response fields without crashing.",
+      "commonMistakes": "Overusing the double-bang (!!) operator instead of safe calls (?.) or Elvis (?:).",
+      "whenNotToUse": "Forcing non-null assertion (!!) on values that could be null under network failure.",
+      "bestPractice": "Use safe call operators (?.) and the Elvis operator (?:) to supply sensible fallback defaults.",
+      "reference": [
+        {
+          "title": "Kotlin Null Safety",
+          "url": "https://kotlinlang.org/docs/null-safety.html"
+        }
+      ],
+      "officialDocumentationLink": "https://kotlinlang.org/docs/null-safety.html",
+      "difficulty": "BEGINNER",
+      "estimatedReadingTimeSeconds": 180,
+      "careerImpact": "CRITICAL",
+      "tags": [
+        {
+          "name": "Kotlin"
+        },
+        {
+          "name": "NullSafety"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_kotlin_val_var"
+      ],
+      "relatedTopicCodes": [
+        "tp_kotlin"
+      ]
+    },
+    {
+      "id": "c_kotlin_functions",
+      "title": "Functions & Default Arguments",
+      "summary": "Kotlin functions support named arguments, default parameter values, and single-expression syntax.",
+      "whyItMatters": "Drastically reduces the need for overloaded constructor and method boilerplate.",
+      "realWorldExample": "Creating API client methods with optional timeout and retry parameters.",
+      "commonMistakes": "Creating dozens of overloaded methods in Kotlin instead of leveraging default parameters.",
+      "whenNotToUse": "When interacting with legacy Java code without @JvmOverloads annotations.",
+      "bestPractice": "Use single-expression functions for simple one-line transformations.",
+      "reference": [
+        {
+          "title": "Kotlin Functions",
+          "url": "https://kotlinlang.org/docs/functions.html"
+        }
+      ],
+      "officialDocumentationLink": "https://kotlinlang.org/docs/functions.html",
+      "difficulty": "BEGINNER",
+      "estimatedReadingTimeSeconds": 150,
+      "careerImpact": "High",
+      "tags": [
+        {
+          "name": "Kotlin"
+        },
+        {
+          "name": "Functions"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_kotlin_basics"
+      ],
+      "relatedTopicCodes": [
+        "tp_kotlin"
+      ]
+    },
+    {
+      "id": "c_kotlin_collections",
+      "title": "Collections: List, Set, and Map",
+      "summary": "Kotlin distinguishes read-only collection interfaces (List) from mutable counterparts (MutableList).",
+      "whyItMatters": "Protects data integrity by exposing unmodifiable views of collections from repositories and ViewModels.",
+      "realWorldExample": "Exposing StateFlow<List<Item>> to the UI while keeping MutableStateFlow private.",
+      "commonMistakes": "Casting List to MutableList instead of creating a defensive copy.",
+      "whenNotToUse": "Exposing mutable collections directly across architectural boundaries.",
+      "bestPractice": "Always return read-only collection interfaces from public functions and classes.",
+      "reference": [
+        {
+          "title": "Kotlin Collections Overview",
+          "url": "https://kotlinlang.org/docs/collections-overview.html"
+        }
+      ],
+      "officialDocumentationLink": "https://kotlinlang.org/docs/collections-overview.html",
+      "difficulty": "JUNIOR",
+      "estimatedReadingTimeSeconds": 180,
+      "careerImpact": "High",
+      "tags": [
+        {
+          "name": "Kotlin"
+        },
+        {
+          "name": "Collections"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_kotlin_functions"
+      ],
+      "relatedTopicCodes": [
+        "tp_kotlin"
+      ]
+    },
+    {
+      "id": "c_kotlin_data_classes",
+      "title": "Data Classes & Value Immutability",
+      "summary": "Data classes automatically generate equals(), hashCode(), toString(), componentN(), and copy() functions.",
+      "whyItMatters": "Simplifies creating immutable Value Objects, DTOs, and UI state wrappers.",
+      "realWorldExample": "Representing UserProfile, PaymentIntent, or ScreenState models.",
+      "commonMistakes": "Creating mutable properties (var) inside data classes.",
+      "whenNotToUse": "Entities with mutable internal state or complex inheritance hierarchies.",
+      "bestPractice": "Make all data class constructor properties val and use copy() for immutable modifications.",
+      "reference": [
+        {
+          "title": "Kotlin Data Classes",
+          "url": "https://kotlinlang.org/docs/data-classes.html"
+        }
+      ],
+      "officialDocumentationLink": "https://kotlinlang.org/docs/data-classes.html",
+      "difficulty": "JUNIOR",
+      "estimatedReadingTimeSeconds": 150,
+      "careerImpact": "High",
+      "tags": [
+        {
+          "name": "Kotlin"
+        },
+        {
+          "name": "DataClasses"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_kotlin_collections"
+      ],
+      "relatedTopicCodes": [
+        "tp_kotlin"
+      ]
+    },
+    {
+      "id": "c_kotlin_sealed_classes",
+      "title": "Sealed Classes & Exhaustive State Modeling",
+      "summary": "Sealed classes represent restricted class hierarchies where all subclasses are known at compile time.",
+      "whyItMatters": "Enables exhaustive when expressions without requiring error-prone else branches.",
+      "realWorldExample": "Modeling UI states: Sealed interface UiState { Loading, Success, Error }.",
+      "commonMistakes": "Adding a default 'else' branch in when expressions, bypassing compile-time safety on new state additions.",
+      "whenNotToUse": "Open polymorphism where third-party modules need to extend subclasses dynamically.",
+      "bestPractice": "Use sealed interfaces for modeling domain events, UI states, and operation outcomes.",
+      "reference": [
+        {
+          "title": "Kotlin Sealed Classes",
+          "url": "https://kotlinlang.org/docs/sealed-classes.html"
+        }
+      ],
+      "officialDocumentationLink": "https://kotlinlang.org/docs/sealed-classes.html",
+      "difficulty": "MID",
+      "estimatedReadingTimeSeconds": 180,
+      "careerImpact": "CRITICAL",
+      "tags": [
+        {
+          "name": "Kotlin"
+        },
+        {
+          "name": "SealedClasses"
+        },
+        {
+          "name": "Architecture"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_kotlin_data_classes"
+      ],
+      "relatedTopicCodes": [
+        "tp_kotlin",
+        "tp_architecture"
+      ]
+    },
+    {
+      "id": "c_kotlin_extension_functions",
+      "title": "Extension Functions",
+      "summary": "Extension functions extend a class with new functionality without inheriting or modifying the original class.",
+      "whyItMatters": "Provides readable, fluent API utilities without cluttering utility helper classes.",
+      "realWorldExample": "Converting domain models to UI view models: fun User.toUiState(): UserUiState.",
+      "commonMistakes": "Overusing extension functions on standard types (like String/Int) with ambiguous names.",
+      "whenNotToUse": "Accessing private or protected members of the receiver class.",
+      "bestPractice": "Keep extensions domain-scoped and place them in cohesive, top-level files.",
+      "reference": [
+        {
+          "title": "Kotlin Extensions",
+          "url": "https://kotlinlang.org/docs/extensions.html"
+        }
+      ],
+      "officialDocumentationLink": "https://kotlinlang.org/docs/extensions.html",
+      "difficulty": "MID",
+      "estimatedReadingTimeSeconds": 150,
+      "careerImpact": "High",
+      "tags": [
+        {
+          "name": "Kotlin"
+        },
+        {
+          "name": "Extensions"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_kotlin_functions"
+      ],
+      "relatedTopicCodes": [
+        "tp_kotlin"
+      ]
+    },
+    {
+      "id": "c_kotlin_coroutines_basics",
+      "title": "Coroutines & Structured Concurrency",
+      "summary": "Coroutines provide lightweight, non-blocking asynchronous execution managed by scopes and dispatchers.",
+      "whyItMatters": "Prevents ANR (Application Not Responding) crashes by offloading expensive work from the Main thread.",
+      "realWorldExample": "Performing database queries and network calls with suspend functions.",
+      "commonMistakes": "Launching unconfined coroutines with GlobalScope instead of viewModelScope / lifecycleScope.",
+      "whenNotToUse": "Blocking CPU-bound tasks without switching to Dispatchers.Default.",
+      "bestPractice": "Always adhere to structured concurrency by tying coroutine lifecycles to component scopes.",
+      "reference": [
+        {
+          "title": "Kotlin Coroutines Guide",
+          "url": "https://kotlinlang.org/docs/coroutines-overview.html"
+        }
+      ],
+      "officialDocumentationLink": "https://kotlinlang.org/docs/coroutines-overview.html",
+      "difficulty": "MID",
+      "estimatedReadingTimeSeconds": 240,
+      "careerImpact": "CRITICAL",
+      "tags": [
+        {
+          "name": "Kotlin"
+        },
+        {
+          "name": "Coroutines"
+        },
+        {
+          "name": "Concurrency"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_kotlin_functions"
+      ],
+      "relatedTopicCodes": [
+        "tp_kotlin"
+      ]
+    },
+    {
+      "id": "c_kotlin_flow",
+      "title": "Kotlin Flow & Reactive Streams",
+      "summary": "Flow is a cold asynchronous stream that emits values sequentially according to reactive stream principles.",
+      "whyItMatters": "Allows reactive data propagation from Room/Network layers all the way to Compose UI.",
+      "realWorldExample": "Streaming real-time database query results to UI state collectors.",
+      "commonMistakes": "Collecting cold Flows directly in Compose without repeatOnLifecycle or collectAsStateWithLifecycle.",
+      "whenNotToUse": "Single one-shot requests where a simple suspend function is clearer.",
+      "bestPractice": "Use StateFlow for state holding and SharedFlow for one-time navigation/toast events.",
+      "reference": [
+        {
+          "title": "Kotlin Flow Documentation",
+          "url": "https://kotlinlang.org/docs/flow.html"
+        }
+      ],
+      "officialDocumentationLink": "https://kotlinlang.org/docs/flow.html",
+      "difficulty": "MID",
+      "estimatedReadingTimeSeconds": 210,
+      "careerImpact": "CRITICAL",
+      "tags": [
+        {
+          "name": "Kotlin"
+        },
+        {
+          "name": "Flow"
+        },
+        {
+          "name": "Reactive"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_kotlin_coroutines_basics"
+      ],
+      "relatedTopicCodes": [
+        "tp_kotlin"
+      ]
+    },
+    {
+      "id": "c_android_activity",
+      "title": "Activity & Single-Activity Architecture",
+      "summary": "An Activity is an entry point for user interaction, serving as the host window in modern Android apps.",
+      "whyItMatters": "Modern Android development uses a Single-Activity Architecture hosting Jetpack Compose screens.",
+      "realWorldExample": "MainActivity acting as the root entry point that sets the Compose content.",
+      "commonMistakes": "Placing business logic, database calls, or state management inside Activity classes.",
+      "whenNotToUse": "Creating multiple heavyweight Activities for every individual screen.",
+      "bestPractice": "Keep Activity lightweight: initialize Hilt, theme, and host root Compose Navigation.",
+      "reference": [
+        {
+          "title": "Android Activity Guide",
+          "url": "https://developer.android.com/guide/components/activities/intro-activities"
+        }
+      ],
+      "officialDocumentationLink": "https://developer.android.com/guide/components/activities/intro-activities",
+      "difficulty": "BEGINNER",
+      "estimatedReadingTimeSeconds": 150,
+      "careerImpact": "High",
+      "tags": [
+        {
+          "name": "Android"
+        },
+        {
+          "name": "Architecture"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_kotlin_basics"
+      ],
+      "relatedTopicCodes": [
+        "tp_android"
+      ]
+    },
+    {
+      "id": "c_android_lifecycle",
+      "title": "Android Lifecycle & State Management",
+      "summary": "Lifecycle-aware components respond to system lifecycle state transitions (CREATED, STARTED, RESUMED, DESTROYED).",
+      "whyItMatters": "Prevents memory leaks, crashes during backgrounding, and unnecessary battery consumption.",
+      "realWorldExample": "Pausing camera preview or location tracking in onStop() and resuming in onStart().",
+      "commonMistakes": "Updating UI components after the view is destroyed.",
+      "whenNotToUse": "Relying on Activity destruction for normal state clearing.",
+      "bestPractice": "Use LifecycleObserver and lifecycle-aware coroutine scopes to bind background tasks safely.",
+      "reference": [
+        {
+          "title": "Handling Lifecycles",
+          "url": "https://developer.android.com/topic/libraries/architecture/lifecycle"
+        }
+      ],
+      "officialDocumentationLink": "https://developer.android.com/topic/libraries/architecture/lifecycle",
+      "difficulty": "JUNIOR",
+      "estimatedReadingTimeSeconds": 180,
+      "careerImpact": "CRITICAL",
+      "tags": [
+        {
+          "name": "Android"
+        },
+        {
+          "name": "Lifecycle"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_android_activity"
+      ],
+      "relatedTopicCodes": [
+        "tp_android"
+      ]
+    },
+    {
+      "id": "c_android_viewmodel",
+      "title": "ViewModel & Configuration Changes",
+      "summary": "ViewModel stores and manages UI-related data in a lifecycle-conscious way that survives screen rotations.",
+      "whyItMatters": "Eliminates data loss during screen rotation and configuration changes.",
+      "realWorldExample": "Maintaining search query results and form inputs when user rotates their phone.",
+      "commonMistakes": "Holding references to Context, Activity, or View inside a ViewModel (causing memory leaks).",
+      "whenNotToUse": "Storing persistent disk data that must survive process death (use Room or SavedStateHandle).",
+      "bestPractice": "Expose UI state as StateFlow and handle user actions through clear ViewModel methods.",
+      "reference": [
+        {
+          "title": "ViewModel Overview",
+          "url": "https://developer.android.com/topic/libraries/architecture/viewmodel"
+        }
+      ],
+      "officialDocumentationLink": "https://developer.android.com/topic/libraries/architecture/viewmodel",
+      "difficulty": "JUNIOR",
+      "estimatedReadingTimeSeconds": 180,
+      "careerImpact": "CRITICAL",
+      "tags": [
+        {
+          "name": "Android"
+        },
+        {
+          "name": "ViewModel"
+        },
+        {
+          "name": "Architecture"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_android_lifecycle"
+      ],
+      "relatedTopicCodes": [
+        "tp_android"
+      ]
+    },
+    {
+      "id": "c_android_compose_basics",
+      "title": "Jetpack Compose Declarative UI",
+      "summary": "Jetpack Compose is Android's modern toolkit for building native UI using declarative Kotlin functions.",
+      "whyItMatters": "Simplifies and accelerates UI development by eliminating XML layout and view-binding boilerplate.",
+      "realWorldExample": "Creating responsive list layouts using LazyColumn and Card composables.",
+      "commonMistakes": "Performing heavy calculations or side-effects directly inside composable functions.",
+      "whenNotToUse": "Triggering network calls inside a Composable without LaunchedEffect.",
+      "bestPractice": "Keep composable functions pure and stateless by passing data down and events up.",
+      "reference": [
+        {
+          "title": "Jetpack Compose Tutorial",
+          "url": "https://developer.android.com/jetpack/compose/tutorial"
+        }
+      ],
+      "officialDocumentationLink": "https://developer.android.com/jetpack/compose",
+      "difficulty": "JUNIOR",
+      "estimatedReadingTimeSeconds": 200,
+      "careerImpact": "CRITICAL",
+      "tags": [
+        {
+          "name": "Android"
+        },
+        {
+          "name": "Compose"
+        },
+        {
+          "name": "UI"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_android_viewmodel"
+      ],
+      "relatedTopicCodes": [
+        "tp_android"
+      ]
+    },
+    {
+      "id": "c_android_state_hoisting",
+      "title": "State Hoisting in Jetpack Compose",
+      "summary": "State hoisting is a pattern of moving state to a caller to make a composable stateless, reusable, and testable.",
+      "whyItMatters": "Stateless composables are easy to preview, unit test, and reuse across multiple screens.",
+      "realWorldExample": "TextField receiving value: String and onValueChange: (String) -> Unit from parent screen.",
+      "commonMistakes": "Hardcoding ViewModel calls inside deep leaf composables.",
+      "whenNotToUse": "Ephemeral animations that belong entirely to a single self-contained UI widget.",
+      "bestPractice": "Pass explicit state objects into composables and propagate interactions via event lambdas.",
+      "reference": [
+        {
+          "title": "State and Jetpack Compose",
+          "url": "https://developer.android.com/jetpack/compose/state"
+        }
+      ],
+      "officialDocumentationLink": "https://developer.android.com/jetpack/compose/state#state-hoisting",
+      "difficulty": "MID",
+      "estimatedReadingTimeSeconds": 180,
+      "careerImpact": "High",
+      "tags": [
+        {
+          "name": "Android"
+        },
+        {
+          "name": "Compose"
+        },
+        {
+          "name": "Architecture"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_android_compose_basics"
+      ],
+      "relatedTopicCodes": [
+        "tp_android"
+      ]
+    },
+    {
+      "id": "c_android_room",
+      "title": "Room Local Persistence",
+      "summary": "Room provides an abstraction layer over SQLite to allow fluent database access while leveraging compile-time SQL verification.",
+      "whyItMatters": "Guarantees compile-time safety for database queries and native coroutines/Flow integration.",
+      "realWorldExample": "Storing user profiles, offline learning packages, and cognitive memory records.",
+      "commonMistakes": "Executing database operations on the main thread (causing crashes).",
+      "whenNotToUse": "Storing simple key-value settings (use Jetpack DataStore instead).",
+      "bestPractice": "Define DAOs with suspend functions and return Flow<T> for reactive data streams.",
+      "reference": [
+        {
+          "title": "Room Persistence Library",
+          "url": "https://developer.android.com/training/data-storage/room"
+        }
+      ],
+      "officialDocumentationLink": "https://developer.android.com/training/data-storage/room",
+      "difficulty": "MID",
+      "estimatedReadingTimeSeconds": 210,
+      "careerImpact": "CRITICAL",
+      "tags": [
+        {
+          "name": "Android"
+        },
+        {
+          "name": "Room"
+        },
+        {
+          "name": "Database"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_kotlin_coroutines_basics"
+      ],
+      "relatedTopicCodes": [
+        "tp_android"
+      ]
+    },
+    {
+      "id": "c_android_di",
+      "title": "Dependency Injection with Hilt",
+      "summary": "Hilt is Android's standard dependency injection library built on top of Dagger to provide compile-time DI.",
+      "whyItMatters": "Decouples object creation from business logic, making code modular, maintainable, and easily mockable in tests.",
+      "realWorldExample": "Injecting repositories and domain use cases into ViewModels with @Inject constructor.",
+      "commonMistakes": "Creating manual singletons with static global variables instead of Hilt @Singleton components.",
+      "whenNotToUse": "Injecting framework Android components into pure domain models.",
+      "bestPractice": "Bind repository interfaces to implementations using @Binds within clean Hilt modules.",
+      "reference": [
+        {
+          "title": "Dependency Injection with Hilt",
+          "url": "https://developer.android.com/training/dependency-injection/hilt-android"
+        }
+      ],
+      "officialDocumentationLink": "https://developer.android.com/training/dependency-injection/hilt-android",
+      "difficulty": "SENIOR",
+      "estimatedReadingTimeSeconds": 240,
+      "careerImpact": "CRITICAL",
+      "tags": [
+        {
+          "name": "Android"
+        },
+        {
+          "name": "Hilt"
+        },
+        {
+          "name": "Architecture"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_android_viewmodel",
+        "c_android_room"
+      ],
+      "relatedTopicCodes": [
+        "tp_android",
+        "tp_architecture"
+      ]
+    },
+    {
+      "id": "c_arch_clean",
+      "title": "Clean Architecture Layer Isolation",
+      "summary": "Clean Architecture separates concerns into Presentation, Domain, and Data layers with strict inward dependency rules.",
+      "whyItMatters": "Core business logic remains completely independent of UI frameworks, databases, and third-party libraries.",
+      "realWorldExample": "Structuring an Android app with core:domain, core:storage, and feature modules.",
+      "commonMistakes": "Allowing domain layer entities to import Android SDK or Room database classes.",
+      "whenNotToUse": "Trivial one-screen utility scripts with zero business rules.",
+      "bestPractice": "Domain layer must contain only pure Kotlin code, business use cases, and repository interfaces.",
+      "reference": [
+        {
+          "title": "Guide to App Architecture",
+          "url": "https://developer.android.com/topic/architecture"
+        }
+      ],
+      "officialDocumentationLink": "https://developer.android.com/topic/architecture",
+      "difficulty": "MID",
+      "estimatedReadingTimeSeconds": 220,
+      "careerImpact": "CRITICAL",
+      "tags": [
+        {
+          "name": "Architecture"
+        },
+        {
+          "name": "CleanArchitecture"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_kotlin_data_classes"
+      ],
+      "relatedTopicCodes": [
+        "tp_architecture"
+      ]
+    },
+    {
+      "id": "c_arch_repository_pattern",
+      "title": "Repository Pattern & Single Source of Truth",
+      "summary": "The Repository pattern mediates between domain logic and data sources (local database, remote network API).",
+      "whyItMatters": "Provides a clean API for data access while encapsulating caching, network synchronization, and offline fallback.",
+      "realWorldExample": "KnowledgePackageRepository fetching from Room and synchronizing with remote updates.",
+      "commonMistakes": "Exposing raw Room Database Entities directly to ViewModels and UI Composables.",
+      "whenNotToUse": "Accessing hardware sensor streams directly from UI components without abstraction.",
+      "bestPractice": "Map data transfer entities to pure domain models inside the repository layer.",
+      "reference": [
+        {
+          "title": "Data Layer Architecture",
+          "url": "https://developer.android.com/topic/architecture/data-layer"
+        }
+      ],
+      "officialDocumentationLink": "https://developer.android.com/topic/architecture/data-layer",
+      "difficulty": "MID",
+      "estimatedReadingTimeSeconds": 180,
+      "careerImpact": "CRITICAL",
+      "tags": [
+        {
+          "name": "Architecture"
+        },
+        {
+          "name": "Repository"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_arch_clean"
+      ],
+      "relatedTopicCodes": [
+        "tp_architecture"
+      ]
+    },
+    {
+      "id": "c_arch_use_cases",
+      "title": "Use Cases & Domain Workflows",
+      "summary": "Use Cases (interactors) encapsulate single, reusable units of business logic in the domain layer.",
+      "whyItMatters": "Prevents fat ViewModels and enables straightforward testing of business workflows.",
+      "realWorldExample": "InitializeApplicationWorkflow, FinishReviewWorkflow, and BuildDailyFeedWorkflow.",
+      "commonMistakes": "Creating pass-through use cases that merely call repository without adding business logic.",
+      "whenNotToUse": "Direct UI formatting or presentation-specific transformations.",
+      "bestPractice": "Every use case should have a single public execute() or invoke() operator function.",
+      "reference": [
+        {
+          "title": "Domain Layer Architecture",
+          "url": "https://developer.android.com/topic/architecture/domain-layer"
+        }
+      ],
+      "officialDocumentationLink": "https://developer.android.com/topic/architecture/domain-layer",
+      "difficulty": "MID",
+      "estimatedReadingTimeSeconds": 180,
+      "careerImpact": "High",
+      "tags": [
+        {
+          "name": "Architecture"
+        },
+        {
+          "name": "Domain"
+        },
+        {
+          "name": "UseCases"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_arch_clean"
+      ],
+      "relatedTopicCodes": [
+        "tp_architecture"
+      ]
+    },
+    {
+      "id": "c_arch_solid_principles",
+      "title": "SOLID Principles in Kotlin",
+      "summary": "SOLID is an acronym for five design principles that make software designs understandable, flexible, and maintainable.",
+      "whyItMatters": "Protects codebases from architectural decay as feature complexity and team size grow.",
+      "realWorldExample": "Using Interface Segregation and Dependency Inversion to mock repositories in unit tests.",
+      "commonMistakes": "Violating Single Responsibility by stuffing business rules, network calls, and UI handlers into one class.",
+      "whenNotToUse": "Over-engineering simple one-off data scripts with dozens of unused interfaces.",
+      "bestPractice": "Depend on abstractions (interfaces) rather than concrete implementations.",
+      "reference": [
+        {
+          "title": "SOLID Design Principles",
+          "url": "https://en.wikipedia.org/wiki/SOLID"
+        }
+      ],
+      "officialDocumentationLink": "https://developer.android.com/topic/architecture",
+      "difficulty": "SENIOR",
+      "estimatedReadingTimeSeconds": 240,
+      "careerImpact": "CRITICAL",
+      "tags": [
+        {
+          "name": "Architecture"
+        },
+        {
+          "name": "SOLID"
+        },
+        {
+          "name": "DesignPatterns"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_arch_clean"
+      ],
+      "relatedTopicCodes": [
+        "tp_architecture"
+      ]
+    },
+    {
+      "id": "c_arch_modularization",
+      "title": "Multi-Module Android Architecture",
+      "summary": "Modularization divides a monolithic application codebase into loosely coupled, independent Gradle subprojects.",
+      "whyItMatters": "Improves build speed with parallel compilation, enforces architectural boundaries, and enables code reuse.",
+      "realWorldExample": "Separating app into :core:domain, :core:storage, :core:ui, and feature modules.",
+      "commonMistakes": "Creating circular dependencies between feature modules.",
+      "whenNotToUse": "Small prototype apps where multi-module overhead outweighs build benefits.",
+      "bestPractice": "Features should depend on shared core APIs, never directly on other feature implementation modules.",
+      "reference": [
+        {
+          "title": "Android Modularization Guide",
+          "url": "https://developer.android.com/topic/modularization"
+        }
+      ],
+      "officialDocumentationLink": "https://developer.android.com/topic/modularization",
+      "difficulty": "SENIOR",
+      "estimatedReadingTimeSeconds": 240,
+      "careerImpact": "CRITICAL",
+      "tags": [
+        {
+          "name": "Architecture"
+        },
+        {
+          "name": "Modularization"
+        },
+        {
+          "name": "Gradle"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_arch_clean"
+      ],
+      "relatedTopicCodes": [
+        "tp_architecture"
+      ]
+    },
+    {
+      "id": "c_arch_unit_testing",
+      "title": "Unit Testing with JUnit & MockK",
+      "summary": "Unit tests verify that individual units of source code function correctly in complete isolation from external frameworks.",
+      "whyItMatters": "Enables rapid refactoring, catches regressions instantly, and acts as living code documentation.",
+      "realWorldExample": "Testing InitializeApplicationWorkflow with deterministic fake repository doubles.",
+      "commonMistakes": "Writing brittle tests that test internal private implementation details instead of public behavior.",
+      "whenNotToUse": "Testing Android framework drawing and rendering (use UI screenshot testing instead).",
+      "bestPractice": "Follow Arrange-Act-Assert structure and use deterministic Dispatchers in coroutine tests.",
+      "reference": [
+        {
+          "title": "Test Apps on Android",
+          "url": "https://developer.android.com/training/testing"
+        }
+      ],
+      "officialDocumentationLink": "https://developer.android.com/training/testing/fundamentals",
+      "difficulty": "JUNIOR",
+      "estimatedReadingTimeSeconds": 180,
+      "careerImpact": "CRITICAL",
+      "tags": [
+        {
+          "name": "Testing"
+        },
+        {
+          "name": "JUnit"
+        },
+        {
+          "name": "MockK"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_kotlin_functions"
+      ],
+      "relatedTopicCodes": [
+        "tp_architecture"
+      ]
     }
   ],
   "units": [
@@ -56,6 +853,182 @@
       "quizId": "qz_kotlin_basics",
       "estimatedMinutes": 5,
       "topicCode": "tp_kotlin"
+    },
+    {
+      "id": "u_kotlin_val_var",
+      "title": "Variables & Immutability",
+      "cardId": "c_kotlin_val_var",
+      "quizId": "qz_kotlin_val_var",
+      "estimatedMinutes": 4,
+      "topicCode": "tp_kotlin"
+    },
+    {
+      "id": "u_kotlin_null_safety",
+      "title": "Null Safety in Kotlin",
+      "cardId": "c_kotlin_null_safety",
+      "quizId": "qz_kotlin_null_safety",
+      "estimatedMinutes": 5,
+      "topicCode": "tp_kotlin"
+    },
+    {
+      "id": "u_kotlin_functions",
+      "title": "Functions & Parameters",
+      "cardId": "c_kotlin_functions",
+      "quizId": "qz_kotlin_functions",
+      "estimatedMinutes": 5,
+      "topicCode": "tp_kotlin"
+    },
+    {
+      "id": "u_kotlin_collections",
+      "title": "Kotlin Collections",
+      "cardId": "c_kotlin_collections",
+      "quizId": "qz_kotlin_collections",
+      "estimatedMinutes": 5,
+      "topicCode": "tp_kotlin"
+    },
+    {
+      "id": "u_kotlin_data_classes",
+      "title": "Data Classes",
+      "cardId": "c_kotlin_data_classes",
+      "quizId": "qz_kotlin_data_classes",
+      "estimatedMinutes": 4,
+      "topicCode": "tp_kotlin"
+    },
+    {
+      "id": "u_kotlin_sealed_classes",
+      "title": "Sealed Classes & States",
+      "cardId": "c_kotlin_sealed_classes",
+      "quizId": "qz_kotlin_sealed_classes",
+      "estimatedMinutes": 6,
+      "topicCode": "tp_kotlin"
+    },
+    {
+      "id": "u_kotlin_extension_functions",
+      "title": "Extension Functions",
+      "cardId": "c_kotlin_extension_functions",
+      "quizId": "qz_kotlin_extension_functions",
+      "estimatedMinutes": 5,
+      "topicCode": "tp_kotlin"
+    },
+    {
+      "id": "u_kotlin_coroutines_basics",
+      "title": "Coroutines Fundamentals",
+      "cardId": "c_kotlin_coroutines_basics",
+      "quizId": "qz_kotlin_coroutines_basics",
+      "estimatedMinutes": 7,
+      "topicCode": "tp_kotlin"
+    },
+    {
+      "id": "u_kotlin_flow",
+      "title": "Reactive Flow Streams",
+      "cardId": "c_kotlin_flow",
+      "quizId": "qz_kotlin_flow",
+      "estimatedMinutes": 6,
+      "topicCode": "tp_kotlin"
+    },
+    {
+      "id": "u_android_activity",
+      "title": "Activity Architecture",
+      "cardId": "c_android_activity",
+      "quizId": "qz_android_activity",
+      "estimatedMinutes": 5,
+      "topicCode": "tp_android"
+    },
+    {
+      "id": "u_android_lifecycle",
+      "title": "Lifecycle Management",
+      "cardId": "c_android_lifecycle",
+      "quizId": "qz_android_lifecycle",
+      "estimatedMinutes": 6,
+      "topicCode": "tp_android"
+    },
+    {
+      "id": "u_android_viewmodel",
+      "title": "ViewModel State Retention",
+      "cardId": "c_android_viewmodel",
+      "quizId": "qz_android_viewmodel",
+      "estimatedMinutes": 6,
+      "topicCode": "tp_android"
+    },
+    {
+      "id": "u_android_compose_basics",
+      "title": "Jetpack Compose Basics",
+      "cardId": "c_android_compose_basics",
+      "quizId": "qz_android_compose_basics",
+      "estimatedMinutes": 6,
+      "topicCode": "tp_android"
+    },
+    {
+      "id": "u_android_state_hoisting",
+      "title": "State Hoisting Pattern",
+      "cardId": "c_android_state_hoisting",
+      "quizId": "qz_android_state_hoisting",
+      "estimatedMinutes": 5,
+      "topicCode": "tp_android"
+    },
+    {
+      "id": "u_android_room",
+      "title": "Room Database",
+      "cardId": "c_android_room",
+      "quizId": "qz_android_room",
+      "estimatedMinutes": 6,
+      "topicCode": "tp_android"
+    },
+    {
+      "id": "u_android_di",
+      "title": "Hilt Dependency Injection",
+      "cardId": "c_android_di",
+      "quizId": "qz_android_di",
+      "estimatedMinutes": 7,
+      "topicCode": "tp_android"
+    },
+    {
+      "id": "u_arch_clean",
+      "title": "Clean Architecture Principles",
+      "cardId": "c_arch_clean",
+      "quizId": "qz_arch_clean",
+      "estimatedMinutes": 6,
+      "topicCode": "tp_architecture"
+    },
+    {
+      "id": "u_arch_repository_pattern",
+      "title": "Repository Pattern",
+      "cardId": "c_arch_repository_pattern",
+      "quizId": "qz_arch_repository_pattern",
+      "estimatedMinutes": 5,
+      "topicCode": "tp_architecture"
+    },
+    {
+      "id": "u_arch_use_cases",
+      "title": "Domain Use Cases",
+      "cardId": "c_arch_use_cases",
+      "quizId": "qz_arch_use_cases",
+      "estimatedMinutes": 5,
+      "topicCode": "tp_architecture"
+    },
+    {
+      "id": "u_arch_solid_principles",
+      "title": "SOLID Principles",
+      "cardId": "c_arch_solid_principles",
+      "quizId": "qz_arch_solid_principles",
+      "estimatedMinutes": 7,
+      "topicCode": "tp_architecture"
+    },
+    {
+      "id": "u_arch_modularization",
+      "title": "Modular Architecture",
+      "cardId": "c_arch_modularization",
+      "quizId": "qz_arch_modularization",
+      "estimatedMinutes": 7,
+      "topicCode": "tp_architecture"
+    },
+    {
+      "id": "u_arch_unit_testing",
+      "title": "Unit Testing Fundamentals",
+      "cardId": "c_arch_unit_testing",
+      "quizId": "qz_arch_unit_testing",
+      "estimatedMinutes": 5,
+      "topicCode": "tp_architecture"
     }
   ],
   "quizzes": [
@@ -75,6 +1048,490 @@
             {
               "text": "var",
               "explanation": "Incorrect. var declares a mutable variable."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_kotlin_val_var",
+      "title": "Variables Quiz",
+      "targetDifficulty": "BEGINNER",
+      "questions": [
+        {
+          "id": "q_val_reassign",
+          "questionText": "Can a variable declared with val be reassigned after initialization?",
+          "options": [
+            {
+              "text": "No, val references are immutable once assigned",
+              "explanation": "Correct. val cannot be reassigned after initialization."
+            },
+            {
+              "text": "Yes, if it is inside a function",
+              "explanation": "Incorrect. val cannot be reassigned regardless of scope."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_kotlin_null_safety",
+      "title": "Null Safety Quiz",
+      "targetDifficulty": "BEGINNER",
+      "questions": [
+        {
+          "id": "q_safe_call",
+          "questionText": "Which operator safely calls a method only if the target reference is non-null?",
+          "options": [
+            {
+              "text": "?.",
+              "explanation": "Correct. The safe call operator (?.) returns null if receiver is null."
+            },
+            {
+              "text": "!!",
+              "explanation": "Incorrect. !! throws NullPointerException if the receiver is null."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_kotlin_functions",
+      "title": "Functions Quiz",
+      "targetDifficulty": "BEGINNER",
+      "questions": [
+        {
+          "id": "q_default_param",
+          "questionText": "What feature in Kotlin avoids creating multiple overloaded methods?",
+          "options": [
+            {
+              "text": "Default parameter values",
+              "explanation": "Correct. Default arguments allow callers to omit optional arguments."
+            },
+            {
+              "text": "Dynamic typing",
+              "explanation": "Incorrect. Kotlin is statically typed."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_kotlin_collections",
+      "title": "Collections Quiz",
+      "targetDifficulty": "JUNIOR",
+      "questions": [
+        {
+          "id": "q_list_mutability",
+          "questionText": "Is the standard Kotlin List<T> interface mutable by default?",
+          "options": [
+            {
+              "text": "No, List<T> is read-only; use MutableList<T> for mutation",
+              "explanation": "Correct. List<T> does not expose mutating methods like add() or remove()."
+            },
+            {
+              "text": "Yes, all Kotlin collections are mutable",
+              "explanation": "Incorrect. Kotlin separates read-only and mutable collection interfaces."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_kotlin_data_classes",
+      "title": "Data Classes Quiz",
+      "targetDifficulty": "JUNIOR",
+      "questions": [
+        {
+          "id": "q_data_class_copy",
+          "questionText": "Which generated method allows creating modified immutable copies of a data class?",
+          "options": [
+            {
+              "text": "copy()",
+              "explanation": "Correct. copy() creates a shallow clone with selectively updated fields."
+            },
+            {
+              "text": "clone()",
+              "explanation": "Incorrect. Kotlin data classes provide copy()."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_kotlin_sealed_classes",
+      "title": "Sealed Classes Quiz",
+      "targetDifficulty": "MID",
+      "questions": [
+        {
+          "id": "q_sealed_when",
+          "questionText": "Why do sealed classes enable exhaustive when expressions without an else branch?",
+          "options": [
+            {
+              "text": "The compiler knows all permitted subclasses at compile-time",
+              "explanation": "Correct. Sealed hierarchies are closed and fully verifiable by the compiler."
+            },
+            {
+              "text": "Sealed classes automatically implement Java Enums",
+              "explanation": "Incorrect. Sealed classes allow subclasses with distinct state."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_kotlin_extension_functions",
+      "title": "Extension Functions Quiz",
+      "targetDifficulty": "MID",
+      "questions": [
+        {
+          "id": "q_extension_dispatch",
+          "questionText": "How are Kotlin extension functions resolved under the hood?",
+          "options": [
+            {
+              "text": "Statically based on the declared receiver type",
+              "explanation": "Correct. Extension functions are compiled as static methods."
+            },
+            {
+              "text": "Dynamically using runtime reflection and byte-weaving",
+              "explanation": "Incorrect. Extensions are statically dispatched with zero reflection overhead."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_kotlin_coroutines_basics",
+      "title": "Coroutines Quiz",
+      "targetDifficulty": "MID",
+      "questions": [
+        {
+          "id": "q_coroutine_blocking",
+          "questionText": "Does calling a suspend function block the underlying thread?",
+          "options": [
+            {
+              "text": "No, it suspends execution without blocking the underlying thread",
+              "explanation": "Correct. Suspension frees the underlying thread to execute other tasks."
+            },
+            {
+              "text": "Yes, it puts the thread into a Thread.sleep state",
+              "explanation": "Incorrect. Coroutines are non-blocking."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_kotlin_flow",
+      "title": "Flow Quiz",
+      "targetDifficulty": "MID",
+      "questions": [
+        {
+          "id": "q_flow_nature",
+          "questionText": "By default, is a standard Kotlin Flow hot or cold?",
+          "options": [
+            {
+              "text": "Cold (does not produce values until collected)",
+              "explanation": "Correct. Flow blocks only start emitting when a collector begins."
+            },
+            {
+              "text": "Hot (emits values regardless of collectors)",
+              "explanation": "Incorrect. StateFlow and SharedFlow are hot, but standard Flow is cold."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_android_activity",
+      "title": "Activity Quiz",
+      "targetDifficulty": "BEGINNER",
+      "questions": [
+        {
+          "id": "q_single_activity",
+          "questionText": "In modern Jetpack Compose architecture, what is the role of MainActivity?",
+          "options": [
+            {
+              "text": "A lightweight entry point and window host for Compose screens",
+              "explanation": "Correct. Single-Activity pattern hosts the root composable tree."
+            },
+            {
+              "text": "Holding all business logic and database connections",
+              "explanation": "Incorrect. Business logic belongs in Domain Use Cases and ViewModels."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_android_lifecycle",
+      "title": "Lifecycle Quiz",
+      "targetDifficulty": "JUNIOR",
+      "questions": [
+        {
+          "id": "q_lifecycle_background",
+          "questionText": "Which lifecycle state indicates the app is in the foreground and interactive?",
+          "options": [
+            {
+              "text": "RESUMED",
+              "explanation": "Correct. In RESUMED state, the activity is in the foreground and has focus."
+            },
+            {
+              "text": "STOPPED",
+              "explanation": "Incorrect. STOPPED indicates the UI is no longer visible."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_android_viewmodel",
+      "title": "ViewModel Quiz",
+      "targetDifficulty": "JUNIOR",
+      "questions": [
+        {
+          "id": "q_viewmodel_rotation",
+          "questionText": "Does a Jetpack ViewModel survive screen rotation?",
+          "options": [
+            {
+              "text": "Yes, it is retained across configuration changes",
+              "explanation": "Correct. ViewModel is designed to retain UI state across configuration changes."
+            },
+            {
+              "text": "No, it is destroyed and recreated on every rotation",
+              "explanation": "Incorrect. ViewModels survive configuration changes."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_android_compose_basics",
+      "title": "Compose Quiz",
+      "targetDifficulty": "JUNIOR",
+      "questions": [
+        {
+          "id": "q_compose_recomposition",
+          "questionText": "What process updates the UI when Compose state changes?",
+          "options": [
+            {
+              "text": "Recomposition",
+              "explanation": "Correct. Compose calls the composable functions again with new data."
+            },
+            {
+              "text": "DOM re-rendering",
+              "explanation": "Incorrect. Recomposition is Jetpack Compose's update mechanism."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_android_state_hoisting",
+      "title": "State Hoisting Quiz",
+      "targetDifficulty": "MID",
+      "questions": [
+        {
+          "id": "q_hoisting_pattern",
+          "questionText": "In Compose state hoisting, what goes down and what goes up?",
+          "options": [
+            {
+              "text": "State goes down, events go up",
+              "explanation": "Correct. Parameters pass state down, callbacks pass events up."
+            },
+            {
+              "text": "Events go down, state goes up",
+              "explanation": "Incorrect. Unidirectional data flow passes state down and events up."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_android_room",
+      "title": "Room Quiz",
+      "targetDifficulty": "MID",
+      "questions": [
+        {
+          "id": "q_room_compile_check",
+          "questionText": "When does Room verify SQL queries written in @Query annotations?",
+          "options": [
+            {
+              "text": "At compile time",
+              "explanation": "Correct. Room validates SQL syntax and table columns during compilation."
+            },
+            {
+              "text": "Only at runtime when the query is first executed",
+              "explanation": "Incorrect. Compile-time verification is a key feature of Room."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_android_di",
+      "title": "Hilt Quiz",
+      "targetDifficulty": "SENIOR",
+      "questions": [
+        {
+          "id": "q_hilt_viewmodel",
+          "questionText": "Which annotation injects dependencies into an Android ViewModel using Hilt?",
+          "options": [
+            {
+              "text": "@HiltViewModel and @Inject constructor",
+              "explanation": "Correct. @HiltViewModel marks the ViewModel for Hilt injection."
+            },
+            {
+              "text": "@AndroidEntryPoint only",
+              "explanation": "Incorrect. @AndroidEntryPoint is for Activities, Fragments, and Views."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_arch_clean",
+      "title": "Clean Architecture Quiz",
+      "targetDifficulty": "MID",
+      "questions": [
+        {
+          "id": "q_clean_rule",
+          "questionText": "According to Clean Architecture, can the Domain layer depend on the Data or UI layer?",
+          "options": [
+            {
+              "text": "No, dependencies must point inward toward the Domain layer",
+              "explanation": "Correct. Domain is completely independent of external layers."
+            },
+            {
+              "text": "Yes, Domain can freely import Room DAOs and Composables",
+              "explanation": "Incorrect. Violates Clean Architecture dependency rule."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_arch_repository_pattern",
+      "title": "Repository Pattern Quiz",
+      "targetDifficulty": "MID",
+      "questions": [
+        {
+          "id": "q_repo_purpose",
+          "questionText": "What is the primary responsibility of a Repository in Clean Architecture?",
+          "options": [
+            {
+              "text": "To abstract data sources and provide a single source of truth",
+              "explanation": "Correct. Repositories mediate between domain workflows and storage/network."
+            },
+            {
+              "text": "To render UI elements and handle touch events",
+              "explanation": "Incorrect. UI rendering belongs in the presentation layer."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_arch_use_cases",
+      "title": "Use Cases Quiz",
+      "targetDifficulty": "MID",
+      "questions": [
+        {
+          "id": "q_use_case_scope",
+          "questionText": "How many business workflows should a single Use Case class encapsulate?",
+          "options": [
+            {
+              "text": "Exactly one discrete business action (Single Responsibility)",
+              "explanation": "Correct. Use cases represent atomic business operations."
+            },
+            {
+              "text": "All operations for an entire database table",
+              "explanation": "Incorrect. That describes a DAO or Repository."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_arch_solid_principles",
+      "title": "SOLID Quiz",
+      "targetDifficulty": "SENIOR",
+      "questions": [
+        {
+          "id": "q_dip_principle",
+          "questionText": "What does the Dependency Inversion Principle (D in SOLID) state?",
+          "options": [
+            {
+              "text": "High-level modules should depend on abstractions, not concrete details",
+              "explanation": "Correct. Both high and low level modules must depend on abstractions."
+            },
+            {
+              "text": "All classes must be declared as static singletons",
+              "explanation": "Incorrect. Static singletons increase tight coupling."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_arch_modularization",
+      "title": "Modularization Quiz",
+      "targetDifficulty": "SENIOR",
+      "questions": [
+        {
+          "id": "q_mod_benefit",
+          "questionText": "What is a major engineering benefit of modularizing an Android codebase?",
+          "options": [
+            {
+              "text": "Faster incremental builds and strict architectural encapsulation",
+              "explanation": "Correct. Gradle can build independent modules in parallel."
+            },
+            {
+              "text": "Eliminating all unit testing requirements",
+              "explanation": "Incorrect. Modularization makes unit testing even easier."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_arch_unit_testing",
+      "title": "Unit Testing Quiz",
+      "targetDifficulty": "JUNIOR",
+      "questions": [
+        {
+          "id": "q_unit_isolation",
+          "questionText": "Why are unit tests run on the local JVM instead of a real Android device?",
+          "options": [
+            {
+              "text": "For fast execution speed without emulator/device startup overhead",
+              "explanation": "Correct. JVM unit tests execute in milliseconds."
+            },
+            {
+              "text": "Because Kotlin code cannot be executed on Android",
+              "explanation": "Incorrect. Android runs Kotlin natively."
             }
           ],
           "correctOptionIndex": 0

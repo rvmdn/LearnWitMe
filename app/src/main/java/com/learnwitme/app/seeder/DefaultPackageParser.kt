@@ -12,6 +12,10 @@ object DefaultPackageParser {
         } catch (e: Exception) {
             context.assets.open("default-package.json").use { it.bufferedReader().readText() }
         }
+        return parse(jsonString)
+    }
+
+    fun parse(jsonString: String): PackageManifest {
         val root = JSONObject(jsonString)
 
         val metadataObj = root.getJSONObject("metadata")

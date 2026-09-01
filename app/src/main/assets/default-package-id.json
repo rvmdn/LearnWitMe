@@ -1,8 +1,8 @@
 {
   "metadata": {
     "id": "pkg_default_id",
-    "title": "Kurikulum Dasar Kotlin",
-    "description": "Pelajari dasar-dasar pemrograman Kotlin modern.",
+    "title": "Kurikulum Rekayasa Kotlin & Android",
+    "description": "Fondasi komprehensif untuk penguasaan Kotlin, Android modern, dan Clean Architecture.",
     "version": {
       "major": 1,
       "minor": 0,
@@ -13,8 +13,18 @@
   "topics": [
     {
       "code": "tp_kotlin",
-      "name": "Dasar Kotlin",
-      "description": "Pelajari variabel Kotlin, struktur kontrol, dan fungsi dasar."
+      "name": "Dasar Pemrograman Kotlin",
+      "description": "Kuasai pemrograman inti Kotlin, sintaks bahasa modern, dan coroutines."
+    },
+    {
+      "code": "tp_android",
+      "name": "Dasar Pengembangan Android",
+      "description": "Bangun aplikasi Android yang andal dengan Jetpack Compose, Lifecycle, dan Room."
+    },
+    {
+      "code": "tp_architecture",
+      "name": "Arsitektur & Rekayasa Perangkat Lunak",
+      "description": "Rancang aplikasi modular, mudah dipelihara, dan dapat diuji menggunakan Clean Architecture."
     }
   ],
   "cards": [
@@ -46,6 +56,793 @@
       "relatedTopicCodes": [
         "tp_kotlin"
       ]
+    },
+    {
+      "id": "c_kotlin_val_var",
+      "title": "Variabel & Imutabilitas",
+      "summary": "Kotlin membedakan referensi read-only (val) dari variabel yang dapat diubah nilainya (var).",
+      "whyItMatters": "Imutabilitas mencegah efek samping (side-effects), kondisi balapan (race conditions), dan mutasi state yang tidak disengaja.",
+      "realWorldExample": "Mendeklarasikan parameter konfigurasi, model domain, dan state UI sebagai val.",
+      "commonMistakes": "Menggunakan var secara default karena kebiasaan dari bahasa pemrograman lain.",
+      "whenNotToUse": "Pencatat iterasi loop lokal atau akumulator mutable internal untuk kebutuhan performa tinggi.",
+      "bestPractice": "Selalu deklarasikan variabel dengan val; ubah menjadi var hanya jika penugasan ulang nilai mutlak diperlukan.",
+      "reference": [
+        {
+          "title": "Tipe Data Dasar Kotlin",
+          "url": "https://kotlinlang.org/docs/basic-types.html"
+        }
+      ],
+      "officialDocumentationLink": "https://kotlinlang.org/docs/basic-syntax.html#variables",
+      "difficulty": "BEGINNER",
+      "estimatedReadingTimeSeconds": 120,
+      "careerImpact": "Tinggi",
+      "tags": [
+        {
+          "name": "Kotlin"
+        },
+        {
+          "name": "Imutabilitas"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_kotlin_basics"
+      ],
+      "relatedTopicCodes": [
+        "tp_kotlin"
+      ]
+    },
+    {
+      "id": "c_kotlin_null_safety",
+      "title": "Null Safety & Nullable Types",
+      "summary": "Sistem tipe Kotlin membedakan tipe yang dapat bernilai null (Tipe?) dari tipe non-null (Tipe).",
+      "whyItMatters": "Mencegah NullPointerException (Kesalahan Bernilai Miliar Dolar) langsung pada saat kompilasi.",
+      "realWorldExample": "Menangani kolom respon API jaringan yang bersifat opsional tanpa menyebabkan aplikasi crash.",
+      "commonMistakes": "Menggunakan operator double-bang (!!) secara berlebihan alih-alih safe call (?.) atau Elvis (?:).",
+      "whenNotToUse": "Memaksa konversi non-null (!!) pada nilai yang bisa null saat terjadi kegagalan koneksi jaringan.",
+      "bestPractice": "Gunakan operator pemanggilan aman (?.) dan Elvis operator (?:) untuk memberikan nilai default yang aman.",
+      "reference": [
+        {
+          "title": "Null Safety Kotlin",
+          "url": "https://kotlinlang.org/docs/null-safety.html"
+        }
+      ],
+      "officialDocumentationLink": "https://kotlinlang.org/docs/null-safety.html",
+      "difficulty": "BEGINNER",
+      "estimatedReadingTimeSeconds": 180,
+      "careerImpact": "KRITIS",
+      "tags": [
+        {
+          "name": "Kotlin"
+        },
+        {
+          "name": "NullSafety"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_kotlin_val_var"
+      ],
+      "relatedTopicCodes": [
+        "tp_kotlin"
+      ]
+    },
+    {
+      "id": "c_kotlin_functions",
+      "title": "Fungsi & Argumen Default",
+      "summary": "Fungsi di Kotlin mendukung named arguments, nilai parameter default, dan sintaks ekspresi tunggal (single-expression).",
+      "whyItMatters": "Mengurangi secara signifikan kebutuhan kode boilerplate untuk overload fungsi dan konstruktor.",
+      "realWorldExample": "Membuat fungsi klien API dengan parameter timeout dan retry opsional.",
+      "commonMistakes": "Membuat banyak fungsi overload manual padahal cukup menggunakan nilai parameter default.",
+      "whenNotToUse": "Ketika diakses dari kode Java lama tanpa anotasi @JvmOverloads.",
+      "bestPractice": "Gunakan single-expression function untuk fungsi sederhana satu baris.",
+      "reference": [
+        {
+          "title": "Dokumentasi Fungsi Kotlin",
+          "url": "https://kotlinlang.org/docs/functions.html"
+        }
+      ],
+      "officialDocumentationLink": "https://kotlinlang.org/docs/functions.html",
+      "difficulty": "BEGINNER",
+      "estimatedReadingTimeSeconds": 150,
+      "careerImpact": "Tinggi",
+      "tags": [
+        {
+          "name": "Kotlin"
+        },
+        {
+          "name": "Fungsi"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_kotlin_basics"
+      ],
+      "relatedTopicCodes": [
+        "tp_kotlin"
+      ]
+    },
+    {
+      "id": "c_kotlin_collections",
+      "title": "Koleksi: List, Set, dan Map",
+      "summary": "Kotlin memisahkan interface koleksi read-only (List) dari varian yang dapat dimutasi (MutableList).",
+      "whyItMatters": "Menjaga integritas data dengan mengekspos representasi unmodifiable dari Repository dan ViewModel.",
+      "realWorldExample": "Mengekspos StateFlow<List<Item>> ke UI sambil menjaga MutableStateFlow tetap privat.",
+      "commonMistakes": "Melakukan casting List ke MutableList secara paksa alih-alih membuat salinan defensif.",
+      "whenNotToUse": "Mengekspos koleksi mutable secara langsung melintasi batasan arsitektur modul.",
+      "bestPractice": "Selalu gunakan interface koleksi read-only pada fungsi publik dan properti kelas.",
+      "reference": [
+        {
+          "title": "Gambaran Umum Koleksi Kotlin",
+          "url": "https://kotlinlang.org/docs/collections-overview.html"
+        }
+      ],
+      "officialDocumentationLink": "https://kotlinlang.org/docs/collections-overview.html",
+      "difficulty": "JUNIOR",
+      "estimatedReadingTimeSeconds": 180,
+      "careerImpact": "Tinggi",
+      "tags": [
+        {
+          "name": "Kotlin"
+        },
+        {
+          "name": "Koleksi"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_kotlin_functions"
+      ],
+      "relatedTopicCodes": [
+        "tp_kotlin"
+      ]
+    },
+    {
+      "id": "c_kotlin_data_classes",
+      "title": "Data Classes & Imutabilitas Nilai",
+      "summary": "Data class secara otomatis mengenerate fungsi equals(), hashCode(), toString(), componentN(), dan copy().",
+      "whyItMatters": "Mempermudah pembuatan Value Objects, DTO, dan state pembungkus UI yang imutabel.",
+      "realWorldExample": "Merepresentasikan model UserProfile, PaymentIntent, atau ScreenState.",
+      "commonMistakes": "Mendeklarasikan properti mutable (var) di dalam data class.",
+      "whenNotToUse": "Entity dengan state mutable internal atau hierarki pewarisan yang kompleks.",
+      "bestPractice": "Jadikan semua properti konstruktor data class sebagai val dan gunakan copy() untuk modifikasi data.",
+      "reference": [
+        {
+          "title": "Data Classes di Kotlin",
+          "url": "https://kotlinlang.org/docs/data-classes.html"
+        }
+      ],
+      "officialDocumentationLink": "https://kotlinlang.org/docs/data-classes.html",
+      "difficulty": "JUNIOR",
+      "estimatedReadingTimeSeconds": 150,
+      "careerImpact": "Tinggi",
+      "tags": [
+        {
+          "name": "Kotlin"
+        },
+        {
+          "name": "DataClasses"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_kotlin_collections"
+      ],
+      "relatedTopicCodes": [
+        "tp_kotlin"
+      ]
+    },
+    {
+      "id": "c_kotlin_sealed_classes",
+      "title": "Sealed Classes & Pemodelan State Lengkap",
+      "summary": "Sealed class merepresentasikan hierarki kelas terbatas di mana semua subclass diketahui pada saat kompilasi.",
+      "whyItMatters": "Memungkinkan ekspresi when yang exhaustive (lengkap) tanpa membutuhkan percabangan else yang rawan bug.",
+      "realWorldExample": "Memodelkan state UI: sealed interface UiState { Loading, Success, Error }.",
+      "commonMistakes": "Menambahkan cabang else pada ekspresi when sealed class, sehingga kehilangan keamanan saat ada state baru.",
+      "whenNotToUse": "Polimorfisme terbuka di mana modul pihak ketiga harus dapat membuat subclass secara dinamis.",
+      "bestPractice": "Gunakan sealed interface untuk memodelkan domain event, UI state, dan hasil operasi.",
+      "reference": [
+        {
+          "title": "Sealed Classes Kotlin",
+          "url": "https://kotlinlang.org/docs/sealed-classes.html"
+        }
+      ],
+      "officialDocumentationLink": "https://kotlinlang.org/docs/sealed-classes.html",
+      "difficulty": "MID",
+      "estimatedReadingTimeSeconds": 180,
+      "careerImpact": "KRITIS",
+      "tags": [
+        {
+          "name": "Kotlin"
+        },
+        {
+          "name": "SealedClasses"
+        },
+        {
+          "name": "Arsitektur"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_kotlin_data_classes"
+      ],
+      "relatedTopicCodes": [
+        "tp_kotlin",
+        "tp_architecture"
+      ]
+    },
+    {
+      "id": "c_kotlin_extension_functions",
+      "title": "Extension Functions",
+      "summary": "Extension function memperluas kemampuan sebuah kelas tanpa harus mewarisi atau mengubah kode kelas aslinya.",
+      "whyItMatters": "Menyediakan API yang mudah dibaca dan fasih tanpa mengotori helper class.",
+      "realWorldExample": "Mengonversi model domain ke UI view model: fun User.toUiState(): UserUiState.",
+      "commonMistakes": "Membuat extension function berlebihan pada tipe standar (seperti String/Int) dengan nama yang membingungkan.",
+      "whenNotToUse": "Mencoba mengakses member privat atau terproteksi dari kelas penerima (receiver class).",
+      "bestPractice": "Batasi cakupan ekstensi sesuai domain dan kelompokkan dalam file top-level yang kohesif.",
+      "reference": [
+        {
+          "title": "Extension Functions Kotlin",
+          "url": "https://kotlinlang.org/docs/extensions.html"
+        }
+      ],
+      "officialDocumentationLink": "https://kotlinlang.org/docs/extensions.html",
+      "difficulty": "MID",
+      "estimatedReadingTimeSeconds": 150,
+      "careerImpact": "Tinggi",
+      "tags": [
+        {
+          "name": "Kotlin"
+        },
+        {
+          "name": "Extensions"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_kotlin_functions"
+      ],
+      "relatedTopicCodes": [
+        "tp_kotlin"
+      ]
+    },
+    {
+      "id": "c_kotlin_coroutines_basics",
+      "title": "Coroutines & Structured Concurrency",
+      "summary": "Coroutines menyediakan eksekusi asinkronus ringan dan non-blocking yang dikelola oleh scope dan dispatcher.",
+      "whyItMatters": "Mencegah crash ANR (Application Not Responding) dengan memindahkan tugas berat dari Main thread.",
+      "realWorldExample": "Menjalankan query database dan pemanggilan API jaringan menggunakan fungsi suspend.",
+      "commonMistakes": "Meluncurkan coroutine dengan GlobalScope yang tidak terikat siklus hidup alih-alih viewModelScope.",
+      "whenNotToUse": "Tugas CPU-bound berat tanpa beralih ke Dispatchers.Default.",
+      "bestPractice": "Selalu terapkan structured concurrency dengan mengikat siklus hidup coroutine ke scope komponen terkait.",
+      "reference": [
+        {
+          "title": "Panduan Coroutines Kotlin",
+          "url": "https://kotlinlang.org/docs/coroutines-overview.html"
+        }
+      ],
+      "officialDocumentationLink": "https://kotlinlang.org/docs/coroutines-overview.html",
+      "difficulty": "MID",
+      "estimatedReadingTimeSeconds": 240,
+      "careerImpact": "KRITIS",
+      "tags": [
+        {
+          "name": "Kotlin"
+        },
+        {
+          "name": "Coroutines"
+        },
+        {
+          "name": "Konkurensi"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_kotlin_functions"
+      ],
+      "relatedTopicCodes": [
+        "tp_kotlin"
+      ]
+    },
+    {
+      "id": "c_kotlin_flow",
+      "title": "Kotlin Flow & Stream Reaktif",
+      "summary": "Flow adalah stream asinkronus dingin (cold stream) yang memancarkan nilai secara berurutan sesuai prinsip reactive stream.",
+      "whyItMatters": "Memungkinkan perambatan data reaktif dari Room/Network langsung ke UI Compose secara konsisten.",
+      "realWorldExample": "Mengalirkan hasil query database real-time ke pengumpul state di UI.",
+      "commonMistakes": "Mengumpulkan Flow dingin langsung di Compose tanpa repeatOnLifecycle atau collectAsStateWithLifecycle.",
+      "whenNotToUse": "Permintaan data satu kali (one-shot request) yang cukup menggunakan fungsi suspend biasa.",
+      "bestPractice": "Gunakan StateFlow untuk pemegang state dan SharedFlow untuk event satu kali seperti navigasi.",
+      "reference": [
+        {
+          "title": "Dokumentasi Kotlin Flow",
+          "url": "https://kotlinlang.org/docs/flow.html"
+        }
+      ],
+      "officialDocumentationLink": "https://kotlinlang.org/docs/flow.html",
+      "difficulty": "MID",
+      "estimatedReadingTimeSeconds": 210,
+      "careerImpact": "KRITIS",
+      "tags": [
+        {
+          "name": "Kotlin"
+        },
+        {
+          "name": "Flow"
+        },
+        {
+          "name": "Reaktif"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_kotlin_coroutines_basics"
+      ],
+      "relatedTopicCodes": [
+        "tp_kotlin"
+      ]
+    },
+    {
+      "id": "c_android_activity",
+      "title": "Activity & Single-Activity Architecture",
+      "summary": "Activity adalah titik masuk interaksi pengguna yang berfungsi sebagai jendela host pada aplikasi Android modern.",
+      "whyItMatters": "Pengembangan Android modern mengadopsi Single-Activity Architecture yang meng-host layar Jetpack Compose.",
+      "realWorldExample": "MainActivity yang berfungsi sebagai entry point dan mengatur konten Compose.",
+      "commonMistakes": "Menaruh logika bisnis, akses database, atau state management di dalam kelas Activity.",
+      "whenNotToUse": "Membuat Activity terpisah yang berat untuk setiap layar individual.",
+      "bestPractice": "Jaga Activity tetap ramping: inisialisasi Hilt, tema, dan host Compose Navigation utama.",
+      "reference": [
+        {
+          "title": "Panduan Activity Android",
+          "url": "https://developer.android.com/guide/components/activities/intro-activities"
+        }
+      ],
+      "officialDocumentationLink": "https://developer.android.com/guide/components/activities/intro-activities",
+      "difficulty": "BEGINNER",
+      "estimatedReadingTimeSeconds": 150,
+      "careerImpact": "Tinggi",
+      "tags": [
+        {
+          "name": "Android"
+        },
+        {
+          "name": "Arsitektur"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_kotlin_basics"
+      ],
+      "relatedTopicCodes": [
+        "tp_android"
+      ]
+    },
+    {
+      "id": "c_android_lifecycle",
+      "title": "Android Lifecycle & Manajemen State",
+      "summary": "Komponen lifecycle-aware merespons transisi status siklus hidup sistem (CREATED, STARTED, RESUMED, DESTROYED).",
+      "whyItMatters": "Mencegah kebocoran memori (memory leaks), crash saat aplikasi di latar belakang, dan pemborosan baterai.",
+      "realWorldExample": "Menghentikan sementara preview kamera atau pelacakan lokasi di onStop() dan melanjutkannya di onStart().",
+      "commonMistakes": "Memperbarui komponen UI setelah view dihancurkan (destroyed).",
+      "whenNotToUse": "Mengandalkan penghancuran Activity untuk membersihkan state bisnis normal.",
+      "bestPractice": "Gunakan LifecycleObserver dan coroutine scope yang peka siklus hidup untuk mengikat tugas latar belakang.",
+      "reference": [
+        {
+          "title": "Menangani Siklus Hidup",
+          "url": "https://developer.android.com/topic/libraries/architecture/lifecycle"
+        }
+      ],
+      "officialDocumentationLink": "https://developer.android.com/topic/libraries/architecture/lifecycle",
+      "difficulty": "JUNIOR",
+      "estimatedReadingTimeSeconds": 180,
+      "careerImpact": "KRITIS",
+      "tags": [
+        {
+          "name": "Android"
+        },
+        {
+          "name": "Lifecycle"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_android_activity"
+      ],
+      "relatedTopicCodes": [
+        "tp_android"
+      ]
+    },
+    {
+      "id": "c_android_viewmodel",
+      "title": "ViewModel & Perubahan Konfigurasi",
+      "summary": "ViewModel menyimpan dan mengelola data UI dengan cara yang peka siklus hidup serta bertahan dari rotasi layar.",
+      "whyItMatters": "Mencegah hilangnya data UI saat terjadi rotasi layar atau perubahan konfigurasi perangkat.",
+      "realWorldExample": "Mempertahankan hasil pencarian dan input form saat pengguna memutar posisi ponsel.",
+      "commonMistakes": "Menyimpan referensi Context, Activity, atau View di dalam ViewModel (menyebabkan memory leak).",
+      "whenNotToUse": "Menyimpan data persisten disk yang harus bertahan setelah proses aplikasi dimatikan sistem (gunakan Room).",
+      "bestPractice": "Ekspos state UI sebagai StateFlow dan tangani aksi pengguna melalui fungsi ViewModel yang jelas.",
+      "reference": [
+        {
+          "title": "Ringkasan ViewModel",
+          "url": "https://developer.android.com/topic/libraries/architecture/viewmodel"
+        }
+      ],
+      "officialDocumentationLink": "https://developer.android.com/topic/libraries/architecture/viewmodel",
+      "difficulty": "JUNIOR",
+      "estimatedReadingTimeSeconds": 180,
+      "careerImpact": "KRITIS",
+      "tags": [
+        {
+          "name": "Android"
+        },
+        {
+          "name": "ViewModel"
+        },
+        {
+          "name": "Arsitektur"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_android_lifecycle"
+      ],
+      "relatedTopicCodes": [
+        "tp_android"
+      ]
+    },
+    {
+      "id": "c_android_compose_basics",
+      "title": "Jetpack Compose Declarative UI",
+      "summary": "Jetpack Compose adalah toolkit modern Android untuk membangun UI native menggunakan fungsi deklaratif Kotlin.",
+      "whyItMatters": "Mempercepat pengembangan UI dengan menghilangkan kerumitan XML layout dan view binding.",
+      "realWorldExample": "Membuat layout daftar responsif menggunakan composable LazyColumn dan Card.",
+      "commonMistakes": "Menjalankan kalkulasi berat atau side-effect langsung di dalam fungsi composable.",
+      "whenNotToUse": "Memanggil API jaringan di dalam Composable tanpa membungkusnya dalam LaunchedEffect.",
+      "bestPractice": "Jaga fungsi composable tetap murni dan stateless dengan mengalirkan data ke bawah dan event ke atas.",
+      "reference": [
+        {
+          "title": "Tutorial Jetpack Compose",
+          "url": "https://developer.android.com/jetpack/compose/tutorial"
+        }
+      ],
+      "officialDocumentationLink": "https://developer.android.com/jetpack/compose",
+      "difficulty": "JUNIOR",
+      "estimatedReadingTimeSeconds": 200,
+      "careerImpact": "KRITIS",
+      "tags": [
+        {
+          "name": "Android"
+        },
+        {
+          "name": "Compose"
+        },
+        {
+          "name": "UI"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_android_viewmodel"
+      ],
+      "relatedTopicCodes": [
+        "tp_android"
+      ]
+    },
+    {
+      "id": "c_android_state_hoisting",
+      "title": "State Hoisting di Jetpack Compose",
+      "summary": "State hoisting adalah pola memindahkan state ke pemanggil (caller) agar composable menjadi stateless, reusable, dan testable.",
+      "whyItMatters": "Composable stateless sangat mudah diuji, dipratinjau di IDE, dan digunakan kembali di banyak layar.",
+      "realWorldExample": "Komponen TextField menerima value: String dan onValueChange: (String) -> Unit dari layar induk.",
+      "commonMistakes": "Menghubungkan ViewModel secara langsung di dalam composable daun (leaf components) terdalam.",
+      "whenNotToUse": "Animasi efemeral yang murni milik satu widget UI tertutup.",
+      "bestPractice": "Kirimkan objek state eksplisit ke composable dan teruskan interaksi melalui callback lambda event.",
+      "reference": [
+        {
+          "title": "State dan Jetpack Compose",
+          "url": "https://developer.android.com/jetpack/compose/state"
+        }
+      ],
+      "officialDocumentationLink": "https://developer.android.com/jetpack/compose/state#state-hoisting",
+      "difficulty": "MID",
+      "estimatedReadingTimeSeconds": 180,
+      "careerImpact": "Tinggi",
+      "tags": [
+        {
+          "name": "Android"
+        },
+        {
+          "name": "Compose"
+        },
+        {
+          "name": "Arsitektur"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_android_compose_basics"
+      ],
+      "relatedTopicCodes": [
+        "tp_android"
+      ]
+    },
+    {
+      "id": "c_android_room",
+      "title": "Persistensi Lokal Room Database",
+      "summary": "Room menyediakan lapisan abstraksi di atas SQLite untuk akses database yang fasih dengan verifikasi SQL waktu-kompilasi.",
+      "whyItMatters": "Menjamin keamanan query waktu kompilasi dan integrasi native dengan Coroutines/Flow.",
+      "realWorldExample": "Menyimpan profil pengguna, paket materi offline, dan rekaman memori belajar.",
+      "commonMistakes": "Menjalankan operasi database di main UI thread (menyebabkan crash aplikasi).",
+      "whenNotToUse": "Menyimpan pengaturan sederhana key-value (gunakan Jetpack DataStore).",
+      "bestPractice": "Definisikan DAO dengan fungsi suspend dan kembalikan Flow<T> untuk data reaktif.",
+      "reference": [
+        {
+          "title": "Library Persistensi Room",
+          "url": "https://developer.android.com/training/data-storage/room"
+        }
+      ],
+      "officialDocumentationLink": "https://developer.android.com/training/data-storage/room",
+      "difficulty": "MID",
+      "estimatedReadingTimeSeconds": 210,
+      "careerImpact": "KRITIS",
+      "tags": [
+        {
+          "name": "Android"
+        },
+        {
+          "name": "Room"
+        },
+        {
+          "name": "Database"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_kotlin_coroutines_basics"
+      ],
+      "relatedTopicCodes": [
+        "tp_android"
+      ]
+    },
+    {
+      "id": "c_android_di",
+      "title": "Dependency Injection dengan Hilt",
+      "summary": "Hilt adalah library standar dependency injection Android di atas Dagger untuk menyediakan DI waktu-kompilasi.",
+      "whyItMatters": "Memisahkan pembuatan objek dari logika bisnis, menjadikan kode modular dan mudah di-mock dalam unit test.",
+      "realWorldExample": "Menginjeksi repository dan domain use case ke dalam ViewModel dengan @Inject constructor.",
+      "commonMistakes": "Membuat singleton manual dengan variabel statis global alih-alih komponen @Singleton Hilt.",
+      "whenNotToUse": "Menginjeksi komponen framework Android ke dalam pure domain model.",
+      "bestPractice": "Gunakan @Binds untuk menghubungkan interface repository ke implementasinya di dalam modul Hilt.",
+      "reference": [
+        {
+          "title": "Dependency Injection dengan Hilt",
+          "url": "https://developer.android.com/training/dependency-injection/hilt-android"
+        }
+      ],
+      "officialDocumentationLink": "https://developer.android.com/training/dependency-injection/hilt-android",
+      "difficulty": "SENIOR",
+      "estimatedReadingTimeSeconds": 240,
+      "careerImpact": "KRITIS",
+      "tags": [
+        {
+          "name": "Android"
+        },
+        {
+          "name": "Hilt"
+        },
+        {
+          "name": "Arsitektur"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_android_viewmodel",
+        "c_android_room"
+      ],
+      "relatedTopicCodes": [
+        "tp_android",
+        "tp_architecture"
+      ]
+    },
+    {
+      "id": "c_arch_clean",
+      "title": "Isolasi Layer Clean Architecture",
+      "summary": "Clean Architecture membagi tanggung jawab ke dalam Presentation, Domain, dan Data dengan aturan dependensi ke dalam.",
+      "whyItMatters": "Logika bisnis inti tetap murni dan independen dari framework UI, database, dan library eksternal.",
+      "realWorldExample": "Menyusun struktur aplikasi Android dengan modul core:domain, core:storage, dan modul feature.",
+      "commonMistakes": "Membiarkan entity domain mengimpor class Android SDK atau entity database Room.",
+      "whenNotToUse": "Skrip prototipe kecil satu layar yang tidak memiliki aturan bisnis nyata.",
+      "bestPractice": "Layer domain hanya boleh berisi kode Kotlin murni, business use case, dan interface repository.",
+      "reference": [
+        {
+          "title": "Panduan Arsitektur Aplikasi",
+          "url": "https://developer.android.com/topic/architecture"
+        }
+      ],
+      "officialDocumentationLink": "https://developer.android.com/topic/architecture",
+      "difficulty": "MID",
+      "estimatedReadingTimeSeconds": 220,
+      "careerImpact": "KRITIS",
+      "tags": [
+        {
+          "name": "Arsitektur"
+        },
+        {
+          "name": "CleanArchitecture"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_kotlin_data_classes"
+      ],
+      "relatedTopicCodes": [
+        "tp_architecture"
+      ]
+    },
+    {
+      "id": "c_arch_repository_pattern",
+      "title": "Repository Pattern & Sumber Kebenaran Tunggal",
+      "summary": "Pola Repository menjembatani domain logic dengan sumber data (database lokal, REST API jaringan).",
+      "whyItMatters": "Menyediakan API bersih untuk akses data sambil mengenkapsulasi caching, sinkronisasi, dan fallback offline.",
+      "realWorldExample": "KnowledgePackageRepository mengambil dari Room dan menyinkronkan pembaruan jarak jauh.",
+      "commonMistakes": "Mengekspos Entity database Room mentah langsung ke ViewModel dan UI Composable.",
+      "whenNotToUse": "Mengakses stream hardware sensor langsung dari UI tanpa abstraksi.",
+      "bestPractice": "Lakukan pemetaan (mapping) entity database ke domain model murni di dalam layer repository.",
+      "reference": [
+        {
+          "title": "Arsitektur Data Layer",
+          "url": "https://developer.android.com/topic/architecture/data-layer"
+        }
+      ],
+      "officialDocumentationLink": "https://developer.android.com/topic/architecture/data-layer",
+      "difficulty": "MID",
+      "estimatedReadingTimeSeconds": 180,
+      "careerImpact": "KRITIS",
+      "tags": [
+        {
+          "name": "Arsitektur"
+        },
+        {
+          "name": "Repository"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_arch_clean"
+      ],
+      "relatedTopicCodes": [
+        "tp_architecture"
+      ]
+    },
+    {
+      "id": "c_arch_use_cases",
+      "title": "Use Cases & Alur Bisnis Domain",
+      "summary": "Use Case (interactor) mengenkapsulasi satu unit logika bisnis yang dapat digunakan kembali di layer domain.",
+      "whyItMatters": "Mencegah ViewModel menjadi terlalu besar (fat ViewModel) dan mempermudah pengujian alur bisnis.",
+      "realWorldExample": "InitializeApplicationWorkflow, FinishReviewWorkflow, dan BuildDailyFeedWorkflow.",
+      "commonMistakes": "Membuat use case passthrough yang hanya memanggil repository tanpa menambahkan logika bisnis.",
+      "whenNotToUse": "Transformasi visual murni yang spesifik untuk presentasi UI.",
+      "bestPractice": "Setiap use case idealnya memiliki satu fungsi operator publik execute() atau invoke().",
+      "reference": [
+        {
+          "title": "Arsitektur Domain Layer",
+          "url": "https://developer.android.com/topic/architecture/domain-layer"
+        }
+      ],
+      "officialDocumentationLink": "https://developer.android.com/topic/architecture/domain-layer",
+      "difficulty": "MID",
+      "estimatedReadingTimeSeconds": 180,
+      "careerImpact": "Tinggi",
+      "tags": [
+        {
+          "name": "Arsitektur"
+        },
+        {
+          "name": "Domain"
+        },
+        {
+          "name": "UseCases"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_arch_clean"
+      ],
+      "relatedTopicCodes": [
+        "tp_architecture"
+      ]
+    },
+    {
+      "id": "c_arch_solid_principles",
+      "title": "Prinsip SOLID dalam Kotlin",
+      "summary": "SOLID adalah akronim dari 5 prinsip desain perangkat lunak agar sistem mudah dipahami, fleksibel, dan terpelihara.",
+      "whyItMatters": "Mencegah pembusukan arsitektur (architectural decay) seiring bertambahnya fitur dan tim developer.",
+      "realWorldExample": "Menerapkan Dependency Inversion untuk memudahkan mocking repository dalam unit test.",
+      "commonMistakes": "Melanggar Single Responsibility dengan menaruh aturan bisnis, network call, dan UI listener di satu kelas.",
+      "whenNotToUse": "Over-engineering pada skrip prototipe sederhana dengan membuat puluhan interface yang tidak terpakai.",
+      "bestPractice": "Bergantunglah pada abstraksi (interface) alih-alih implementasi konkret.",
+      "reference": [
+        {
+          "title": "Prinsip Desain SOLID",
+          "url": "https://en.wikipedia.org/wiki/SOLID"
+        }
+      ],
+      "officialDocumentationLink": "https://developer.android.com/topic/architecture",
+      "difficulty": "SENIOR",
+      "estimatedReadingTimeSeconds": 240,
+      "careerImpact": "KRITIS",
+      "tags": [
+        {
+          "name": "Arsitektur"
+        },
+        {
+          "name": "SOLID"
+        },
+        {
+          "name": "DesignPatterns"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_arch_clean"
+      ],
+      "relatedTopicCodes": [
+        "tp_architecture"
+      ]
+    },
+    {
+      "id": "c_arch_modularization",
+      "title": "Arsitektur Multi-Module Android",
+      "summary": "Modularisasi membagi basis kode monolitik menjadi subproject Gradle yang independen dan terisolasi dengan rapi.",
+      "whyItMatters": "Mempercepat build inkremental dengan kompilasi paralel dan menegakkan batas arsitektur secara tegas.",
+      "realWorldExample": "Memisahkan aplikasi ke dalam modul :core:domain, :core:storage, :core:ui, dan modul :feature.",
+      "commonMistakes": "Membuat dependensi melingkar (circular dependency) antar modul feature.",
+      "whenNotToUse": "Aplikasi prototipe kecil di mana beban konfigurasi modul melebihi manfaat kompilasinya.",
+      "bestPractice": "Modul feature harus bergantung pada core API bersama, bukan langsung pada modul implementasi feature lain.",
+      "reference": [
+        {
+          "title": "Panduan Modularisasi Android",
+          "url": "https://developer.android.com/topic/modularization"
+        }
+      ],
+      "officialDocumentationLink": "https://developer.android.com/topic/modularization",
+      "difficulty": "SENIOR",
+      "estimatedReadingTimeSeconds": 240,
+      "careerImpact": "KRITIS",
+      "tags": [
+        {
+          "name": "Arsitektur"
+        },
+        {
+          "name": "Modularisasi"
+        },
+        {
+          "name": "Gradle"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_arch_clean"
+      ],
+      "relatedTopicCodes": [
+        "tp_architecture"
+      ]
+    },
+    {
+      "id": "c_arch_unit_testing",
+      "title": "Unit Testing dengan JUnit & MockK",
+      "summary": "Unit test memverifikasi fungsi unit kode secara terisolasi penuh dari framework eksternal dan sistem operasi.",
+      "whyItMatters": "Memungkinkan refactoring yang aman, menangkap regresi bug secara instan, dan menjadi dokumentasi hidup kode.",
+      "realWorldExample": "Menguji InitializeApplicationWorkflow menggunakan test double fake repository deterministik.",
+      "commonMistakes": "Menulis test rapuh yang menguji detail implementasi privat alih-alih perilaku kontrak publik.",
+      "whenNotToUse": "Menguji rendering piksel visual Android (gunakan screenshot UI testing).",
+      "bestPractice": "Ikuti pola Arrange-Act-Assert dan gunakan TestDispatcher deterministik dalam pengujian coroutine.",
+      "reference": [
+        {
+          "title": "Menguji Aplikasi Android",
+          "url": "https://developer.android.com/training/testing"
+        }
+      ],
+      "officialDocumentationLink": "https://developer.android.com/training/testing/fundamentals",
+      "difficulty": "JUNIOR",
+      "estimatedReadingTimeSeconds": 180,
+      "careerImpact": "KRITIS",
+      "tags": [
+        {
+          "name": "Testing"
+        },
+        {
+          "name": "JUnit"
+        },
+        {
+          "name": "MockK"
+        }
+      ],
+      "prerequisiteCardIds": [
+        "c_kotlin_functions"
+      ],
+      "relatedTopicCodes": [
+        "tp_architecture"
+      ]
     }
   ],
   "units": [
@@ -56,6 +853,182 @@
       "quizId": "qz_kotlin_basics",
       "estimatedMinutes": 5,
       "topicCode": "tp_kotlin"
+    },
+    {
+      "id": "u_kotlin_val_var",
+      "title": "Variabel & Imutabilitas",
+      "cardId": "c_kotlin_val_var",
+      "quizId": "qz_kotlin_val_var",
+      "estimatedMinutes": 4,
+      "topicCode": "tp_kotlin"
+    },
+    {
+      "id": "u_kotlin_null_safety",
+      "title": "Null Safety di Kotlin",
+      "cardId": "c_kotlin_null_safety",
+      "quizId": "qz_kotlin_null_safety",
+      "estimatedMinutes": 5,
+      "topicCode": "tp_kotlin"
+    },
+    {
+      "id": "u_kotlin_functions",
+      "title": "Fungsi & Parameter",
+      "cardId": "c_kotlin_functions",
+      "quizId": "qz_kotlin_functions",
+      "estimatedMinutes": 5,
+      "topicCode": "tp_kotlin"
+    },
+    {
+      "id": "u_kotlin_collections",
+      "title": "Koleksi Kotlin",
+      "cardId": "c_kotlin_collections",
+      "quizId": "qz_kotlin_collections",
+      "estimatedMinutes": 5,
+      "topicCode": "tp_kotlin"
+    },
+    {
+      "id": "u_kotlin_data_classes",
+      "title": "Data Classes",
+      "cardId": "c_kotlin_data_classes",
+      "quizId": "qz_kotlin_data_classes",
+      "estimatedMinutes": 4,
+      "topicCode": "tp_kotlin"
+    },
+    {
+      "id": "u_kotlin_sealed_classes",
+      "title": "Sealed Classes & State",
+      "cardId": "c_kotlin_sealed_classes",
+      "quizId": "qz_kotlin_sealed_classes",
+      "estimatedMinutes": 6,
+      "topicCode": "tp_kotlin"
+    },
+    {
+      "id": "u_kotlin_extension_functions",
+      "title": "Extension Functions",
+      "cardId": "c_kotlin_extension_functions",
+      "quizId": "qz_kotlin_extension_functions",
+      "estimatedMinutes": 5,
+      "topicCode": "tp_kotlin"
+    },
+    {
+      "id": "u_kotlin_coroutines_basics",
+      "title": "Dasar Coroutines",
+      "cardId": "c_kotlin_coroutines_basics",
+      "quizId": "qz_kotlin_coroutines_basics",
+      "estimatedMinutes": 7,
+      "topicCode": "tp_kotlin"
+    },
+    {
+      "id": "u_kotlin_flow",
+      "title": "Stream Flow Reaktif",
+      "cardId": "c_kotlin_flow",
+      "quizId": "qz_kotlin_flow",
+      "estimatedMinutes": 6,
+      "topicCode": "tp_kotlin"
+    },
+    {
+      "id": "u_android_activity",
+      "title": "Arsitektur Activity",
+      "cardId": "c_android_activity",
+      "quizId": "qz_android_activity",
+      "estimatedMinutes": 5,
+      "topicCode": "tp_android"
+    },
+    {
+      "id": "u_android_lifecycle",
+      "title": "Manajemen Lifecycle",
+      "cardId": "c_android_lifecycle",
+      "quizId": "qz_android_lifecycle",
+      "estimatedMinutes": 6,
+      "topicCode": "tp_android"
+    },
+    {
+      "id": "u_android_viewmodel",
+      "title": "Retensi State ViewModel",
+      "cardId": "c_android_viewmodel",
+      "quizId": "qz_android_viewmodel",
+      "estimatedMinutes": 6,
+      "topicCode": "tp_android"
+    },
+    {
+      "id": "u_android_compose_basics",
+      "title": "Dasar Jetpack Compose",
+      "cardId": "c_android_compose_basics",
+      "quizId": "qz_android_compose_basics",
+      "estimatedMinutes": 6,
+      "topicCode": "tp_android"
+    },
+    {
+      "id": "u_android_state_hoisting",
+      "title": "Pola State Hoisting",
+      "cardId": "c_android_state_hoisting",
+      "quizId": "qz_android_state_hoisting",
+      "estimatedMinutes": 5,
+      "topicCode": "tp_android"
+    },
+    {
+      "id": "u_android_room",
+      "title": "Database Room",
+      "cardId": "c_android_room",
+      "quizId": "qz_android_room",
+      "estimatedMinutes": 6,
+      "topicCode": "tp_android"
+    },
+    {
+      "id": "u_android_di",
+      "title": "Dependency Injection Hilt",
+      "cardId": "c_android_di",
+      "quizId": "qz_android_di",
+      "estimatedMinutes": 7,
+      "topicCode": "tp_android"
+    },
+    {
+      "id": "u_arch_clean",
+      "title": "Prinsip Clean Architecture",
+      "cardId": "c_arch_clean",
+      "quizId": "qz_arch_clean",
+      "estimatedMinutes": 6,
+      "topicCode": "tp_architecture"
+    },
+    {
+      "id": "u_arch_repository_pattern",
+      "title": "Pola Repository",
+      "cardId": "c_arch_repository_pattern",
+      "quizId": "qz_arch_repository_pattern",
+      "estimatedMinutes": 5,
+      "topicCode": "tp_architecture"
+    },
+    {
+      "id": "u_arch_use_cases",
+      "title": "Domain Use Cases",
+      "cardId": "c_arch_use_cases",
+      "quizId": "qz_arch_use_cases",
+      "estimatedMinutes": 5,
+      "topicCode": "tp_architecture"
+    },
+    {
+      "id": "u_arch_solid_principles",
+      "title": "Prinsip SOLID",
+      "cardId": "c_arch_solid_principles",
+      "quizId": "qz_arch_solid_principles",
+      "estimatedMinutes": 7,
+      "topicCode": "tp_architecture"
+    },
+    {
+      "id": "u_arch_modularization",
+      "title": "Arsitektur Modular",
+      "cardId": "c_arch_modularization",
+      "quizId": "qz_arch_modularization",
+      "estimatedMinutes": 7,
+      "topicCode": "tp_architecture"
+    },
+    {
+      "id": "u_arch_unit_testing",
+      "title": "Dasar Unit Testing",
+      "cardId": "c_arch_unit_testing",
+      "quizId": "qz_arch_unit_testing",
+      "estimatedMinutes": 5,
+      "topicCode": "tp_architecture"
     }
   ],
   "quizzes": [
@@ -75,6 +1048,490 @@
             {
               "text": "var",
               "explanation": "Salah. var mendeklarasikan variabel mutable."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_kotlin_val_var",
+      "title": "Kuis Variabel",
+      "targetDifficulty": "BEGINNER",
+      "questions": [
+        {
+          "id": "q_val_reassign",
+          "questionText": "Dapatkah variabel yang dideklarasikan dengan val diubah nilainya setelah inisialisasi?",
+          "options": [
+            {
+              "text": "Tidak, referensi val bersifat imutabel setelah diisi",
+              "explanation": "Benar. val tidak dapat di-reassign setelah diinisialisasi."
+            },
+            {
+              "text": "Ya, jika berada di dalam fungsi",
+              "explanation": "Salah. val tidak dapat di-reassign di scope mana pun."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_kotlin_null_safety",
+      "title": "Kuis Null Safety",
+      "targetDifficulty": "BEGINNER",
+      "questions": [
+        {
+          "id": "q_safe_call",
+          "questionText": "Operator mana yang memanggil fungsi hanya jika objek target bernilai non-null?",
+          "options": [
+            {
+              "text": "?.",
+              "explanation": "Benar. Operator safe call (?.) mengembalikan null jika objek penerima bernilai null."
+            },
+            {
+              "text": "!!",
+              "explanation": "Salah. !! melempar NullPointerException jika objek bernilai null."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_kotlin_functions",
+      "title": "Kuis Fungsi",
+      "targetDifficulty": "BEGINNER",
+      "questions": [
+        {
+          "id": "q_default_param",
+          "questionText": "Fitur Kotlin mana yang menghindari pembuatan banyak fungsi overload manual?",
+          "options": [
+            {
+              "text": "Nilai parameter default",
+              "explanation": "Benar. Argumen default memungkinkan pemanggil melewatkan argumen opsional."
+            },
+            {
+              "text": "Dynamic typing",
+              "explanation": "Salah. Kotlin berketikan statis."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_kotlin_collections",
+      "title": "Kuis Koleksi",
+      "targetDifficulty": "JUNIOR",
+      "questions": [
+        {
+          "id": "q_list_mutability",
+          "questionText": "Apakah interface List<T> standar di Kotlin bersifat mutable secara default?",
+          "options": [
+            {
+              "text": "Tidak, List<T> bersifat read-only; gunakan MutableList<T> untuk mutasi",
+              "explanation": "Benar. List<T> tidak menyediakan fungsi mutasi seperti add() atau remove()."
+            },
+            {
+              "text": "Ya, semua koleksi di Kotlin bersifat mutable",
+              "explanation": "Salah. Kotlin membedakan interface koleksi read-only dan mutable."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_kotlin_data_classes",
+      "title": "Kuis Data Class",
+      "targetDifficulty": "JUNIOR",
+      "questions": [
+        {
+          "id": "q_data_class_copy",
+          "questionText": "Fungsi otomatis mana yang memungkinkan pembuatan salinan imutabel dari data class?",
+          "options": [
+            {
+              "text": "copy()",
+              "explanation": "Benar. copy() membuat salinan shallow dengan properti yang dapat dimodifikasi selektif."
+            },
+            {
+              "text": "clone()",
+              "explanation": "Salah. Data class Kotlin menyediakan fungsi copy()."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_kotlin_sealed_classes",
+      "title": "Kuis Sealed Class",
+      "targetDifficulty": "MID",
+      "questions": [
+        {
+          "id": "q_sealed_when",
+          "questionText": "Mengapa sealed class memungkinkan ekspresi when lengkap tanpa cabang else?",
+          "options": [
+            {
+              "text": "Kompiler mengetahui semua subclass yang diizinkan pada saat kompilasi",
+              "explanation": "Benar. Hierarki sealed bersifat tertutup dan dapat diverifikasi penuh oleh compiler."
+            },
+            {
+              "text": "Sealed class secara otomatis mengimplementasikan Java Enum",
+              "explanation": "Salah. Sealed class memungkinkan setiap subclass memiliki state berbeda."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_kotlin_extension_functions",
+      "title": "Kuis Extension Function",
+      "targetDifficulty": "MID",
+      "questions": [
+        {
+          "id": "q_extension_dispatch",
+          "questionText": "Bagaimana pemanggilan extension function di Kotlin diselesaikan di balik layar?",
+          "options": [
+            {
+              "text": "Secara statis berdasarkan tipe receiver yang dideklarasikan",
+              "explanation": "Benar. Extension function dikompilasi sebagai method statis."
+            },
+            {
+              "text": "Secara dinamis menggunakan refleksi runtime",
+              "explanation": "Salah. Extension diselesaikan secara statis tanpa overhead refleksi."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_kotlin_coroutines_basics",
+      "title": "Kuis Coroutines",
+      "targetDifficulty": "MID",
+      "questions": [
+        {
+          "id": "q_coroutine_blocking",
+          "questionText": "Apakah memanggil fungsi suspend memblokir thread yang mendasarinya?",
+          "options": [
+            {
+              "text": "Tidak, fungsi menunda eksekusi tanpa memblokir thread",
+              "explanation": "Benar. Suspensi membebaskan thread untuk mengeksekusi tugas lain."
+            },
+            {
+              "text": "Ya, thread akan masuk ke status Thread.sleep",
+              "explanation": "Salah. Coroutine bersifat non-blocking."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_kotlin_flow",
+      "title": "Kuis Flow",
+      "targetDifficulty": "MID",
+      "questions": [
+        {
+          "id": "q_flow_nature",
+          "questionText": "Secara default, apakah Kotlin Flow standar bersifat hot atau cold?",
+          "options": [
+            {
+              "text": "Cold (tidak memancarkan nilai sebelum ada collector)",
+              "explanation": "Benar. Eksekusi Flow hanya dimulai ketika ada pengumpul (collector)."
+            },
+            {
+              "text": "Hot (selalu memancarkan nilai terlepas ada collector atau tidak)",
+              "explanation": "Salah. StateFlow/SharedFlow bersifat hot, namun standard Flow bersifat cold."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_android_activity",
+      "title": "Kuis Activity",
+      "targetDifficulty": "BEGINNER",
+      "questions": [
+        {
+          "id": "q_single_activity",
+          "questionText": "Dalam arsitektur Jetpack Compose modern, apa peran utama MainActivity?",
+          "options": [
+            {
+              "text": "Sebagai entry point ringan dan jendela host untuk layar Compose",
+              "explanation": "Benar. Pola Single-Activity menjadi host untuk pohon composable root."
+            },
+            {
+              "text": "Menampung seluruh logika bisnis dan koneksi database",
+              "explanation": "Salah. Logika bisnis berada di Domain Use Case dan ViewModel."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_android_lifecycle",
+      "title": "Kuis Lifecycle",
+      "targetDifficulty": "JUNIOR",
+      "questions": [
+        {
+          "id": "q_lifecycle_background",
+          "questionText": "Status lifecycle mana yang menandakan aplikasi berada di foreground dan interaktif?",
+          "options": [
+            {
+              "text": "RESUMED",
+              "explanation": "Benar. Pada status RESUMED, activity berada di garis depan dan memiliki fokus."
+            },
+            {
+              "text": "STOPPED",
+              "explanation": "Salah. STOPPED menandakan UI tidak lagi terlihat."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_android_viewmodel",
+      "title": "Kuis ViewModel",
+      "targetDifficulty": "JUNIOR",
+      "questions": [
+        {
+          "id": "q_viewmodel_rotation",
+          "questionText": "Apakah Jetpack ViewModel bertahan saat terjadi rotasi layar?",
+          "options": [
+            {
+              "text": "Ya, ViewModel bertahan melintasi perubahan konfigurasi",
+              "explanation": "Benar. ViewModel dirancang mempertahankan state UI melintasi rotasi layar."
+            },
+            {
+              "text": "Tidak, ViewModel dihancurkan dan dibuat ulang setiap rotasi",
+              "explanation": "Salah. ViewModel bertahan melintasi perubahan konfigurasi."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_android_compose_basics",
+      "title": "Kuis Compose",
+      "targetDifficulty": "JUNIOR",
+      "questions": [
+        {
+          "id": "q_compose_recomposition",
+          "questionText": "Proses apa yang memperbarui tampilan UI saat Compose state berubah?",
+          "options": [
+            {
+              "text": "Recomposition",
+              "explanation": "Benar. Compose memanggil ulang fungsi composable dengan data baru."
+            },
+            {
+              "text": "DOM re-rendering",
+              "explanation": "Salah. Recomposition adalah mekanisme pembaruan Jetpack Compose."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_android_state_hoisting",
+      "title": "Kuis State Hoisting",
+      "targetDifficulty": "MID",
+      "questions": [
+        {
+          "id": "q_hoisting_pattern",
+          "questionText": "Dalam pola state hoisting Compose, apa yang mengalir ke bawah dan ke atas?",
+          "options": [
+            {
+              "text": "State mengalir ke bawah, event mengalir ke atas",
+              "explanation": "Benar. Parameter meneruskan state ke bawah, callback meneruskan event ke atas."
+            },
+            {
+              "text": "Event mengalir ke bawah, state mengalir ke atas",
+              "explanation": "Salah. Unidirectional data flow mengalirkan state ke bawah dan event ke atas."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_android_room",
+      "title": "Kuis Room",
+      "targetDifficulty": "MID",
+      "questions": [
+        {
+          "id": "q_room_compile_check",
+          "questionText": "Kapan Room memverifikasi query SQL yang ditulis dalam anotasi @Query?",
+          "options": [
+            {
+              "text": "Pada saat waktu kompilasi (compile-time)",
+              "explanation": "Benar. Room memvalidasi sintaks SQL dan nama tabel/kolom saat kompilasi."
+            },
+            {
+              "text": "Hanya saat runtime ketika query pertama kali dieksekusi",
+              "explanation": "Salah. Verifikasi waktu kompilasi adalah fitur utama Room."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_android_di",
+      "title": "Kuis Hilt",
+      "targetDifficulty": "SENIOR",
+      "questions": [
+        {
+          "id": "q_hilt_viewmodel",
+          "questionText": "Anotasi mana yang digunakan untuk menginjeksi dependensi ke dalam ViewModel menggunakan Hilt?",
+          "options": [
+            {
+              "text": "@HiltViewModel dan @Inject constructor",
+              "explanation": "Benar. @HiltViewModel menandai ViewModel untuk injection Hilt."
+            },
+            {
+              "text": "@AndroidEntryPoint saja",
+              "explanation": "Salah. @AndroidEntryPoint digunakan untuk Activity, Fragment, dan View."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_arch_clean",
+      "title": "Kuis Clean Architecture",
+      "targetDifficulty": "MID",
+      "questions": [
+        {
+          "id": "q_clean_rule",
+          "questionText": "Menurut Clean Architecture, bolehkah layer Domain bergantung pada layer Data atau UI?",
+          "options": [
+            {
+              "text": "Tidak, dependensi harus mengarah ke dalam menuju layer Domain",
+              "explanation": "Benar. Domain sepenuhnya independen dari layer eksternal."
+            },
+            {
+              "text": "Ya, Domain bebas mengimpor Room DAO dan Composable",
+              "explanation": "Salah. Melanggar aturan arah dependensi Clean Architecture."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_arch_repository_pattern",
+      "title": "Kuis Repository Pattern",
+      "targetDifficulty": "MID",
+      "questions": [
+        {
+          "id": "q_repo_purpose",
+          "questionText": "Apa tanggung jawab utama dari Repository dalam Clean Architecture?",
+          "options": [
+            {
+              "text": "Mengabstraksi sumber data dan menyediakan single source of truth",
+              "explanation": "Benar. Repository menjembatani domain workflow dengan storage dan jaringan."
+            },
+            {
+              "text": "Merender elemen UI dan menangani sentuhan layar",
+              "explanation": "Salah. Rendering UI berada di layer presentasi."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_arch_use_cases",
+      "title": "Kuis Use Cases",
+      "targetDifficulty": "MID",
+      "questions": [
+        {
+          "id": "q_use_case_scope",
+          "questionText": "Berapa banyak alur bisnis yang idealnya dienkapsulasi oleh satu kelas Use Case?",
+          "options": [
+            {
+              "text": "Tepat satu tindakan bisnis diskrit (Single Responsibility)",
+              "explanation": "Benar. Use case merepresentasikan operasi bisnis atomik."
+            },
+            {
+              "text": "Seluruh operasi untuk satu tabel database penuh",
+              "explanation": "Salah. Itu adalah tanggung jawab DAO atau Repository."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_arch_solid_principles",
+      "title": "Kuis SOLID",
+      "targetDifficulty": "SENIOR",
+      "questions": [
+        {
+          "id": "q_dip_principle",
+          "questionText": "Apa yang dinyatakan oleh Prinsip Dependency Inversion (huruf D dalam SOLID)?",
+          "options": [
+            {
+              "text": "Modul tingkat tinggi harus bergantung pada abstraksi, bukan detail konkret",
+              "explanation": "Benar. Baik modul high-level maupun low-level harus bergantung pada abstraksi."
+            },
+            {
+              "text": "Semua kelas harus dibuat sebagai static singleton",
+              "explanation": "Salah. Static singleton meningkatkan keterikatan erat (tight coupling)."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_arch_modularization",
+      "title": "Kuis Modularisasi",
+      "targetDifficulty": "SENIOR",
+      "questions": [
+        {
+          "id": "q_mod_benefit",
+          "questionText": "Apa manfaat utama memodularisasi basis kode aplikasi Android?",
+          "options": [
+            {
+              "text": "Build inkremental lebih cepat dan enkapsulasi arsitektur yang ketat",
+              "explanation": "Benar. Gradle dapat mengompilasi modul-modul independen secara paralel."
+            },
+            {
+              "text": "Menghilangkan semua kebutuhan unit testing",
+              "explanation": "Salah. Modularisasi justru mempermudah unit testing."
+            }
+          ],
+          "correctOptionIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "qz_arch_unit_testing",
+      "title": "Kuis Unit Testing",
+      "targetDifficulty": "JUNIOR",
+      "questions": [
+        {
+          "id": "q_unit_isolation",
+          "questionText": "Mengapa unit test dijalankan di local JVM alih-alih di perangkat Android fisik?",
+          "options": [
+            {
+              "text": "Untuk kecepatan eksekusi instan tanpa overhead startup emulator/device",
+              "explanation": "Benar. Unit test JVM berjalan dalam hitungan milidetik."
+            },
+            {
+              "text": "Karena kode Kotlin tidak bisa dijalankan di Android",
+              "explanation": "Salah. Android menjalankan Kotlin secara native."
             }
           ],
           "correctOptionIndex": 0
