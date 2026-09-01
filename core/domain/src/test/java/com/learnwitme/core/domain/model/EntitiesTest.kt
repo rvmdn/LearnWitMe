@@ -35,6 +35,44 @@ class EntitiesTest {
     }
 
     @Test
+    fun testKnowledgeCard_canonicalContentContract() {
+        val card = KnowledgeCard(
+            id = KnowledgeCardId("kc_contract_test"),
+            packageId = KnowledgePackageId("pkg_canonical"),
+            title = "Kotlin Coroutines Flow",
+            summary = "Asynchronous cold stream",
+            whyItMatters = "Handles reactive data streams safely",
+            realWorldExample = "Fetching real-time updates from Room or Network",
+            commonMistakes = "Collecting in wrong coroutine scope",
+            whenNotToUse = "One-shot single value requests",
+            bestPractice = "Use stateIn / shareIn with WhileSubscribed",
+            reference = listOf(Reference("Kotlin Docs - Flow")),
+            officialDocumentationLink = "https://kotlinlang.org/docs/flow.html",
+            difficulty = DifficultyLevel.MID,
+            estimatedReadingTimeSeconds = 180,
+            careerImpact = "CRITICAL",
+            tags = listOf(Tag("kotlin"), Tag("coroutines"), Tag("flow")),
+            prerequisiteCardIds = listOf(KnowledgeCardId("kc_coroutines_basic")),
+            relatedTopicCodes = listOf("tp_kotlin", "tp_android"),
+            learningObjective = "Understand and apply Flow in Kotlin"
+        )
+
+        assertEquals("kc_contract_test", card.id.value)
+        assertEquals("pkg_canonical", card.packageId.value)
+        assertEquals("Kotlin Coroutines Flow", card.title)
+        assertEquals("Asynchronous cold stream", card.summary)
+        assertEquals(DifficultyLevel.MID, card.difficulty)
+        assertEquals(180, card.estimatedReadingTimeSeconds)
+        assertEquals("CRITICAL", card.careerImpact)
+        assertEquals(3, card.tags.size)
+        assertEquals("Understand and apply Flow in Kotlin", card.learningObjective)
+        assertEquals("https://kotlinlang.org/docs/flow.html", card.officialDocumentationLink)
+        assertEquals(1, card.references.size)
+        assertEquals(1, card.prerequisiteCardIds.size)
+        assertEquals(2, card.relatedTopicCodes.size)
+    }
+
+    @Test
     fun testKnowledgeCard_invalid_blankTitle() {
         try {
             KnowledgeCard(

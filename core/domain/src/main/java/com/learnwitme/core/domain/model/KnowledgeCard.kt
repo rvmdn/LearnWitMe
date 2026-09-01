@@ -26,6 +26,7 @@ data class KnowledgeCard(
     val whenNotToUse: String get() = content.whenNotToUse
     val bestPractice: String get() = content.bestPractice
     val officialDocumentationLink: String get() = content.officialDocumentationLink
+    val learningObjective: String get() = content.learningObjective
 
     constructor(
         id: KnowledgeCardId,
@@ -44,7 +45,8 @@ data class KnowledgeCard(
         careerImpact: String,
         tags: List<Tag>,
         prerequisiteCardIds: List<KnowledgeCardId>,
-        relatedTopicCodes: List<String>
+        relatedTopicCodes: List<String>,
+        learningObjective: String = ""
     ) : this(
         id = id,
         packageId = packageId,
@@ -56,7 +58,8 @@ data class KnowledgeCard(
             commonMistakes = commonMistakes,
             whenNotToUse = whenNotToUse,
             bestPractice = bestPractice,
-            officialDocumentationLink = officialDocumentationLink
+            officialDocumentationLink = officialDocumentationLink,
+            learningObjective = learningObjective
         ),
         difficulty = difficulty,
         estimatedReadingTimeSeconds = estimatedReadingTimeSeconds,

@@ -50,7 +50,8 @@ data class KnowledgeContent(
     val commonMistakes: String,
     val whenNotToUse: String = "",
     val bestPractice: String,
-    val officialDocumentationLink: String = ""
+    val officialDocumentationLink: String = "",
+    val learningObjective: String = ""
 ) : ValueObject {
     init {
         require(title.isNotBlank()) { "KnowledgeContent title cannot be blank" }
