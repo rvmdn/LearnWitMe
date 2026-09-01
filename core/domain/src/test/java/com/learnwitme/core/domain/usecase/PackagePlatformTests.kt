@@ -43,12 +43,12 @@ class PackagePlatformTests {
     private val cardId2 = KnowledgeCardId("c2")
 
     private val card1 = KnowledgeCard(
-        cardId1, "Card 1", "Summary", "Why", "Example", "Mistakes", "WhenNot", "Best", 
+        cardId1, packageId, "Card 1", "Summary", "Why", "Example", "Mistakes", "WhenNot", "Best", 
         emptyList(), "http://doc", DifficultyLevel.BEGINNER, 120, "Impact", 
         emptyList(), emptyList(), listOf("tp_sql")
     )
     private val card2 = KnowledgeCard(
-        cardId2, "Card 2", "Summary", "Why", "Example", "Mistakes", "WhenNot", "Best", 
+        cardId2, packageId, "Card 2", "Summary", "Why", "Example", "Mistakes", "WhenNot", "Best", 
         emptyList(), "http://doc", DifficultyLevel.BEGINNER, 120, "Impact", 
         emptyList(), listOf(cardId1), listOf("tp_sql")
     )

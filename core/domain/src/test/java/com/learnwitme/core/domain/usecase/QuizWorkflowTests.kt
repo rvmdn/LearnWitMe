@@ -65,7 +65,7 @@ class QuizWorkflowTests {
         profileRepo.profile = UserProfile(userId, CareerPath("cp_dev", "Dev", ""), LearningPreference(listOf("tp_sql"), 30), DifficultyLevel.BEGINNER, DifficultyLevel.MID, LearningProgress(0, 0, 0, 0))
         
         val card = KnowledgeCard(
-            cardId, "Title", "Summary", "Why", "Example", "Mistakes", "WhenNot", "Best", 
+            cardId, KnowledgePackageId("p1"), "Title", "Summary", "Why", "Example", "Mistakes", "WhenNot", "Best", 
             emptyList(), "http://doc", DifficultyLevel.BEGINNER, 120, "Impact", 
             emptyList(), emptyList(), listOf("tp_sql")
         )
@@ -134,7 +134,7 @@ class QuizWorkflowTests {
         profileRepo.profile = UserProfile(userId, CareerPath("cp_dev", "Dev", ""), LearningPreference(listOf("tp_sql"), 30), DifficultyLevel.BEGINNER, DifficultyLevel.MID, LearningProgress(0, 0, 0, 0))
         
         val card = KnowledgeCard(
-            cardId, "Title", "Summary", "Why", "Example", "Mistakes", "WhenNot", "Best", 
+            cardId, KnowledgePackageId("p1"), "Title", "Summary", "Why", "Example", "Mistakes", "WhenNot", "Best", 
             emptyList(), "http://doc", DifficultyLevel.BEGINNER, 120, "Impact", 
             emptyList(), emptyList(), listOf("tp_sql")
         )

@@ -299,4 +299,51 @@ class InitializePersonalizedDailyLearningWorkflowTest {
         assertTrue(result is DailyLearningInitializationResult.Success)
         assertEquals(guestUserId, (result as DailyLearningInitializationResult.Success).userId)
     }
+
+    @Test
+    fun execute_withDefaultIdPackage_producesActionableDailyFeedWithHeroCard() = runTest {
+        val packageId = KnowledgePackageId("pkg_default_id")
+        val cardId = KnowledgeCardId("c_kotlin_basics")
+        val card = KnowledgeCard(
+            id = cardId,
+            packageId = packageId,
+            content = KnowledgeContent("Sintaks Dasar", "Summary", "Why", "Example", "Mistakes", "WhenNot", "Best"),
+            difficulty = DifficultyLevel.BEGINNER
+        )
+        val defaultPkg = KnowledgePackage(
+            id = packageId,
+            title = "Kurikulum Dasar Kotlin",
+            description = "Dasar Kotlin",
+            topics = listOf(Topic("tp_kotlin", "Kotlin", "Desc")),
+            cards = listOf(card)
+        )
+        val roadmap = LearningRoadmap(
+            id = LearningRoadmapId("rm_default"),
+            goal = LearningGoal("Goal", "cp_kotlin_dev", DifficultyLevel.MID),
+            units = listOf(LearningUnit(LearningUnitId("u_kotlin_basics"), "Unit 1", cardId, null, 5, "tp_kotlin")),
+            status = RoadmapStatus.ACTIVE,
+            completedUnitIds = emptySet()
+        )
+
+        val profile = createValidProfile()
+        val context = mockk<LearningPersonalizationContext>(relaxed = true)
+        coEvery { buildContextWorkflow.execute(userId, any()) } returns PersonalizedContextResult.Success(context)
+        coEvery { profileRepository.getUserProfile(userId) } returns profile
+        coEvery { memoryRepository.getMemory(any()) } returns null
+        coEvery { memoryRepository.getMemoryByUserId(userId) } returns null
+        coEvery { roadmapRepository.getActiveRoadmapByUserId(userId) } returns roadmap
+        coEvery { roadmapRepository.getRoadmap(any()) } returns roadmap
+        coEvery { packageRepository.getActivePackages() } returns listOf(defaultPkg)
+        coEvery { packageRepository.getPackage(packageId) } returns defaultPkg
+
+        val result = workflow.execute(userId)
+
+        assertTrue(result is DailyLearningInitializationResult.Success)
+        val success = result as DailyLearningInitializationResult.Success
+        val focusSection = success.feedDecision.feed.sections.find { it.type == FeedSectionType.TODAYS_FOCUS }
+        assertNotNull("Today's Focus section must exist", focusSection)
+        assertTrue("Today's Focus must contain items", focusSection!!.items.isNotEmpty())
+        assertEquals("c_kotlin_basics", focusSection.items.first().cardId.value)
+    }
 }
+

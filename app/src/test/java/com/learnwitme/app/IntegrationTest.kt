@@ -97,7 +97,7 @@ class IntegrationTest {
     private val validator = PackageValidator(packageRepo, knowledgeRepo)
     private val importer = PackageImporter(packageRepo, knowledgeRepo, quizRepo, validator)
 
-    private val initializeWorkflow = InitializeApplicationWorkflow(profileRepo, roadmapRepo, memoryRepo, importer, clock)
+    private val initializeWorkflow = InitializeApplicationWorkflow(profileRepo, roadmapRepo, memoryRepo, packageRepo, importer, clock)
     private val buildDailyFeedWorkflow = BuildDailyFeedWorkflow(
         memoryRepo, roadmapRepo, profileRepo, packageRepo, sessionRepo,
         reviewEngine, progressEngine, recommendationEngine, knowledgeEngine, feedEngine, clock
@@ -119,6 +119,7 @@ class IntegrationTest {
         val topic = Topic("tp_kotlin", "Kotlin", "Basics")
         val card = KnowledgeCard(
             id = KnowledgeCardId("c_kotlin_basics"),
+            packageId = KnowledgePackageId("pkg_default"),
             title = "Syntax",
             summary = "Val and Var",
             whyItMatters = "W",

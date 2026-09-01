@@ -13,6 +13,7 @@ class EntitiesTest {
     fun testKnowledgeCard_valid() {
         val card = KnowledgeCard(
             id = KnowledgeCardId("kc_sql_select"),
+            packageId = KnowledgePackageId("pkg_1"),
             title = "SQL Select",
             summary = "Select query",
             whyItMatters = "Allows data retrieval",
@@ -38,6 +39,7 @@ class EntitiesTest {
         try {
             KnowledgeCard(
                 id = KnowledgeCardId("kc_sql_select"),
+                packageId = KnowledgePackageId("pkg_1"),
                 title = "  ",
                 summary = "Select query",
                 whyItMatters = "Allows data retrieval",
@@ -64,6 +66,7 @@ class EntitiesTest {
     fun testKnowledgeCard_copy_invariantCheck() {
         val card = KnowledgeCard(
             id = KnowledgeCardId("kc_sql_select"),
+            packageId = KnowledgePackageId("pkg_1"),
             title = "SQL Select",
             summary = "Select query",
             whyItMatters = "Allows data retrieval",
@@ -194,6 +197,7 @@ class EntitiesTest {
     fun testEntityEquality() {
         val card1 = KnowledgeCard(
             id = KnowledgeCardId("kc_1"),
+            packageId = KnowledgePackageId("pkg_1"),
             title = "Title A",
             summary = "Summary", whyItMatters = "Matters", realWorldExample = "Example",
             commonMistakes = "Mistake", whenNotToUse = "Not to use", bestPractice = "Practice",

@@ -34,6 +34,7 @@ import com.learnwitme.core.designsystem.foundation.LwmTheme
 import com.learnwitme.core.domain.model.DifficultyLevel
 import com.learnwitme.core.domain.model.KnowledgeCard
 import com.learnwitme.core.domain.model.KnowledgeCardId
+import com.learnwitme.core.domain.model.KnowledgePackageId
 
 @Composable
 fun KnowledgeCardScreen(
@@ -431,6 +432,7 @@ private fun KnowledgeCardContent(
 private fun KnowledgeCardScreenPreviewLight() {
     val sampleCard = KnowledgeCard(
         id = KnowledgeCardId("c_kotlin_basics"),
+        packageId = KnowledgePackageId("pkg_default"),
         title = "Kotlin Basics & Syntax",
         summary = "Atomic summary of Kotlin core features and null safety.",
         whyItMatters = "Understanding null safety prevents NullPointerExceptions at runtime.",
@@ -461,6 +463,7 @@ private fun KnowledgeCardScreenPreviewLight() {
 private fun KnowledgeCardScreenPreviewDark() {
     val sampleCard = KnowledgeCard(
         id = KnowledgeCardId("c_kotlin_basics"),
+        packageId = KnowledgePackageId("pkg_default"),
         title = "Kotlin Basics & Syntax",
         summary = "Atomic summary of Kotlin core features and null safety.",
         whyItMatters = "Understanding null safety prevents NullPointerExceptions at runtime.",

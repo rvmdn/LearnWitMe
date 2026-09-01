@@ -29,6 +29,7 @@ data class KnowledgeCard(
 
     constructor(
         id: KnowledgeCardId,
+        packageId: KnowledgePackageId,
         title: String,
         summary: String,
         whyItMatters: String,
@@ -46,7 +47,7 @@ data class KnowledgeCard(
         relatedTopicCodes: List<String>
     ) : this(
         id = id,
-        packageId = KnowledgePackageId("pkg_default"),
+        packageId = packageId,
         content = KnowledgeContent(
             title = title,
             summary = summary,

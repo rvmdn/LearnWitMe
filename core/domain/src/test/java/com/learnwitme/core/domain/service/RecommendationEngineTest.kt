@@ -24,6 +24,7 @@ class RecommendationEngineTest {
     private fun createCard(id: String, topic: String, diff: DifficultyLevel): KnowledgeCard {
         return KnowledgeCard(
             id = KnowledgeCardId(id),
+            packageId = KnowledgePackageId("p1"),
             title = "Title", summary = "Summary", whyItMatters = "Why",
             realWorldExample = "Ex", commonMistakes = "Mistakes", whenNotToUse = "Not",
             bestPractice = "Best", reference = emptyList(), officialDocumentationLink = "",

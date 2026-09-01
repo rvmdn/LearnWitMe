@@ -60,7 +60,7 @@ class KnowledgeCardViewModelTest {
     fun testLoadCardSuccess() = runTest(testDispatcher) {
         val cardId = KnowledgeCardId("c1")
         val card = KnowledgeCard(
-            cardId, "Title", "Summary", "Why", "Example", "Mistakes", "WhenNot", "Best",
+            cardId, KnowledgePackageId("pkg_1"), "Title", "Summary", "Why", "Example", "Mistakes", "WhenNot", "Best",
             emptyList(), "http://doc", DifficultyLevel.BEGINNER, 120, "Impact",
             emptyList(), emptyList(), listOf("tp_sql")
         )
@@ -96,7 +96,7 @@ class KnowledgeCardViewModelTest {
     fun testSubmitReview_withActiveRoadmapUnit_completesSession() = runTest(testDispatcher) {
         val cardId = "c1"
         val card = KnowledgeCard(
-            KnowledgeCardId(cardId), "Title", "Summary", "Why", "Example", "Mistakes", "WhenNot", "Best",
+            KnowledgeCardId(cardId), KnowledgePackageId("pkg_1"), "Title", "Summary", "Why", "Example", "Mistakes", "WhenNot", "Best",
             emptyList(), "http://doc", DifficultyLevel.BEGINNER, 120, "Impact",
             emptyList(), emptyList(), listOf("tp_sql")
         )
@@ -133,7 +133,7 @@ class KnowledgeCardViewModelTest {
     fun testRequestAiExplanation_success_updatesAiStateToSuccess() = runTest(testDispatcher) {
         val cardId = "c1"
         val card = KnowledgeCard(
-            KnowledgeCardId(cardId), "Title", "Summary", "Why", "Example", "Mistakes", "WhenNot", "Best",
+            KnowledgeCardId(cardId), KnowledgePackageId("pkg_1"), "Title", "Summary", "Why", "Example", "Mistakes", "WhenNot", "Best",
             emptyList(), "http://doc", DifficultyLevel.BEGINNER, 120, "Impact",
             emptyList(), emptyList(), listOf("tp_sql")
         )
@@ -161,7 +161,7 @@ class KnowledgeCardViewModelTest {
     fun testRequestAiExplanation_failure_updatesAiStateToError_preservesCardState() = runTest(testDispatcher) {
         val cardId = "c1"
         val card = KnowledgeCard(
-            KnowledgeCardId(cardId), "Title", "Summary", "Why", "Example", "Mistakes", "WhenNot", "Best",
+            KnowledgeCardId(cardId), KnowledgePackageId("pkg_1"), "Title", "Summary", "Why", "Example", "Mistakes", "WhenNot", "Best",
             emptyList(), "http://doc", DifficultyLevel.BEGINNER, 120, "Impact",
             emptyList(), emptyList(), listOf("tp_sql")
         )
@@ -187,7 +187,7 @@ class KnowledgeCardViewModelTest {
     fun testSubmitAiFeedback_recordsFeedback() = runTest(testDispatcher) {
         val cardId = "c1"
         val card = KnowledgeCard(
-            KnowledgeCardId(cardId), "Title", "Summary", "Why", "Example", "Mistakes", "WhenNot", "Best",
+            KnowledgeCardId(cardId), KnowledgePackageId("pkg_1"), "Title", "Summary", "Why", "Example", "Mistakes", "WhenNot", "Best",
             emptyList(), "http://doc", DifficultyLevel.BEGINNER, 120, "Impact",
             emptyList(), emptyList(), listOf("tp_sql")
         )
@@ -217,7 +217,7 @@ class KnowledgeCardViewModelTest {
     fun testDismissAiExplanation_resetsAiStateToIdle() = runTest(testDispatcher) {
         val cardId = "c1"
         val card = KnowledgeCard(
-            KnowledgeCardId(cardId), "Title", "Summary", "Why", "Example", "Mistakes", "WhenNot", "Best",
+            KnowledgeCardId(cardId), KnowledgePackageId("pkg_1"), "Title", "Summary", "Why", "Example", "Mistakes", "WhenNot", "Best",
             emptyList(), "http://doc", DifficultyLevel.BEGINNER, 120, "Impact",
             emptyList(), emptyList(), listOf("tp_sql")
         )

@@ -171,10 +171,11 @@ object DomainModule {
         profileRepository: UserProfileRepository,
         roadmapRepository: RoadmapRepository,
         memoryRepository: LearningMemoryRepository,
+        packageRepository: KnowledgePackageRepository,
         importer: PackageImporter,
         clock: Clock
     ): InitializeApplicationWorkflow = InitializeApplicationWorkflow(
-        profileRepository, roadmapRepository, memoryRepository, importer, clock
+        profileRepository, roadmapRepository, memoryRepository, packageRepository, importer, clock
     )
 
     @Provides

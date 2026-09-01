@@ -11,6 +11,7 @@ class KnowledgePackageTest {
     private fun createDummyCard(id: String): KnowledgeCard {
         return KnowledgeCard(
             id = KnowledgeCardId(id),
+            packageId = KnowledgePackageId("pkg_1"),
             title = "Title $id",
             summary = "Summary",
             whyItMatters = "Matters",

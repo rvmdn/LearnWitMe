@@ -15,6 +15,15 @@ class PackageImporter(
             throw IllegalArgumentException("Package validation failed: ${validation.errors.joinToString("; ")}")
         }
 
+        // Ensure all cards carry the manifest/package ID
+        val syncedCards = manifest.cards.map { card ->
+            if (card.packageId != manifest.metadata.id) {
+                card.copy(packageId = manifest.metadata.id)
+            } else {
+                card
+            }
+        }
+
         // Map manifest elements to Domain structures
         val pkg = KnowledgePackage(
             id = manifest.metadata.id,
@@ -23,14 +32,14 @@ class PackageImporter(
             version = manifest.metadata.version.toInt(),
             status = PackageStatus.PUBLISHED,
             topics = manifest.topics,
-            cards = manifest.cards,
+            cards = syncedCards,
             dependencies = manifest.dependencies
         )
 
         // Persist all package materials offline
         packageRepository.savePackage(pkg)
         
-        for (card in manifest.cards) {
+        for (card in syncedCards) {
             knowledgeRepository.saveCard(card)
         }
 

@@ -48,7 +48,8 @@ object DefaultPackageParser {
                 if (refArr != null) {
                     for (j in 0 until refArr.length()) {
                         val refObj = refArr.getJSONObject(j)
-                        references.add(Reference(refObj.getString("title"), refObj.optString("url", null)))
+                        val urlStr = if (refObj.isNull("url")) null else refObj.optString("url")
+                        references.add(Reference(refObj.getString("title"), urlStr))
                     }
                 }
                 
@@ -80,6 +81,7 @@ object DefaultPackageParser {
                 cards.add(
                     KnowledgeCard(
                         id = KnowledgeCardId(obj.getString("id")),
+                        packageId = metadata.id,
                         title = obj.getString("title"),
                         summary = obj.getString("summary"),
                         whyItMatters = obj.getString("whyItMatters"),

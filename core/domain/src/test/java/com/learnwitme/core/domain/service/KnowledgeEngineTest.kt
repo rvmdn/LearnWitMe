@@ -20,7 +20,8 @@ class KnowledgeEngineTest {
     private fun createCard(id: String, prereqs: List<String>): KnowledgeCard {
         return KnowledgeCard(
             id = KnowledgeCardId(id),
-            title = "Title \$id", summary = "Summary", whyItMatters = "Why",
+            packageId = KnowledgePackageId("p1"),
+            title = "Title $id", summary = "Summary", whyItMatters = "Why",
             realWorldExample = "Ex", commonMistakes = "Mistakes", whenNotToUse = "Not",
             bestPractice = "Best", reference = emptyList(), officialDocumentationLink = "",
             difficulty = DifficultyLevel.BEGINNER, estimatedReadingTimeSeconds = 60, careerImpact = "High",
