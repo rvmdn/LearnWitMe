@@ -11,6 +11,14 @@ class PackageValidator(
     suspend fun validate(manifest: PackageManifest): ValidationResult {
         val errors = mutableListOf<String>()
 
+        // 0. Metadata Required Fields Validation
+        if (manifest.metadata.title.isBlank()) {
+            errors.add("Package title cannot be blank")
+        }
+        if (manifest.metadata.id.value.isBlank()) {
+            errors.add("Package ID cannot be blank")
+        }
+
         // 1. Checksum Validation
         val calculatedChecksum = calculateChecksum(manifest)
         if (calculatedChecksum.value != manifest.metadata.checksum.value) {
@@ -47,7 +55,15 @@ class PackageValidator(
             }
         }
 
-        // 4. Missing Prerequisite Validation
+        // 4. Package Dependencies Validation
+        for (depId in manifest.dependencies) {
+            val depPkg = packageRepository.getPackage(depId)
+            if (depPkg == null) {
+                errors.add("Missing required package dependency: ${depId.value}")
+            }
+        }
+
+        // 5. Missing Prerequisite & Unit Relation Validation
         val manifestCardIds = manifest.cards.map { it.id }.toSet()
         for (card in manifest.cards) {
             for (preId in card.prerequisiteCardIds) {
@@ -60,7 +76,16 @@ class PackageValidator(
             }
         }
 
-        // 5. Circular Dependency Validation
+        for (unit in manifest.units) {
+            if (!manifestCardIds.contains(unit.cardId)) {
+                val dbCard = knowledgeRepository.getCard(unit.cardId)
+                if (dbCard == null) {
+                    errors.add("Missing unit dependency: LearningUnit ${unit.id.value} references card ${unit.cardId.value} which is not in this package or database")
+                }
+            }
+        }
+
+        // 6. Circular Dependency Validation
         if (detectCircularDependencies(manifest.cards)) {
             errors.add("Circular dependency detected in KnowledgeCards")
         }
