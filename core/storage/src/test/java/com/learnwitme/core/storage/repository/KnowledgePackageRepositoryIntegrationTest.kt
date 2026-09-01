@@ -7,14 +7,10 @@ import com.learnwitme.core.storage.local.dao.KnowledgePackageDao
 import com.learnwitme.core.storage.local.entity.KnowledgeCardEntity
 import com.learnwitme.core.storage.local.entity.KnowledgePackageEntity
 import com.learnwitme.core.storage.source.LearnWitMeLocalDataSource
-import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.mockk
-import io.mockk.slot
+import io.mockk.*
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
+import org.junit.Before
 import org.junit.Test
 
 class KnowledgePackageRepositoryIntegrationTest {
@@ -25,7 +21,9 @@ class KnowledgePackageRepositoryIntegrationTest {
     private val localDataSource = LearnWitMeLocalDataSource(db)
     private val repository = KnowledgePackageRepositoryImpl(localDataSource)
 
-    init {
+    @Before
+    fun setup() {
+        clearAllMocks()
         coEvery { db.knowledgePackageDao() } returns packageDao
         coEvery { db.knowledgeCardDao() } returns cardDao
     }
@@ -99,7 +97,78 @@ class KnowledgePackageRepositoryIntegrationTest {
         assertEquals(1, retrievedPkg.cards.size)
         assertEquals(cardId1, retrievedPkg.cards.first().id)
         assertEquals(packageId, retrievedPkg.cards.first().packageId)
+    }
 
-        coVerify { cardDao.findByPackage("pkg_default_id") }
+    @Test
+    fun testReimportPackage_isIdempotent() = runBlocking {
+        val packageId = KnowledgePackageId("pkg_default_id")
+        val card1 = KnowledgeCard(
+            id = KnowledgeCardId("c_kotlin_basics"),
+            packageId = packageId,
+            content = KnowledgeContent("Title 1", "Summary 1", "Why 1", "Example 1", "Mistake 1", "Not 1", "Best 1")
+        )
+        val pkg = KnowledgePackage(
+            id = packageId,
+            title = "Kurikulum Dasar Kotlin",
+            description = "Dasar Kotlin",
+            version = 1,
+            cards = listOf(card1)
+        )
+
+        // First import
+        repository.savePackage(pkg)
+
+        // Re-import (second time)
+        repository.savePackage(pkg)
+
+        // Both package and card insertions should be called twice without throwing exceptions
+        coVerify(exactly = 2) { packageDao.insert(any()) }
+        coVerify(exactly = 2) { cardDao.insertAll(any()) }
+    }
+
+    @Test
+    fun testGetPackage_returnsSpecificPackageWithCards() = runBlocking {
+        val pkgEntity = KnowledgePackageEntity(
+            id = "pkg_specific",
+            title = "Specific Package",
+            description = "Specific Desc",
+            version = "2",
+            status = "PUBLISHED",
+            isCore = true
+        )
+        val cardEntity = KnowledgeCardEntity(
+            id = "c_specific_1",
+            packageId = "pkg_specific",
+            title = "Specific Card",
+            summary = "Summary",
+            whyItMatters = "Why",
+            realWorldExample = "Example",
+            commonMistakes = "Mistakes",
+            whenNotToUse = "WhenNot",
+            bestPractice = "Best",
+            referencesJson = "[]",
+            officialDocumentationLink = "https://kotlin.org",
+            difficulty = "MID",
+            estimatedReadingTimeSeconds = 180,
+            careerImpact = "HIGH",
+            skillsJson = "[]",
+            tagsJson = "[]",
+            prerequisiteCardIdsJson = "[]",
+            relatedTopicCodesJson = "[]"
+        )
+
+        coEvery { packageDao.findById("pkg_specific") } returns pkgEntity
+        coEvery { cardDao.findByPackage("pkg_specific") } returns listOf(cardEntity)
+
+        val retrieved = repository.getPackage(KnowledgePackageId("pkg_specific"))
+
+        assertNotNull(retrieved)
+        assertEquals("pkg_specific", retrieved!!.id.value)
+        assertEquals("Specific Package", retrieved.title)
+        assertEquals(2, retrieved.version)
+        assertTrue(retrieved.isCore)
+        assertEquals(1, retrieved.cards.size)
+        assertEquals("c_specific_1", retrieved.cards.first().id.value)
+        assertEquals(DifficultyLevel.MID, retrieved.cards.first().difficulty)
     }
 }
