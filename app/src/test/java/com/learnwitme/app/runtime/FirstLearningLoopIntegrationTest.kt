@@ -315,4 +315,90 @@ class FirstLearningLoopIntegrationTest {
         assertEquals(MemoryState.LEARNING, preservedRecord.state)
         assertTrue("Total cards tracked must be at least 1", restartedSuccess.context.totalCardsTracked >= 1)
     }
+
+    @Test
+    fun testDuplicateCompletion_doesNotCorruptState() = runTest(testDispatcher) {
+        val targetCardId = KnowledgeCardId("c_kotlin_basics")
+        cards[targetCardId.value] = KnowledgeCard(
+            id = targetCardId,
+            packageId = KnowledgePackageId("pkg_default_id"),
+            content = KnowledgeContent("Title", "Summary", "Why", "Example", "Mistakes", "WhenNot", "Best")
+        )
+
+        // Initialize default memory
+        val initialMemory = LearningMemory(
+            id = LearningMemoryId("mem_${userId.value}"),
+            userId = userId,
+            records = emptyList()
+        )
+        memoryRepo.saveMemory(initialMemory)
+
+        val loadCardWorkflow = LoadKnowledgeCardWorkflow(knowledgeRepo)
+        val finishReviewWorkflow = FinishReviewWorkflow(memoryRepo, memoryEngine, clock)
+        val completeLearningSessionWorkflow = CompleteLearningSessionWorkflow(
+            memoryRepository = memoryRepo,
+            roadmapRepository = roadmapRepo,
+            profileRepository = profileRepo,
+            sessionRepository = sessionRepo,
+            progressEngine = progressEngine,
+            clock = clock
+        )
+
+        val viewModel = KnowledgeCardViewModel(
+            loadCardWorkflow = loadCardWorkflow,
+            finishReviewWorkflow = finishReviewWorkflow,
+            completeLearningSessionWorkflow = completeLearningSessionWorkflow,
+            roadmapRepository = roadmapRepo,
+            clock = clock,
+            aiLearningInteractionService = aiService
+        )
+
+        // First completion
+        viewModel.onEvent(KnowledgeCardEvent.OnLoadCard(targetCardId.value))
+        advanceUntilIdle()
+        viewModel.onEvent(KnowledgeCardEvent.OnSubmitReview(targetCardId.value, 0.8))
+        advanceUntilIdle()
+
+        // Second completion (later same day)
+        clock.advanceBy(3600000L) // 1 hour later
+        viewModel.onEvent(KnowledgeCardEvent.OnSubmitReview(targetCardId.value, 1.0))
+        advanceUntilIdle()
+
+        val memory = memoryRepo.getMemoryByUserId(userId)
+        assertNotNull(memory)
+        assertEquals("Should only contain 1 record for this card ID", 1, memory!!.records.size)
+        val record = memory.findRecord(targetCardId)
+        assertNotNull(record)
+        assertEquals(2, record!!.reviews.size)
+    }
+
+    @Test
+    fun testLoadNonExistentCard_showsErrorState() = runTest(testDispatcher) {
+        val loadCardWorkflow = LoadKnowledgeCardWorkflow(knowledgeRepo)
+        val finishReviewWorkflow = FinishReviewWorkflow(memoryRepo, memoryEngine, clock)
+        val completeLearningSessionWorkflow = CompleteLearningSessionWorkflow(
+            memoryRepository = memoryRepo,
+            roadmapRepository = roadmapRepo,
+            profileRepository = profileRepo,
+            sessionRepository = sessionRepo,
+            progressEngine = progressEngine,
+            clock = clock
+        )
+
+        val viewModel = KnowledgeCardViewModel(
+            loadCardWorkflow = loadCardWorkflow,
+            finishReviewWorkflow = finishReviewWorkflow,
+            completeLearningSessionWorkflow = completeLearningSessionWorkflow,
+            roadmapRepository = roadmapRepo,
+            clock = clock,
+            aiLearningInteractionService = aiService
+        )
+
+        viewModel.onEvent(KnowledgeCardEvent.OnLoadCard("non_existent_card"))
+        advanceUntilIdle()
+
+        assertTrue(viewModel.uiState.value is KnowledgeCardState.Error)
+        val errorState = viewModel.uiState.value as KnowledgeCardState.Error
+        assertTrue(errorState.message.contains("Card not found"))
+    }
 }
