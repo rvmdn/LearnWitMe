@@ -32,4 +32,4 @@ jobs:
         run: ./gradlew test
 
       - name: Compile Debug Package
-        run: ./gradlew assembleDebug
+        run: ./gradlew :app:assembleDebug

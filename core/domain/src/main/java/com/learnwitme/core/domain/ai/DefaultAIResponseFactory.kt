@@ -6,35 +6,43 @@ package com.learnwitme.core.domain.ai
  */
 class DefaultAIResponseFactory {
 
-    private fun extractCleanTopic(rawPrompt: String): String {
+    internal fun extractCleanTopic(rawPrompt: String): String {
+        if (rawPrompt.isBlank()) return "Core Concept"
+
         val promptBody = if (rawPrompt.contains("=== CURRENT REQUEST ===")) {
             rawPrompt.substringAfter("=== CURRENT REQUEST ===").trim()
         } else {
             rawPrompt.trim()
         }
 
+        if (promptBody.isBlank()) return "Core Concept"
+
         val questionMatch = Regex("(?:question|topic|expanding on)\\s*[:=]?\\s*['\"]([^'\"]+)['\"]", RegexOption.IGNORE_CASE)
             .find(promptBody)
-        if (questionMatch != null) {
+        val extractedTopic = if (questionMatch != null) {
             val extracted = questionMatch.groupValues[1].trim()
             val innerQuoted = Regex("['\"]([^'\"]+)['\"]").find(extracted)
             if (innerQuoted != null) {
-                return innerQuoted.groupValues[1].trim()
+                innerQuoted.groupValues[1].trim()
+            } else {
+                val ofMatch = Regex("of\\s+([A-Za-z0-9 &+\\-]+)$", RegexOption.IGNORE_CASE).find(extracted)
+                if (ofMatch != null) ofMatch.groupValues[1].trim() else extracted
             }
-            val ofMatch = Regex("of\\s+([A-Za-z0-9 &+\\-]+)$", RegexOption.IGNORE_CASE).find(extracted)
-            if (ofMatch != null) {
-                return ofMatch.groupValues[1].trim()
+        } else {
+            val firstQuoted = Regex("['\"]([^'\"]+)['\"]").find(promptBody)
+            if (firstQuoted != null) {
+                firstQuoted.groupValues[1].trim()
+            } else {
+                promptBody.lines().firstOrNull { it.isNotBlank() }?.trim() ?: "Core Concept"
             }
-            return extracted.take(80)
         }
 
-        val firstQuoted = Regex("['\"]([^'\"]+)['\"]").find(promptBody)
-        if (firstQuoted != null) {
-            return firstQuoted.groupValues[1].trim().take(80)
-        }
+        val cleaned = extractedTopic
+            .replace(Regex("^(?:system|instruction|prompt):\\s*", RegexOption.IGNORE_CASE), "")
+            .replace(Regex("[#*`\"\\\\]"), "")
+            .trim()
 
-        val firstLine = promptBody.lines().firstOrNull { it.isNotBlank() }?.trim() ?: "Core Concept"
-        return firstLine.take(80)
+        return if (cleaned.isBlank()) "Core Concept" else cleaned.take(80)
     }
 
     fun createExplanationResponse(request: AIRequest, config: MockAIConfiguration): AIResponse {
