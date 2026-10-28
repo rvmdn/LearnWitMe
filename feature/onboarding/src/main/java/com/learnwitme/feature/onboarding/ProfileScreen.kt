@@ -234,6 +234,36 @@ private fun ProfileContent(
                 }
             }
         }
+
+        // 5. Cloud Sync Status
+        item {
+            Column {
+                LwmSectionHeader(title = "Cloud Account & Synchronization")
+                LwmCard(modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Offline-First Active",
+                                style = LwmTheme.typography.titleMedium,
+                                color = LwmTheme.colors.onSurface
+                            )
+                            Spacer(modifier = Modifier.height(LwmTheme.spacing.xs))
+                            Text(
+                                text = "All learning records, memories, and progress are stored encrypted on this device.",
+                                style = LwmTheme.typography.bodySmall,
+                                color = LwmTheme.colors.onSurfaceVariant
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(LwmTheme.spacing.s))
+                        LwmTag(text = "Cloud Sync: Coming Soon")
+                    }
+                }
+            }
+        }
     }
 }
 
