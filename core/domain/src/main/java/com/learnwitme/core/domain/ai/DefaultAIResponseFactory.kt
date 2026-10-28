@@ -6,9 +6,41 @@ package com.learnwitme.core.domain.ai
  */
 class DefaultAIResponseFactory {
 
+    private fun extractCleanTopic(rawPrompt: String): String {
+        val promptBody = if (rawPrompt.contains("=== CURRENT REQUEST ===")) {
+            rawPrompt.substringAfter("=== CURRENT REQUEST ===").trim()
+        } else {
+            rawPrompt.trim()
+        }
+
+        val questionMatch = Regex("(?:question|topic|expanding on)\\s*[:=]?\\s*['\"]([^'\"]+)['\"]", RegexOption.IGNORE_CASE)
+            .find(promptBody)
+        if (questionMatch != null) {
+            val extracted = questionMatch.groupValues[1].trim()
+            val innerQuoted = Regex("['\"]([^'\"]+)['\"]").find(extracted)
+            if (innerQuoted != null) {
+                return innerQuoted.groupValues[1].trim()
+            }
+            val ofMatch = Regex("of\\s+([A-Za-z0-9 &+\\-]+)$", RegexOption.IGNORE_CASE).find(extracted)
+            if (ofMatch != null) {
+                return ofMatch.groupValues[1].trim()
+            }
+            return extracted.take(80)
+        }
+
+        val firstQuoted = Regex("['\"]([^'\"]+)['\"]").find(promptBody)
+        if (firstQuoted != null) {
+            return firstQuoted.groupValues[1].trim().take(80)
+        }
+
+        val firstLine = promptBody.lines().firstOrNull { it.isNotBlank() }?.trim() ?: "Core Concept"
+        return firstLine.take(80)
+    }
+
     fun createExplanationResponse(request: AIRequest, config: MockAIConfiguration): AIResponse {
+        val topic = extractCleanTopic(request.prompt)
         val content = """
-            |### Explanation for: ${request.prompt}
+            |### Explanation for: $topic
             |
             |**Key Concept Overview**:
             |${request.context.ifBlank { "Core fundamental principles and conceptual framework." }}
@@ -27,11 +59,12 @@ class DefaultAIResponseFactory {
     }
 
     fun createLessonResponse(request: AIRequest, config: MockAIConfiguration): AIResponse {
+        val topic = extractCleanTopic(request.prompt)
         val content = """
-            |# Micro-Lesson: ${request.prompt}
+            |# Micro-Lesson: $topic
             |
             |## Objective
-            |Master the key concepts behind ${request.prompt}.
+            |Master the key concepts behind $topic.
             |
             |## Core Breakdown
             |1. **Foundation**: ${request.context.ifBlank { "Understand the baseline rules." }}
@@ -49,9 +82,10 @@ class DefaultAIResponseFactory {
     }
 
     fun createQuizResponse(request: AIRequest, config: MockAIConfiguration): AIResponse {
+        val topic = extractCleanTopic(request.prompt)
         val content = """
             |{
-            |  "question": "What is the primary architectural goal of ${request.prompt}?",
+            |  "question": "What is the primary architectural goal of $topic?",
             |  "options": [
             |    "Deterministic business logic execution",
             |    "Direct coupling to UI components",
@@ -73,10 +107,11 @@ class DefaultAIResponseFactory {
     }
 
     fun createSimplifiedContentResponse(request: AIRequest, config: MockAIConfiguration): AIResponse {
+        val topic = extractCleanTopic(request.prompt)
         val content = """
-            |**Simplified**: ${request.prompt}
+            |**Simplified**: $topic
             |
-            |In simple terms: ${request.prompt} helps you learn step-by-step with clear explanations and easy rules.
+            |In simple terms: $topic helps you learn step-by-step with clear explanations and easy rules.
         """.trimMargin()
 
         return AIResponse(

@@ -35,4 +35,22 @@ class MockAIProviderTest {
             assertTrue(e.message!!.contains("rate limit"))
         }
     }
+
+    @Test
+    fun testPromptSanitizationWithContextTag() = runBlocking {
+        val provider = MockAIProvider()
+        val request = AIRequest(
+            prompt = """
+                === CURRENT REQUEST ===
+                Explain the reasoning for the question: 'Explain core concepts, practical examples, and common pitfalls of Null Safety & Nullable Types'.
+                Selected Answer: 'Sistem tipe Kotlin membedakan tipe yang dapat bernilai null (Tipe?) dari tipe non-null (Tipe).'
+                Expected Answer: 'Mencegah NullPointerException (Kesalahan Bernilai Miliar Dolar) langsung pada saat kompilasi.'
+            """.trimIndent()
+        )
+
+        val res = provider.generateExplanation(request)
+        org.junit.Assert.assertFalse(res.content.contains("=== CURRENT REQUEST ==="))
+        org.junit.Assert.assertFalse(res.content.contains("Selected Answer:"))
+        assertTrue(res.content.contains("Null Safety & Nullable Types"))
+    }
 }
