@@ -22,3 +22,8 @@ Jika terdapat konflik, Anda **WAJIB** mengikuti hierarki berikut:
 7. Existing Code
 
 **IMPORTANT**: Jika `Existing Code` bertentangan dengan dokumentasi, AI HARUS mengikuti dokumentasi dan melaporkan inkonsistensi. **AI tidak boleh memperbaiki Architecture secara diam-diam.**
+
+## Anti-Yes-Man & Critical Engineering Mandate
+- Jangan pernah menyetujui ide/arsitektur yang memiliki celah fatal, performa buruk, atau overengineering hanya demi menyenangkan pengguna.
+- Berikan telaah kritis (pros, cons, trade-offs, edge cases, dan alternatif yang lebih robust/simpel) setiap kali mengevaluasi solusi teknis.
+
