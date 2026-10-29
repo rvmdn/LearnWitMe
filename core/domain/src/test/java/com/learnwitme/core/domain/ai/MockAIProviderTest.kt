@@ -377,4 +377,183 @@ class MockAIProviderTest {
             }
         }
     }
+
+    @Test
+    fun testCredentialShapedPromptVariantsTriggerFallback() = runBlocking {
+        val provider = MockAIProvider()
+        val credentialInputs = listOf(
+            "API_KEY=abc123secret",
+            "api-key: abc123secret",
+            "access_token=abc123secret",
+            "refresh_token=abc123secret",
+            "client_secret=abc123secret",
+            "password: abc123secret",
+            "Authorization: Bearer abc123secret",
+            "token=abc123secret",
+            "TEST_SECRET_123",
+            "api_key=\n  abc123secret",
+            "token:\n  abc123secret",
+            "API_KEY  =  abc123secret",
+            "api-key : abc123secret",
+            "Authorization : Bearer abc123secret",
+            "Api-Key: abc123secret",
+            "ACCESS_TOKEN=abc123secret",
+            "CLIENT_SECRET=abc123secret",
+            "PassWord: abc123secret",
+            "TOKEN = abc123secret"
+        )
+
+        for (cred in credentialInputs) {
+            val req = AIRequest(prompt = cred)
+            val exp = provider.generateExplanation(req)
+            val les = provider.generateLesson(req)
+            val qz = provider.generateQuiz(req)
+            val smp = provider.simplifyContent(req)
+
+            for (output in listOf(exp.content, les.content, qz.content, smp.content)) {
+                assertTrue("Output should use fallback for $cred", output.contains("Core Concept"))
+                assertFalse("Output must never leak secret value in $cred", output.contains("abc123secret"))
+                assertFalse("Output must never leak TEST_SECRET_123 in $cred", output.contains("TEST_SECRET_123"))
+            }
+        }
+    }
+
+    @Test
+    fun testCredentialInContextSanitizedAcrossAllEndpoints() = runBlocking {
+        val provider = MockAIProvider()
+        val credentialContexts = listOf(
+            "API_KEY=abc123secret",
+            "api-key: abc123secret",
+            "access_token=abc123secret",
+            "refresh_token=abc123secret",
+            "client_secret=abc123secret",
+            "password: abc123secret",
+            "Authorization: Bearer abc123secret",
+            "token=abc123secret",
+            "TEST_SECRET_123",
+            "api_key=\n  abc123secret",
+            "Authorization : Bearer abc123secret"
+        )
+
+        for (cred in credentialContexts) {
+            val req = AIRequest(prompt = "StateFlow", context = cred)
+            val exp = provider.generateExplanation(req)
+            val les = provider.generateLesson(req)
+            val qz = provider.generateQuiz(req)
+            val smp = provider.simplifyContent(req)
+
+            for (output in listOf(exp.content, les.content, qz.content, smp.content)) {
+                assertTrue("Topic must be preserved when context is sanitized", output.contains("StateFlow"))
+                assertFalse("Credential value must not leak from context", output.contains("abc123secret"))
+                assertFalse("Sentinel must not leak from context", output.contains("TEST_SECRET_123"))
+            }
+        }
+    }
+
+    @Test
+    fun testExpandedLegitimateSecurityTopicsPreserved() = runBlocking {
+        val provider = MockAIProvider()
+        val securityTopics = listOf(
+            "API Key Rotation",
+            "Access Token Lifecycle",
+            "Password Hashing Best Practices",
+            "OAuth 2.0 & Secret Management",
+            "Authentication Tokens & Keys",
+            "SQL Injection Prevention",
+            "Bearer Token Authentication",
+            "System Architecture & Instruction Sets"
+        )
+
+        for (topic in securityTopics) {
+            val req = AIRequest(prompt = topic)
+            val exp = provider.generateExplanation(req)
+            val les = provider.generateLesson(req)
+            val qz = provider.generateQuiz(req)
+            val smp = provider.simplifyContent(req)
+
+            for (output in listOf(exp.content, les.content, qz.content, smp.content)) {
+                assertTrue("Legitimate security topic '$topic' must be preserved", output.contains(topic))
+            }
+        }
+    }
+
+    @Test
+    fun testMetadataVariationsTriggerFallbackWhenMalformedOrStandalone() = runBlocking {
+        val provider = MockAIProvider()
+        val metadataInputs = listOf(
+            "Selected Answer: Option A",
+            "Selected Answer : Option A",
+            "selected answer: Option A",
+            "Selected Answer = Option A",
+            "Expected Answer: Option B",
+            "Expected Answer : Option B",
+            "expected answer: Option B",
+            "Expected Answer = Option B",
+            "=== CURRENT REQUEST\nPayload without closing delimiter",
+            "CURRENT REQUEST ===\nPayload without opening delimiter",
+            "=== LEARNER PERSONALIZATION\nPayload",
+            "LEARNER PERSONALIZATION CONTEXT ===\nPayload",
+            "LEARNER PERSONALIZATION CONTEXT"
+        )
+
+        for (meta in metadataInputs) {
+            val req = AIRequest(prompt = meta)
+            val exp = provider.generateExplanation(req)
+            val les = provider.generateLesson(req)
+            val qz = provider.generateQuiz(req)
+            val smp = provider.simplifyContent(req)
+
+            for (output in listOf(exp.content, les.content, qz.content, smp.content)) {
+                assertTrue("Metadata input '$meta' must resolve to fallback", output.contains("Core Concept"))
+                assertFalse("Output must not contain Selected Answer from '$meta'", output.contains("Selected Answer"))
+                assertFalse("Output must not contain Expected Answer from '$meta'", output.contains("Expected Answer"))
+                assertFalse("Output must not contain CURRENT REQUEST from '$meta'", output.contains("CURRENT REQUEST"))
+            }
+        }
+    }
+
+    @Test
+    fun testMetadataAfterValidTopicPreservesTopicAndIsolatesMetadata() = runBlocking {
+        val provider = MockAIProvider()
+        val promptWithMetadata = """
+            Provide a deep-dive, detailed explanation expanding on 'StateFlow vs SharedFlow'.
+            Selected Answer : 'StateFlow holds a single value and is stateful'
+            Expected Answer : 'StateFlow is conflated and stateful, SharedFlow is configurable'
+        """.trimIndent()
+
+        val req = AIRequest(prompt = promptWithMetadata)
+        val exp = provider.generateExplanation(req)
+        val les = provider.generateLesson(req)
+        val qz = provider.generateQuiz(req)
+        val smp = provider.simplifyContent(req)
+
+        for (output in listOf(exp.content, les.content, qz.content, smp.content)) {
+            assertTrue("Valid topic should be extracted", output.contains("StateFlow vs SharedFlow"))
+            assertFalse("Selected Answer must not leak", output.contains("Selected Answer"))
+            assertFalse("Expected Answer must not leak", output.contains("Expected Answer"))
+        }
+    }
+
+    @Test
+    fun testMetadataInContextSanitizedAcrossAllEndpoints() = runBlocking {
+        val provider = MockAIProvider()
+        val metadataContext = """
+            === CURRENT REQUEST ===
+            Selected Answer : Option A
+            Expected Answer : Option B
+        """.trimIndent()
+
+        val req = AIRequest(prompt = "StateFlow", context = metadataContext)
+        val exp = provider.generateExplanation(req)
+        val les = provider.generateLesson(req)
+        val qz = provider.generateQuiz(req)
+        val smp = provider.simplifyContent(req)
+
+        for (output in listOf(exp.content, les.content, qz.content, smp.content)) {
+            assertTrue("Topic must be preserved", output.contains("StateFlow"))
+            assertFalse("Metadata must not leak from context", output.contains("Selected Answer"))
+            assertFalse("Metadata must not leak from context", output.contains("Expected Answer"))
+            assertFalse("Delimiters must not leak from context", output.contains("=== CURRENT REQUEST ==="))
+        }
+    }
 }

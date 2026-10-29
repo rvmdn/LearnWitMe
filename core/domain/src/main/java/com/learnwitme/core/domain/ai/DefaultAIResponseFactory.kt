@@ -52,12 +52,11 @@ class DefaultAIResponseFactory {
         )
 
         private val SECRET_OR_SENTINEL_PATTERN = Regex(
-            """(?i)(?:TEST_SECRET_\w+|api[_-]?key\s*[:=]\s*\S+|bearer\s+[a-z0-9_\-.]+|secret\s*[:=]\s*\S+|password\s*[:=]\s*\S+)"""
+            """(?i)(?:TEST_SECRET_\w+|TEST_KEY_\w+|TEST_TOKEN_\w+|(?:authorization\s*:\s*)bearer\b|\bbearer\s+(?:[\r\n]+\s*)?["']?(?!token\b|tokens\b|auth\b|authentication\b|architecture\b)\S*|\b(?:api[_\-\s]?key|access[_\-\s]?token|refresh[_\-\s]?token|auth[_\-\s]?token|id[_\-\s]?token|client[_\-\s]?secret|client[_\-\s]?id|secret[_\-\s]?key|private[_\-\s]?key|password|passwd|secret|token)\s*[:=]\s*(?:[\r\n]+\s*)?["']?\S*)"""
         )
 
         private val PROMPT_DELIMITER_OR_METADATA_PATTERN = Regex(
-            """(?:===\s*CURRENT REQUEST\s*===|===\s*LEARNER PERSONALIZATION CONTEXT\s*===|===|Selected Answer:|Expected Answer:)""",
-            RegexOption.IGNORE_CASE
+            """(?i)(?:={2,}\s*CURRENT\s+REQUEST|CURRENT\s+REQUEST\s*={2,}|={2,}\s*LEARNER\s+PERSONALIZATION|LEARNER\s+PERSONALIZATION\s*(?:CONTEXT\s*)?={2,}|\bLEARNER\s+PERSONALIZATION\s+CONTEXT\b|={3,}|\bselected\s+answer\s*[:=]|\bexpected\s+answer\s*[:=])"""
         )
 
         private val COMMAND_VERB_PREFIX_PATTERN = Regex(
@@ -80,7 +79,9 @@ class DefaultAIResponseFactory {
     internal fun extractCleanTopic(rawPrompt: String): String {
         if (rawPrompt.isBlank()) return FALLBACK_TOPIC
 
-        val body = if (rawPrompt.contains("=== CURRENT REQUEST ===")) {
+        val hasStandardRequestWrapper = rawPrompt.contains("=== CURRENT REQUEST ===")
+
+        val body = if (hasStandardRequestWrapper) {
             rawPrompt.substringAfter("=== CURRENT REQUEST ===").substringBefore("===").trim()
         } else {
             rawPrompt.trim()
@@ -100,6 +101,12 @@ class DefaultAIResponseFactory {
         val extracted = extractFromKnownTemplates(body)
         if (extracted != null) {
             return finalizeTopic(extracted)
+        }
+
+        // If the prompt does NOT have a recognized template and contains internal metadata or delimiters,
+        // it must not be treated as an arbitrary direct topic.
+        if (PROMPT_DELIMITER_OR_METADATA_PATTERN.containsMatchIn(body)) {
+            return FALLBACK_TOPIC
         }
 
         // Direct topic evaluation
@@ -223,8 +230,8 @@ class DefaultAIResponseFactory {
         // Direct topics must not be multiline
         if (text.lines().count { it.isNotBlank() } > 1) return false
 
-        // Direct topics must not contain prompt wrappers
-        if (text.contains("===")) return false
+        // Direct topics must not contain prompt delimiters or metadata
+        if (PROMPT_DELIMITER_OR_METADATA_PATTERN.containsMatchIn(text)) return false
 
         // Direct topics must not start with arbitrary command verbs
         if (COMMAND_VERB_PREFIX_PATTERN.containsMatchIn(text)) return false
