@@ -563,6 +563,15 @@ class MockAIProviderTest {
 
         // 1. Credentials with synthetic secrets: MUST resolve to fallback and NEVER leak secrets
         val bearerCredentials = listOf(
+            "Bearer abc123secret",
+            "Bearer token123secret",
+            "Bearer token-123secret",
+            "Bearer token.secret",
+            "Bearer token_auth_123",
+            "Authorization: Bearer abc123secret",
+            "Authorization: Bearer token-123secret",
+            "bearer=abc123secret",
+            "bearer: abc123secret",
             "Bearer synth_bearer_sec_01",
             "Authorization: Bearer synth_bearer_sec_02",
             "Authorization : Bearer synth_bearer_sec_03",
@@ -572,7 +581,11 @@ class MockAIProviderTest {
             "Bearer token.synth_sec_07",
             "bearer=synth_sec_08",
             "bearer: synth_sec_09",
-            "Bearer   synth_bearer_sec_10"
+            "Bearer   synth_bearer_sec_10",
+            "Bearer\t\tsynth_bearer_tab",
+            "Bearer\n  synth_bearer_nl",
+            "Header with Bearer synth_mid_01 for access",
+            "  Bearer synth_trimmed_01  "
         )
 
         for (cred in bearerCredentials) {
@@ -587,17 +600,31 @@ class MockAIProviderTest {
 
                 for (output in listOf(exp.content, les.content, qz.content, smp.content)) {
                     assertFalse("Output must never leak synthetic secret from: $cred", output.contains("synth_"))
-                    assertFalse("Output must never leak bearer assignment from: $cred", output.contains("Bearer synth_"))
+                    assertFalse("Output must never leak abc123secret from: $cred", output.contains("abc123secret"))
+                    assertFalse("Output must never leak token123secret from: $cred", output.contains("token123secret"))
+                    assertFalse("Output must never leak token-123secret from: $cred", output.contains("token-123secret"))
+                    assertFalse("Output must never leak token.secret from: $cred", output.contains("token.secret"))
+                    assertFalse("Output must never leak token_auth_123 from: $cred", output.contains("token_auth_123"))
                 }
             }
         }
 
         // 2. Legitimate educational topics: MUST be preserved
         val legitimateBearerTopics = listOf(
+            "Bearer Token",
             "Bearer Token Authentication",
             "Bearer Token Architecture",
+            "Bearer Token Security",
+            "Bearer Token Validation",
+            "Bearer Token Flow",
+            "Bearer Token Lifecycle",
+            "Bearer Token Management",
+            "Bearer Token Standard",
+            "OAuth 2.0 Bearer Token",
             "OAuth 2.0 Bearer Token Flow",
-            "Bearer Tokens in OAuth 2.0"
+            "Bearer Tokens in OAuth 2.0",
+            "Bearer Tokens in OAuth 2.0 (RFC 6750)",
+            "Bearer Token - Architecture"
         )
 
         for (topic in legitimateBearerTopics) {
@@ -736,6 +763,44 @@ class MockAIProviderTest {
             "Question containing '===' must extract the clean topic",
             expWrapped.content.contains("What does === do in JavaScript?")
         )
+
+        // 4. Legitimate technical topics containing 'Current Request': MUST NOT be false positives!
+        val technicalCurrentRequestTopics = listOf(
+            "How to Handle the Current Request in Ktor",
+            "Current Request Lifecycle in HTTP",
+            "Processing Current Requests with Kotlin Coroutines",
+            "Current Request Context in Spring Boot",
+            "Understanding Request Metadata in REST APIs"
+        )
+
+        for (topic in technicalCurrentRequestTopics) {
+            val req = AIRequest(prompt = topic)
+            val exp = provider.generateExplanation(req)
+            val les = provider.generateLesson(req)
+            val qz = provider.generateQuiz(req)
+            val smp = provider.simplifyContent(req)
+
+            for (output in listOf(exp.content, les.content, qz.content, smp.content)) {
+                assertTrue("Legitimate topic '$topic' must be preserved", output.contains(topic))
+                assertFalse("Topic '$topic' must not trigger fallback", output.contains("Core Concept"))
+            }
+
+            // Also test in context
+            val reqCtx = AIRequest(prompt = "Kotlin Coroutines", context = "Investigating $topic for server performance.")
+            val expCtx = provider.generateExplanation(reqCtx)
+            assertTrue("Context containing '$topic' must be preserved", expCtx.content.contains(topic))
+        }
+
+        // 5. Technical topic wrapped with === CURRENT REQUEST ===
+        val wrappedKtorPrompt = """
+            === CURRENT REQUEST ===
+            How to Handle the Current Request in Ktor
+        """.trimIndent()
+        val expKtor = provider.generateExplanation(AIRequest(prompt = wrappedKtorPrompt))
+        assertTrue(
+            "Wrapped technical prompt must extract topic",
+            expKtor.content.contains("How to Handle the Current Request in Ktor")
+        )
     }
 
     @Test
@@ -810,5 +875,16 @@ class MockAIProviderTest {
             assertFalse(option.contains("synth_ctx_secret_888"))
         }
         assertFalse(contextPayload.explanation.contains("synth_ctx_secret_888"))
+
+        // 4. Deserialization of quiz response under educational Bearer concept
+        val bearerReq = AIRequest(prompt = "Bearer Token Security")
+        val bearerQuiz = provider.generateQuiz(bearerReq)
+
+        val bearerPayload = Json.decodeFromString(MockQuizPayload.serializer(), bearerQuiz.content)
+        assertNotNull(bearerPayload)
+        assertTrue(bearerPayload.question.contains("Bearer Token Security"))
+        assertEquals(4, bearerPayload.options.size)
+        assertTrue(bearerPayload.correctAnswerIndex in 0 until bearerPayload.options.size)
+        assertTrue(bearerPayload.explanation.isNotBlank())
     }
 }
