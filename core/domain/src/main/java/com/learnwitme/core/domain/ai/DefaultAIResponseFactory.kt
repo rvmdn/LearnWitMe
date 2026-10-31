@@ -52,11 +52,11 @@ class DefaultAIResponseFactory {
         )
 
         private val SECRET_OR_SENTINEL_PATTERN = Regex(
-            """(?i)(?:TEST_SECRET_\w+|TEST_KEY_\w+|TEST_TOKEN_\w+|(?:authorization\s*:\s*)bearer\b|\bbearer\s+(?:[\r\n]+\s*)?["']?(?!token\b|tokens\b|auth\b|authentication\b|architecture\b)\S*|\b(?:api[_\-\s]?key|access[_\-\s]?token|refresh[_\-\s]?token|auth[_\-\s]?token|id[_\-\s]?token|client[_\-\s]?secret|client[_\-\s]?id|secret[_\-\s]?key|private[_\-\s]?key|password|passwd|secret|token)\s*[:=]\s*(?:[\r\n]+\s*)?["']?\S*)"""
+            """(?i)(?:TEST_SECRET_\w+|TEST_KEY_\w+|TEST_TOKEN_\w+|(?:authorization\s*:\s*)bearer\b|\bbearer\s+(?:[\r\n]+\s*)?["']?(?!token\s+(?:auth|authentication|architecture|flow|lifecycle|management|standard|usage)\b|tokens\b)\S*|\b(?:api[_\-\s]?key|access[_\-\s]?token|refresh[_\-\s]?token|auth[_\-\s]?token|id[_\-\s]?token|client[_\-\s]?secret|client[_\-\s]?id|secret[_\-\s]?key|private[_\-\s]?key|password|passwd|secret|token|bearer)\s*[:=]\s*(?:[\r\n]+\s*)?["']?\S*)"""
         )
 
         private val PROMPT_DELIMITER_OR_METADATA_PATTERN = Regex(
-            """(?i)(?:={2,}\s*CURRENT\s+REQUEST|CURRENT\s+REQUEST\s*={2,}|={2,}\s*LEARNER\s+PERSONALIZATION|LEARNER\s+PERSONALIZATION\s*(?:CONTEXT\s*)?={2,}|\bLEARNER\s+PERSONALIZATION\s+CONTEXT\b|={3,}|\bselected\s+answer\s*[:=]|\bexpected\s+answer\s*[:=])"""
+            """(?i)(?:={2,}\s*CURRENT\s+REQUEST|CURRENT\s+REQUEST\s*={2,}|\bCURRENT\s+REQUEST\b|={2,}\s*LEARNER\s+PERSONALIZATION|LEARNER\s+PERSONALIZATION\s*(?:CONTEXT\s*)?={2,}|\bLEARNER\s+PERSONALIZATION\s+CONTEXT\b|(?m)^\s*={3,}\s*$|\bselected\s+answer\s*[:=]|\bexpected\s+answer\s*[:=])"""
         )
 
         private val COMMAND_VERB_PREFIX_PATTERN = Regex(
@@ -82,7 +82,13 @@ class DefaultAIResponseFactory {
         val hasStandardRequestWrapper = rawPrompt.contains("=== CURRENT REQUEST ===")
 
         val body = if (hasStandardRequestWrapper) {
-            rawPrompt.substringAfter("=== CURRENT REQUEST ===").substringBefore("===").trim()
+            val afterHeader = rawPrompt.substringAfter("=== CURRENT REQUEST ===").trim()
+            val delimiterLineIndex = Regex("""(?m)^\s*={3,}\s*$""").find(afterHeader)?.range?.first
+            if (delimiterLineIndex != null) {
+                afterHeader.substring(0, delimiterLineIndex).trim()
+            } else {
+                afterHeader
+            }
         } else {
             rawPrompt.trim()
         }

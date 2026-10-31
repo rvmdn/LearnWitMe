@@ -556,4 +556,259 @@ class MockAIProviderTest {
             assertFalse("Delimiters must not leak from context", output.contains("=== CURRENT REQUEST ==="))
         }
     }
+
+    @Test
+    fun testBearerTokenEdgeCases() = runBlocking {
+        val provider = MockAIProvider()
+
+        // 1. Credentials with synthetic secrets: MUST resolve to fallback and NEVER leak secrets
+        val bearerCredentials = listOf(
+            "Bearer synth_bearer_sec_01",
+            "Authorization: Bearer synth_bearer_sec_02",
+            "Authorization : Bearer synth_bearer_sec_03",
+            "authorization: bearer synth_bearer_sec_04",
+            "Bearer token123synth_sec_05",
+            "Bearer token-123synth_sec_06",
+            "Bearer token.synth_sec_07",
+            "bearer=synth_sec_08",
+            "bearer: synth_sec_09",
+            "Bearer   synth_bearer_sec_10"
+        )
+
+        for (cred in bearerCredentials) {
+            val reqPrompt = AIRequest(prompt = cred)
+            val reqContext = AIRequest(prompt = "StateFlow", context = cred)
+
+            for (req in listOf(reqPrompt, reqContext)) {
+                val exp = provider.generateExplanation(req)
+                val les = provider.generateLesson(req)
+                val qz = provider.generateQuiz(req)
+                val smp = provider.simplifyContent(req)
+
+                for (output in listOf(exp.content, les.content, qz.content, smp.content)) {
+                    assertFalse("Output must never leak synthetic secret from: $cred", output.contains("synth_"))
+                    assertFalse("Output must never leak bearer assignment from: $cred", output.contains("Bearer synth_"))
+                }
+            }
+        }
+
+        // 2. Legitimate educational topics: MUST be preserved
+        val legitimateBearerTopics = listOf(
+            "Bearer Token Authentication",
+            "Bearer Token Architecture",
+            "OAuth 2.0 Bearer Token Flow",
+            "Bearer Tokens in OAuth 2.0"
+        )
+
+        for (topic in legitimateBearerTopics) {
+            val req = AIRequest(prompt = topic)
+            val exp = provider.generateExplanation(req)
+            val les = provider.generateLesson(req)
+            val qz = provider.generateQuiz(req)
+            val smp = provider.simplifyContent(req)
+
+            for (output in listOf(exp.content, les.content, qz.content, smp.content)) {
+                assertTrue("Legitimate topic '$topic' must be preserved", output.contains(topic))
+                assertFalse("Topic '$topic' must not trigger fallback", output.contains("Core Concept"))
+            }
+        }
+    }
+
+    @Test
+    fun testCredentialAssignmentVariationsEdgeCases() = runBlocking {
+        val provider = MockAIProvider()
+
+        val variations = listOf(
+            // Upper/lower case & spacing
+            "API_KEY=synth_var_01",
+            "api_key=synth_var_02",
+            "ApiKey=synth_var_03",
+            "PASSWORD: synth_var_04",
+            "PassWord: synth_var_05",
+            "token = synth_var_06",
+            "API_KEY  =  synth_var_07",
+            "password  :  synth_var_08",
+            // Tabs
+            "API_KEY\t=\tsynth_var_09",
+            "password:\tsynth_var_10",
+            // Newlines
+            "api_key=\n  synth_var_11",
+            "token:\n\tsynth_var_12",
+            "access_token\n=\nsynth_var_13",
+            // Multiple assignments
+            "API_KEY=synth_var_14\naccess_token=synth_var_15",
+            "client_secret=synth_var_16; refresh_token=synth_var_17",
+            // Position variations (start, middle, end)
+            "api_key=synth_pos_start at start of prompt",
+            "Evaluating credential api_key=synth_pos_mid in middle of prompt",
+            "At end of prompt api_key=synth_pos_end",
+            // Quoted credential values
+            "API_KEY=\"synth_quoted_01\"",
+            "password='synth_quoted_02'"
+        )
+
+        for (cred in variations) {
+            val reqPrompt = AIRequest(prompt = cred)
+            val reqContext = AIRequest(prompt = "Kotlin Generics", context = cred)
+
+            for (req in listOf(reqPrompt, reqContext)) {
+                val exp = provider.generateExplanation(req)
+                val les = provider.generateLesson(req)
+                val qz = provider.generateQuiz(req)
+                val smp = provider.simplifyContent(req)
+
+                for (output in listOf(exp.content, les.content, qz.content, smp.content)) {
+                    assertFalse("Output must never leak credential value from: $cred", output.contains("synth_"))
+                }
+            }
+        }
+    }
+
+    @Test
+    fun testMetadataBoundaryVariationsAndOperators() = runBlocking {
+        val provider = MockAIProvider()
+
+        // 1. Metadata variants: Must resolve to fallback and not leak
+        val metadataInputs = listOf(
+            "Selected Answer: Option A",
+            "Selected Answer : Option A",
+            "selected answer= Option A",
+            "Expected Answer: Option B",
+            "Expected Answer : Option B",
+            "expected answer= Option B",
+            "CURRENT REQUEST",
+            "=== CURRENT REQUEST ===",
+            "LEARNER PERSONALIZATION CONTEXT",
+            "=== LEARNER PERSONALIZATION CONTEXT ===",
+            "=== CURRENT REQUEST",
+            "CURRENT REQUEST ===",
+            "=== LEARNER PERSONALIZATION",
+            "====== CURRENT REQUEST ======",
+            "=======================================",
+            "Provide feedback with Selected Answer: Option A for learner"
+        )
+
+        for (meta in metadataInputs) {
+            val req = AIRequest(prompt = meta)
+            val exp = provider.generateExplanation(req)
+            val les = provider.generateLesson(req)
+            val qz = provider.generateQuiz(req)
+            val smp = provider.simplifyContent(req)
+
+            for (output in listOf(exp.content, les.content, qz.content, smp.content)) {
+                assertTrue("Metadata input '$meta' must resolve to fallback", output.contains("Core Concept"))
+                assertFalse("Output must not contain 'Selected Answer' from '$meta'", output.contains("Selected Answer:"))
+                assertFalse("Output must not contain 'Expected Answer' from '$meta'", output.contains("Expected Answer:"))
+                assertFalse("Output must not contain '=== CURRENT REQUEST' from '$meta'", output.contains("=== CURRENT REQUEST"))
+            }
+        }
+
+        // 2. Legitimate technical topics with strict equality '===' operator: MUST NOT be false positives!
+        val equalityOperatorTopics = listOf(
+            "JavaScript == vs ===",
+            "Strict Equality (===)",
+            "=== Operator in TypeScript",
+            "Difference between == and ==="
+        )
+
+        for (topic in equalityOperatorTopics) {
+            val req = AIRequest(prompt = topic)
+            val exp = provider.generateExplanation(req)
+            val les = provider.generateLesson(req)
+            val qz = provider.generateQuiz(req)
+            val smp = provider.simplifyContent(req)
+
+            for (output in listOf(exp.content, les.content, qz.content, smp.content)) {
+                assertTrue("Legitimate operator topic '$topic' must be preserved", output.contains(topic))
+                assertFalse("Topic '$topic' must not be falsely treated as metadata", output.contains("Core Concept"))
+            }
+        }
+
+        // 3. Question template containing '==='
+        val wrappedQuestionWithTripleEquals = """
+            === CURRENT REQUEST ===
+            Explain the reasoning for the question: 'What does === do in JavaScript?'
+        """.trimIndent()
+
+        val reqWrapped = AIRequest(prompt = wrappedQuestionWithTripleEquals)
+        val expWrapped = provider.generateExplanation(reqWrapped)
+        assertTrue(
+            "Question containing '===' must extract the clean topic",
+            expWrapped.content.contains("What does === do in JavaScript?")
+        )
+    }
+
+    @Test
+    fun testLegitimateSecurityTopicsComprehensive() = runBlocking {
+        val provider = MockAIProvider()
+
+        val securityTopics = listOf(
+            "OAuth 2.0 & Secret Management",
+            "Authentication Tokens & Keys",
+            "Password Hashing Best Practices",
+            "API Key Rotation",
+            "Access Token Lifecycle",
+            "SQL Injection Prevention",
+            "Bearer Token Authentication",
+            "JWT Signature Verification",
+            "Public Key Infrastructure",
+            "Secrets Management Architecture"
+        )
+
+        for (topic in securityTopics) {
+            val req = AIRequest(prompt = topic)
+            val exp = provider.generateExplanation(req)
+            val les = provider.generateLesson(req)
+            val qz = provider.generateQuiz(req)
+            val smp = provider.simplifyContent(req)
+
+            for (output in listOf(exp.content, les.content, qz.content, smp.content)) {
+                assertTrue("Legitimate security topic '$topic' must be preserved", output.contains(topic))
+                assertFalse("Legitimate security topic '$topic' must not fall back", output.contains("Core Concept"))
+            }
+        }
+    }
+
+    @Test
+    fun testCrossMethodConsistencyAndQuizJsonDeserialization() = runBlocking {
+        val provider = MockAIProvider()
+
+        // 1. Deserialization of safe quiz response
+        val safeReq = AIRequest(prompt = "Kotlin Sealed Classes")
+        val safeQuiz = provider.generateQuiz(safeReq)
+
+        val safePayload = Json.decodeFromString(MockQuizPayload.serializer(), safeQuiz.content)
+        assertNotNull(safePayload)
+        assertTrue(safePayload.question.contains("Kotlin Sealed Classes"))
+        assertEquals(4, safePayload.options.size)
+        assertTrue(safePayload.correctAnswerIndex in 0 until safePayload.options.size)
+        assertTrue(safePayload.explanation.isNotBlank())
+
+        // 2. Deserialization of quiz response under synthetic attack prompt
+        val maliciousPrompt = "API_KEY=synth_quiz_attack_key_999"
+        val attackReq = AIRequest(prompt = maliciousPrompt)
+        val attackQuiz = provider.generateQuiz(attackReq)
+
+        val attackPayload = Json.decodeFromString(MockQuizPayload.serializer(), attackQuiz.content)
+        assertNotNull(attackPayload)
+        assertTrue(attackPayload.question.contains("Core Concept"))
+        assertFalse(attackPayload.question.contains("synth_quiz_attack_key_999"))
+        for (option in attackPayload.options) {
+            assertFalse(option.contains("synth_quiz_attack_key_999"))
+        }
+        assertFalse(attackPayload.explanation.contains("synth_quiz_attack_key_999"))
+
+        // 3. Deserialization of quiz response under synthetic attack context
+        val contextAttackReq = AIRequest(prompt = "Room Database", context = "password: synth_ctx_secret_888")
+        val contextAttackQuiz = provider.generateQuiz(contextAttackReq)
+
+        val contextPayload = Json.decodeFromString(MockQuizPayload.serializer(), contextAttackQuiz.content)
+        assertNotNull(contextPayload)
+        assertTrue(contextPayload.question.contains("Room Database"))
+        assertFalse(contextPayload.question.contains("synth_ctx_secret_888"))
+        for (option in contextPayload.options) {
+            assertFalse(option.contains("synth_ctx_secret_888"))
+        }
+        assertFalse(contextPayload.explanation.contains("synth_ctx_secret_888"))
+    }
 }
