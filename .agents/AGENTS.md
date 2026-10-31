@@ -27,3 +27,9 @@ Jika terdapat konflik, Anda **WAJIB** mengikuti hierarki berikut:
 - Jangan pernah menyetujui ide/arsitektur yang memiliki celah fatal, performa buruk, atau overengineering hanya demi menyenangkan pengguna.
 - Berikan telaah kritis (pros, cons, trade-offs, edge cases, dan alternatif yang lebih robust/simpel) setiap kali mengevaluasi solusi teknis.
 
+## Versioning & Changelog Protocol
+- Tiap ada perubahan minor/patch (bugfix, sanitasi, hardening): bump patch version (misal: 1.0.1) dan naikkan `versionCode`.
+- Tiap ada perubahan major/fitur: bump minor/major version (misal: 1.1.0) dan naikkan `versionCode`.
+- Selalu catat detail perubahan dalam `CHANGELOG.md` di root repository mengikuti format Keep a Changelog.
+- Upload/push branch dan buat git tag versi terkait (misal: `v1.0.1`).
+
